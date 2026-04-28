@@ -20,6 +20,7 @@ return [
     'central_domains' => [
         '127.0.0.1',
         'localhost',
+        'siscoop3f.com.br', // SUBSTITUA PELO SEU DOMÍNIO REAL
     ],
 
     /**
