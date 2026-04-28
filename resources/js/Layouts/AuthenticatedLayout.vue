@@ -234,7 +234,7 @@ const markAllAsRead = () => {
                                             <p class="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">{{ $page.props.auth.user.email }}</p>
                                         </div>
                                         <DropdownLink :href="$page.props.isCentral ? '/master-admin/profile' : '/profile'" class="text-xs font-bold">Perfil</DropdownLink>
-                                        <DropdownLink href="/logout" method="post" as="button" class="text-xs font-bold text-rose-500">Sair</DropdownLink>
+                                        <DropdownLink :href="$page.props.isCentral ? '/master-admin/logout' : '/logout'" method="post" as="button" class="text-xs font-bold text-rose-500">Sair</DropdownLink>
                                     </template>
                                 </Dropdown>
                             </div>

@@ -21,7 +21,6 @@ return [
         '127.0.0.1',
         'localhost',
         'siscoop3f.com.br',
-        '.siscoop3f.com.br', // Inclui subdomínios como centrais se necessário
     ],
 
     /**
