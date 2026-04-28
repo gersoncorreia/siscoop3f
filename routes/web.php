@@ -52,6 +52,7 @@ Route::middleware(['auth', \App\Http\Middleware\LgpdMiddleware::class])->group(f
 // Profile routes for central domain only (master admin)
 // Tenant profile is handled by tenant.php routes
 
+// Master Admin Auth Routes
 Route::group(['prefix' => 'master-admin', 'as' => 'master-admin.'], function () {
     require __DIR__ . '/auth.php';
 });
