@@ -20,7 +20,8 @@ return [
     'central_domains' => [
         '127.0.0.1',
         'localhost',
-        env('TENANCY_CENTRAL_DOMAINS', 'siscoop3f.com.br'),
+        'siscoop3f.com.br',
+        '.siscoop3f.com.br', // Inclui subdomínios como centrais se necessário
     ],
 
     /**
