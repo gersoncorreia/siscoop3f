@@ -15,12 +15,12 @@ class ProductionSeeder extends Seeder
     public function run(): void
     {
         // 1. Create Master Admin for Central Domain
-        $adminEmail = 'admin@siscoop3f.com.br'; // ALTERE PARA SEU EMAIL
-        
+        $adminEmail = 'eudemirfernando@gmail.com'; // ALTERE PARA SEU EMAIL
+
         $admin = User::updateOrCreate(
             ['email' => $adminEmail],
             [
-                'name' => 'Master Admin',
+                'name' => 'Eudemir Fernando',
                 'password' => bcrypt('Mudar@123#'), // ALTERE IMEDIATAMENTE
                 'email_verified_at' => now(),
             ]
