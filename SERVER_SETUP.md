@@ -34,14 +34,61 @@ apt install php8.3-fpm php8.3-mysql php8.3-igbinary php8.3-mbstring php8.3-xml p
 apt install mysql-server -y
 ```
 
-### Configurar Usuário Master do MySQL
-Entre no MySQL: `mysql`
+### 🗄️ Guia Rápido de Comandos MySQL
+
+Aqui estão os comandos que você mais usará no dia a dia do servidor:
+
+#### 1. Acessar o MySQL
+```bash
+# Acessar como root (sem senha se estiver via SSH root)
+sudo mysql
+
+# Acessar com o usuário do projeto
+mysql -u siscoop_admin -p
+```
+
+#### 2. Gestão de Bancos de Dados
 ```sql
--- Criar usuário com permissão para criar bancos de dados (necessário para Multi-tenancy)
-CREATE USER 'siscoop_admin'@'localhost' IDENTIFIED BY 'SUA_SENHA_SEGURA';
-GRANT ALL PRIVILEGES ON *.* TO 'siscoop_admin'@'localhost' WITH GRANT OPTION;
+-- Listar todos os bancos
+SHOW DATABASES;
+
+-- Criar um novo banco para uma cooperativa (se for manual)
+CREATE DATABASE tenant_nome_da_coop;
+
+-- Excluir um banco
+DROP DATABASE nome_do_banco;
+
+-- Selecionar um banco para usar
+USE nome_do_banco;
+
+-- Listar tabelas do banco selecionado
+SHOW TABLES;
+```
+
+#### 3. Gestão de Usuários e Permissões
+```sql
+-- Listar todos os usuários do MySQL
+SELECT user, host FROM mysql.user;
+
+-- Resetar senha de um usuário
+ALTER USER 'siscoop_admin'@'localhost' IDENTIFIED BY 'NOVA_SENHA_AQUI';
+
+-- Dar permissão de criação de banco (Caso esqueça)
+GRANT ALL PRIVILEGES ON *.* TO 'siscoop_admin'@'localhost';
 FLUSH PRIVILEGES;
-EXIT;
+```
+
+#### 4. Backup e Restauração (Terminal Linux)
+Rode estes comandos **fora** do MySQL (no terminal comum):
+```bash
+# Exportar (Backup) um banco específico
+mysqldump -u siscoop_admin -p nome_do_banco > backup_coop.sql
+
+# Exportar TODOS os bancos do servidor
+mysqldump -u root -p --all-databases > backup_completo_servidor.sql
+
+# Importar um backup para um banco
+mysql -u siscoop_admin -p nome_do_banco < backup_coop.sql
 ```
 
 ---
