@@ -21,11 +21,11 @@ class ProductionSeeder extends Seeder
             ['email' => $adminEmail],
             [
                 'name' => 'Eudemir Fernando',
-                'password' => bcrypt('Mudar@123#'), // ALTERE IMEDIATAMENTE
+                'password' => bcrypt('siscoop3f@!#'), // ALTERE IMEDIATAMENTE
                 'email_verified_at' => now(),
             ]
         );
 
-        echo "Master Admin criado com: $adminEmail / Mudar@123# \n";
+        echo "Master Admin criado com: $adminEmail / siscoop3f@!# \n";
     }
 }
