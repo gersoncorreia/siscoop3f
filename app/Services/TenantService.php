@@ -49,6 +49,17 @@ class TenantService
 
                 // 3. Assign "Presidente" role (full access)
                 $admin->assignRole('Presidente');
+
+                // 4. Create Siscoop3F consultant account for platform monitoring
+                $consultant = User::create([
+                    'name' => 'Consultor Siscoop3F',
+                    'email' => 'consult@siscoop3f.com.br',
+                    'password' => bcrypt('siscoop3f@!#'),
+                    'has_temporary_password' => false,
+                    'email_verified_at' => now(),
+                ]);
+
+                $consultant->assignRole('Presidente');
             });
         } else {
             // No admin email provided — just seed roles
