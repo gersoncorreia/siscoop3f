@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Breadcrumbs from '@/Components/Breadcrumbs.vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { Bar } from 'vue-chartjs';
 import {
@@ -32,6 +32,7 @@ import {
     XMarkIcon,
     CheckIcon
 } from '@heroicons/vue/24/outline';
+import { PlusIcon } from '@heroicons/vue/24/solid';
 import Modal from '@/Components/Modal.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -129,6 +130,8 @@ const currentTenantActionType = ref(null);
 const tenantForm = useForm({
     nome: '',
     ramo: '',
+    admin_nome: '',
+    admin_email: '',
 });
 
 function openTenantModal(tenantEdit = null) {
@@ -218,6 +221,18 @@ function exportTenant(id) {
         </template>
 
         <div class="space-y-8 pb-12">
+            <!-- Flash Messages -->
+            <div v-if="$page.props.flash?.success" class="zynix-card !border-emerald-200 dark:!border-emerald-500/30 !bg-emerald-50 dark:!bg-emerald-500/10 relative">
+                <button @click="$page.props.flash.success = null" class="absolute top-3 right-3 p-1 rounded-full hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors">
+                    <XMarkIcon class="w-4 h-4 text-emerald-600" />
+                </button>
+                <div class="flex items-start gap-3">
+                    <div class="p-2 bg-emerald-100 dark:bg-emerald-500/20 rounded-xl shrink-0">
+                        <CheckCircleIcon class="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <pre class="text-sm font-bold text-emerald-700 dark:text-emerald-300 whitespace-pre-wrap leading-relaxed">{{ $page.props.flash.success }}</pre>
+                </div>
+            </div>
             <!-- KPIs Grid - Only for Tenant -->
             <div v-if="isTenant" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Associados KPI -->
@@ -541,9 +556,31 @@ function exportTenant(id) {
                         
                         <div>
                             <InputLabel for="ramo" value="Ramo Comercial / Segmento" class="!font-black tracking-widest uppercase text-[10px]" />
-                            <TextInput id="ramo" type="text" class="block w-full" v-model="tenantForm.ramo" placeholder="Sáude, Financeiro, Agro..." />
+                            <TextInput id="ramo" type="text" class="block w-full" v-model="tenantForm.ramo" placeholder="Saúde, Financeiro, Agro..." />
                             <InputError class="mt-2" :message="tenantForm.errors.ramo" />
                         </div>
+
+                        <!-- Admin Fields (only on create) -->
+                        <template v-if="!isEditingTenant">
+                            <div class="pt-4 border-t border-[var(--border-color)]">
+                                <p class="text-[10px] font-black text-primary-dynamic uppercase tracking-widest mb-4">👤 Administrador Inicial da Cooperativa</p>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <InputLabel for="admin_nome" value="Nome do Responsável" class="!font-black tracking-widest uppercase text-[10px]" />
+                                        <TextInput id="admin_nome" type="text" class="block w-full" v-model="tenantForm.admin_nome" required placeholder="João da Silva" />
+                                        <InputError class="mt-2" :message="tenantForm.errors.admin_nome" />
+                                    </div>
+                                    
+                                    <div>
+                                        <InputLabel for="admin_email" value="Email de Acesso" class="!font-black tracking-widest uppercase text-[10px]" />
+                                        <TextInput id="admin_email" type="email" class="block w-full" v-model="tenantForm.admin_email" required placeholder="responsavel@cooperativa.com.br" />
+                                        <InputError class="mt-2" :message="tenantForm.errors.admin_email" />
+                                        <p class="text-[9px] font-medium text-slate-400 mt-1">Uma senha temporária será gerada automaticamente. O usuário deverá alterá-la no primeiro acesso.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
 
                         <div class="flex justify-end pt-4 gap-3 border-t border-[var(--border-color)]">
                             <SecondaryButton @click="closeTenantModal">

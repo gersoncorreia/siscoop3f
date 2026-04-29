@@ -10,15 +10,31 @@ class TenantDatabaseSeeder extends Seeder
 {
     /**
      * Seed the tenant's database.
+     *
+     * In production, roles/permissions are seeded by TenantService
+     * when the admin user is created. This seeder only creates
+     * test data in local/testing environments.
      */
     public function run(): void
     {
-        // 1. Setup Roles inside Tenant
+        // 1. Always setup Roles and Permissions
         $this->call(RolesAndPermissionsSeeder::class);
+
+        // 2. Only create test users in development/testing
+        if (!app()->environment('production')) {
+            $this->seedTestData();
+        }
+    }
+
+    /**
+     * Seed test data for local development and testing.
+     */
+    protected function seedTestData(): void
+    {
         $roleTenantAdmin = Role::where('name', 'Administrador Cooperativa')->first();
         $roleAssociado = Role::where('name', 'Associado')->first();
 
-        // 2. Setup Administrative Test Users
+        // Administrative Test Users
         $testUsers = [
             ['email' => 'presidente@stfsaude.com.br', 'name' => 'Presidente da Cooperativa', 'role' => 'Presidente'],
             ['email' => 'diretor@stfsaude.com.br', 'name' => 'Diretor Financeiro', 'role' => 'Diretor Administrativo Financeiro'],
@@ -38,7 +54,7 @@ class TenantDatabaseSeeder extends Seeder
             $user->assignRole($testUser['role']);
         }
 
-        // 3. Setup Legacy Tenant Admin (for compatibility with previous tests)
+        // Legacy Tenant Admin
         $adminEmail = $this->getAdminEmail();
         $admin = User::updateOrCreate(
             ['email' => $adminEmail],
@@ -49,29 +65,27 @@ class TenantDatabaseSeeder extends Seeder
         );
         $admin->assignRole($roleTenantAdmin);
 
-        // 3. Setup Associado Exemplo
+        // Associado Exemplo (only for stfsaude tenant)
         if (tenant('id') === 'stfsaude') {
             $associado = User::updateOrCreate(
-            ['email' => 'joao.associado@gmail.com'],
-            [
-                'name' => 'João Silva Associado',
-                'password' => bcrypt('senha123'),
-            ]
+                ['email' => 'joao.associado@gmail.com'],
+                [
+                    'name' => 'João Silva Associado',
+                    'password' => bcrypt('senha123'),
+                ]
             );
             $associado->assignRole($roleAssociado);
 
-            // Create linked Profiler Associado
             $perfilAssociado = \App\Models\Associado::create([
                 'user_id' => $associado->id,
                 'nome' => 'João Silva Associado',
-                'cpf' => '12345678900', // Fake CPF, model casts to encrypted
+                'cpf' => '12345678900',
                 'email' => 'joao.associado@gmail.com',
                 'nascimento' => '1985-10-15',
                 'status' => 'ativo',
                 'data_adesao' => now()->subMonths(6),
             ]);
 
-            // Add fake capital quotas
             \App\Models\CotaCapital::create([
                 'associado_id' => $perfilAssociado->id,
                 'valor_quota' => 150.00,
@@ -80,7 +94,6 @@ class TenantDatabaseSeeder extends Seeder
                 'tipo_movimento' => 'integralizacao',
             ]);
 
-            // Add fake recent financial records
             \App\Models\LancamentoFinanceiro::create([
                 'associado_id' => $perfilAssociado->id,
                 'tipo' => 'entrada',
@@ -101,7 +114,6 @@ class TenantDatabaseSeeder extends Seeder
 
     protected function getAdminEmail()
     {
-        // Logic to return different emails based on tenant for testing
         return tenant('id') === 'stfsaude' ? 'admin@stfsaude.com.br' : 'admin@agrocoop.com.br';
     }
 }

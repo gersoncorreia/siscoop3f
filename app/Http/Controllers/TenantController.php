@@ -14,11 +14,24 @@ class TenantController extends Controller
         $validated = $request->validate([
             'nome' => 'required|string|max:255',
             'ramo' => 'nullable|string',
+            'admin_nome' => 'required|string|max:255',
+            'admin_email' => 'required|email|max:255',
         ]);
 
-        $tenantService->createTenant($validated);
+        $result = $tenantService->createTenant($validated);
 
-        return Redirect::route('master-admin.dashboard')->with('success', 'Cooperativa criada com sucesso!');
+        $tenant = $result['tenant'];
+        $tempPassword = $result['temp_password'];
+        $domain = $tenant->domains()->first()?->domain ?? 'N/A';
+
+        $message = "Cooperativa '{$tenant->nome}' criada com sucesso!"
+            . "\n\n📌 Credenciais de Acesso Inicial:"
+            . "\n🌐 Domínio: {$domain}"
+            . "\n👤 Email: {$validated['admin_email']}"
+            . "\n🔑 Senha temporária: {$tempPassword}"
+            . "\n\n⚠️ A senha deverá ser alterada no primeiro login.";
+
+        return Redirect::route('master-admin.dashboard')->with('success', $message);
     }
 
     public function update(Request $request, Tenant $tenant)
