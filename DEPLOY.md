@@ -1,57 +1,70 @@
-# Guia de Deploy — Siscoop3F (HostGator Plano M)
+# Guia de Deploy Contínuo — Siscoop3F (VPS Ubuntu / Hostinger)
 
-Este guia explica como colocar o sistema no ar na HostGator usando o cPanel.
+Este guia explica como atualizar o sistema no servidor de produção sempre que novas funcionalidades forem adicionadas ao GitHub.
 
-## 1. Preparação no cPanel (HostGator)
+## 1. Acesso ao Servidor
+Acesse sua VPS via SSH:
+```bash
+ssh root@seu_ip_da_vps
+```
 
-### Subdomínio Wildcard
-Como o sistema usa subdomínios dinâmicos (ex: `coop1.seu-dominio.com.br`), você precisa configurar um wildcard:
-1. No cPanel, vá em **Domínios**.
-2. Clique em **Criar um Novo Domínio**.
-3. No campo de nome, digite `*.seu-dominio.com.br` (substitua pelo seu domínio).
-4. O "Document Root" deve apontar para a pasta onde você subirá o sistema, especificamente para a pasta `/public`. Exemplo: `/public_html/siscoop3f/public`.
+## 2. Puxando as Atualizações (Git)
+Navegue até a pasta do projeto e baixe as últimas alterações:
+```bash
+cd /var/www/siscoop3f
+git pull origin main
+```
 
-### Banco de Dados
-1. Crie um banco de dados principal (central) no cPanel (ex: `prefixo_siscoop_central`).
-2. Crie um usuário para este banco e dê todas as permissões.
-3. **Importante**: Na HostGator Shared, você precisará criar os bancos das cooperativas manualmente ou usar o modo de "Single Database" (se precisar de ajuda para mudar para Single Database, me avise).
+## 3. Atualizando Dependências
+Se houveram mudanças em pacotes PHP ou Node, rode:
+```bash
+# Dependências do Backend (PHP)
+composer install --no-dev --optimize-autoloader
+
+# Dependências do Frontend (Vue/Inertia)
+npm install
+```
+
+## 4. Banco de Dados (Migrations)
+Sempre que criarmos novas tabelas ou colunas (como fizemos com a Cota Capital), você deve rodar as migrations.
+Como o Siscoop3F usa Multi-Tenancy (uma base de dados para cada cooperativa), use o comando:
+```bash
+# Roda as migrations na base Central e em TODAS as cooperativas automaticamente
+php artisan migrate --force
+php artisan tenants:migrate --force
+```
+
+## 5. Build do Frontend
+Para que as alterações visuais (telas novas, botões) apareçam, você deve recompilar o Vite:
+```bash
+npm run build
+```
+
+## 6. Limpeza de Cache e Otimização
+Por fim, limpe o cache do Laravel e reinicie a fila para aplicar as novas configurações:
+```bash
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Reinicia os workers (fila de e-mails, processamentos em background)
+supervisorctl restart siscoop-worker:*
+```
 
 ---
 
-## 2. Subindo o Código
+## 💡 Resumo Rápido (Copia e Cola)
+Se você tem certeza que não houve erro no `git pull`, pode rodar tudo de uma vez colando isso no terminal da VPS:
 
-### Via Git (Recomendado)
-Se você tiver acesso SSH na HostGator:
-1. Entre via terminal SSH.
-2. Clone o repositório: `git clone https://github.com/gersoncorreia/siscoop3f.git`.
-
-### Via FTP/Gerenciador de Arquivos
-1. Suba todos os arquivos para uma pasta (ex: `/public_html/siscoop3f`).
-2. **NÃO suba as pastas `node_modules` e `vendor`** (elas devem ser instaladas no servidor ou subidas separadamente se o servidor não tiver Composer).
-
----
-
-## 3. Configuração do Ambiente
-
-1. Copie o arquivo `.env.production.example` para `.env`.
-2. Edite o `.env` com os dados do banco que você criou no cPanel.
-3. Gere a chave do app: `php artisan key:generate`.
-4. Rode as migrações: `php artisan migrate`.
-5. Rode o seeder de produção: `php artisan db:seed --class=ProductionSeeder`.
-
----
-
-## 4. Build do Frontend
-
-Como usamos Vue + Inertia + Vite:
-1. No seu computador local, rode: `npm run build`.
-2. Isso vai gerar a pasta `public/build`.
-3. Certifique-se de que essa pasta `public/build` foi enviada para o servidor.
-
----
-
-## 5. Dicas Importantes para HostGator
-
-*   **Versão do PHP**: Garanta que o domínio está usando **PHP 8.2** ou superior (mude no "MultiPHP Manager" do cPanel).
-*   **Symlink**: Rode `php artisan storage:link` para que os documentos e logos funcionem.
-*   **Acesso SSH**: Se o seu plano permite, habilite o SSH no suporte da HostGator, facilita 100% o deploy.
+```bash
+cd /var/www/siscoop3f && \
+git pull origin main && \
+composer install --no-dev --optimize-autoloader && \
+npm install && \
+npm run build && \
+php artisan migrate --force && \
+php artisan tenants:migrate --force && \
+php artisan optimize:clear && \
+supervisorctl restart siscoop-worker:*
+```
