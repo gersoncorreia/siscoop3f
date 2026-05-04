@@ -32,9 +32,9 @@ function formatCurrency(v) {
 
 const kpis = computed(() => [
     {
-        label: 'Cota Capital',
+        label: 'Meu Patrimônio',
         value: formatCurrency(stats.value.saldoCotaCapital),
-        sub: 'Saldo integralizado',
+        sub: 'Na Cooperativa (Cota)',
         icon: CurrencyDollarIcon,
         color: 'emerald',
         href: '/cooperado/cotas',

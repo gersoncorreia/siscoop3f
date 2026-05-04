@@ -29,5 +29,7 @@ class AppServiceProvider extends ServiceProvider
             $logger = $this->app->make('log');
             $logger->pushProcessor(new \App\Logging\ContextMonologProcessor());
         }
+
+        \App\Models\LancamentoFinanceiro::observe(\App\Observers\LancamentoFinanceiroObserver::class);
     }
 }

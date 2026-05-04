@@ -28,6 +28,32 @@ const form = useForm({
     telefones: [
         { numero: '', tipo: 'celular' }
     ],
+    dependentes: [],
+});
+
+const addDependente = () => {
+    form.dependentes.push({ nome: '', cpf: '', parentesco: '' });
+};
+
+const removeDependente = (index) => {
+    form.dependentes.splice(index, 1);
+};
+
+const resumoFinanceiro = computed(() => {
+    const taxaTitular = 100;
+    const taxaDependente = 80;
+    const primeiraCota = 10;
+    const qtdDependentes = form.dependentes.length;
+    const totalDependentes = qtdDependentes * taxaDependente;
+    const total = taxaTitular + totalDependentes + primeiraCota;
+    
+    return {
+        titular: taxaTitular,
+        qtdDependentes,
+        totalDependentes,
+        cota: primeiraCota,
+        total
+    };
 });
 
 // CPF Masking logic
@@ -179,6 +205,78 @@ function submitForm() {
                                     placeholder="Opcional"
                                 />
                                 <InputError class="mt-2" :message="form.errors.matricula" />
+                            </div>
+                        </div>
+
+                        <!-- Dependentes Section -->
+                        <div class="pt-6 border-t border-[var(--border-color)]/30">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-xl font-black text-[var(--text-heading)] tracking-tighter">Dependentes</h3>
+                                    <p class="text-[11px] uppercase tracking-widest font-bold text-slate-400 mt-1">Adicione familiares (Opcional)</p>
+                                </div>
+                                <button type="button" @click="addDependente" class="text-xs font-black uppercase tracking-widest text-primary-dynamic hover:text-primary-dynamic/80 bg-primary-dynamic/10 px-4 py-2 rounded-full transition-all">
+                                    + Adicionar Dependente
+                                </button>
+                            </div>
+
+                            <div v-if="form.dependentes.length === 0" class="text-center py-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                                <p class="text-xs text-slate-400 font-medium">Nenhum dependente adicionado.</p>
+                            </div>
+
+                            <div v-else class="space-y-4">
+                                <div v-for="(dep, index) in form.dependentes" :key="index" class="p-5 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800 relative">
+                                    <button type="button" @click="removeDependente(index)" class="absolute top-4 right-4 text-rose-400 hover:text-rose-600">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div class="space-y-1">
+                                            <InputLabel value="Nome do Dependente" class="!font-black text-[9px] uppercase tracking-widest" />
+                                            <TextInput v-model="dep.nome" type="text" class="block w-full !py-2.5 text-sm rounded-lg" required />
+                                        </div>
+                                        <div class="space-y-1">
+                                            <InputLabel value="CPF" class="!font-black text-[9px] uppercase tracking-widest" />
+                                            <TextInput v-model="dep.cpf" type="text" v-mask="'###.###.###-##'" class="block w-full !py-2.5 text-sm rounded-lg font-mono tracking-wider" />
+                                        </div>
+                                        <div class="space-y-1">
+                                            <InputLabel value="Parentesco" class="!font-black text-[9px] uppercase tracking-widest" />
+                                            <select v-model="dep.parentesco" required class="block w-full !py-2.5 text-sm rounded-lg border-slate-200 bg-white focus:border-primary-dynamic focus:ring focus:ring-primary-dynamic/20">
+                                                <option value="">Selecione</option>
+                                                <option value="Cônjuge">Cônjuge</option>
+                                                <option value="Filho(a)">Filho(a)</option>
+                                                <option value="Pai/Mãe">Pai/Mãe</option>
+                                                <option value="Outro">Outro</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resumo Financeiro -->
+                        <div class="pt-6 border-t border-[var(--border-color)]/30">
+                            <h3 class="text-xl font-black text-[var(--text-heading)] tracking-tighter mb-4">Resumo Financeiro</h3>
+                            
+                            <div class="bg-primary-dynamic/5 rounded-2xl border border-primary-dynamic/10 overflow-hidden">
+                                <div class="p-6 space-y-3">
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-[var(--text-muted)] font-medium">Taxa Administrativa (Titular)</span>
+                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.titular.toFixed(2).replace('.', ',') }}</span>
+                                    </div>
+                                    <div v-if="resumoFinanceiro.qtdDependentes > 0" class="flex justify-between items-center text-sm">
+                                        <span class="text-[var(--text-muted)] font-medium">Taxas de Dependentes ({{ resumoFinanceiro.qtdDependentes }}x)</span>
+                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.totalDependentes.toFixed(2).replace('.', ',') }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-[var(--text-muted)] font-medium">Cota Capital (Aporte Inicial)</span>
+                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.cota.toFixed(2).replace('.', ',') }}</span>
+                                    </div>
+                                </div>
+                                <div class="bg-primary-dynamic/10 p-5 flex justify-between items-center">
+                                    <span class="text-xs font-black uppercase tracking-widest text-primary-dynamic">Total a Pagar Hoje</span>
+                                    <span class="text-2xl font-black text-primary-dynamic">R$ {{ resumoFinanceiro.total.toFixed(2).replace('.', ',') }}</span>
+                                </div>
                             </div>
                         </div>
 
