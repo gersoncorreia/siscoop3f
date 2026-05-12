@@ -28,6 +28,7 @@ class Associado extends Model
 
     protected $casts = [
         'cpf' => 'encrypted',
+        'email' => 'encrypted',
         // 'endereco' removed
         'nascimento' => 'date',
         'data_adesao' => 'date',

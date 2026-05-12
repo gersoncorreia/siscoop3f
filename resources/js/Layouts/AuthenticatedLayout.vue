@@ -140,12 +140,15 @@ const markAllAsRead = () => {
                                         <template #icon><HeartIcon class="w-4 h-4 mr-2" /></template>
                                         <NavGroupLink href="/saude/planos" :active="route().current('saude.planos.*')">Planos de Saúde</NavGroupLink>
                                         <NavGroupLink href="/saude/prestadores" :active="route().current('saude.prestadores.*')">Rede de Prestadores</NavGroupLink>
+                                        <NavGroupLink href="/saude/autorizacoes" :active="route().current('saude.autorizacoes.*')">Autorizações (Rede)</NavGroupLink>
+                                        <NavGroupLink href="/saude/faturas" :active="route().current('saude.faturas.*')">Faturamento (Dia 05)</NavGroupLink>
                                         <NavGroupLink href="/saude/reembolsos" :active="route().current('saude.reembolsos.*')">Pedidos de Reembolso</NavGroupLink>
                                     </NavGroup>
 
                                     <NavGroup v-if="$page.props.auth.permissions.includes('configuracoes.users')" title="Ajustes" :active="route().current('configuracoes.*')">
                                         <template #icon><Cog6ToothIcon class="w-4 h-4 mr-2" /></template>
                                         <NavGroupLink href="/configuracoes" :active="route().current('configuracoes.index')">Customização Visual</NavGroupLink>
+                                        <NavGroupLink :href="route('configuracoes.pagamentos')" :active="route().current('configuracoes.pagamentos')">Ajustes de Pagamentos</NavGroupLink>
                                         <NavGroupLink :href="route('configuracoes.usuarios.index')" :active="route().current('configuracoes.usuarios.*')">Gestão de Equipe</NavGroupLink>
                                     </NavGroup>
                                 </template>

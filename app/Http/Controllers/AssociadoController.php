@@ -14,21 +14,31 @@ class AssociadoController extends Controller
 {
     public function index()
     {
-        Gate::authorize('associados.view');
+        $this->authorize('viewAny', Associado::class);
 
         return Inertia::render('Associados/Index', [
-            'associados' => Associado::latest()->paginate(10)
+            'associados' => Associado::latest()->paginate(10)->through(fn($a) => [
+                'id' => $a->id,
+                'nome' => $a->nome,
+                'email' => $a->email,
+                'matricula' => $a->matricula,
+                'status' => $a->status,
+                'cpf_masked' => $a->cpf ? substr($a->cpf, 0, 3) . '.***.***-' . substr($a->cpf, -2) : null,
+                'created_at' => $a->created_at->format('d/m/Y'),
+            ])
         ]);
     }
 
     public function create()
     {
-        Gate::authorize('associados.create');
+        $this->authorize('create', Associado::class);
         return Inertia::render('Associados/Form');
     }
 
     public function store(StoreAssociadoRequest $request)
     {
+        $this->authorize('create', Associado::class);
+
         Associado::create($request->validated());
 
         return Redirect::route('associados.index')->with('success', 'Associado criado com sucesso!');
@@ -36,7 +46,7 @@ class AssociadoController extends Controller
 
     public function edit(Associado $associado)
     {
-        Gate::authorize('associados.update');
+        $this->authorize('update', $associado);
         $associado->load('documentos');
         return Inertia::render('Associados/Form', [
             'associado' => $associado
@@ -45,6 +55,8 @@ class AssociadoController extends Controller
 
     public function update(UpdateAssociadoRequest $request, Associado $associado)
     {
+        $this->authorize('update', $associado);
+
         $associado->update($request->validated());
 
         return Redirect::route('associados.index')->with('success', 'Associado atualizado com sucesso!');
@@ -52,7 +64,7 @@ class AssociadoController extends Controller
 
     public function destroy(Associado $associado)
     {
-        Gate::authorize('associados.delete');
+        $this->authorize('delete', $associado);
 
         $associado->delete();
 

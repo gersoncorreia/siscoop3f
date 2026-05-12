@@ -17,8 +17,9 @@ class DocumentoController extends Controller
             'tipo' => 'nullable|string|max:255',
             'arquivo' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240', // max 10MB
         ]);
-
-        $path = $request->file('arquivo')->store('documentos', 'public');
+        
+        // Armazenar no disco privado 'local'
+        $path = $request->file('arquivo')->store('documentos', 'local');
 
         $associado->documentos()->create([
             'titulo' => $request->titulo,
@@ -31,8 +32,15 @@ class DocumentoController extends Controller
 
     public function destroy(Associado $associado, Documento $documento)
     {
-        if ($documento->arquivo_path && Storage::disk('public')->exists($documento->arquivo_path)) {
-            Storage::disk('public')->delete($documento->arquivo_path);
+        // Verificar se o documento pertence ao associado
+        if ($documento->associado_id !== $associado->id) {
+            abort(404);
+        }
+
+        $this->authorize('delete', $documento);
+
+        if ($documento->arquivo_path && Storage::disk('local')->exists($documento->arquivo_path)) {
+            Storage::disk('local')->delete($documento->arquivo_path);
         }
 
         $documento->delete();
@@ -42,15 +50,24 @@ class DocumentoController extends Controller
 
     public function download(Associado $associado, Documento $documento)
     {
-        if (!Storage::disk('public')->exists($documento->arquivo_path)) {
+        // Verificar se o documento pertence ao associado
+        if ($documento->associado_id !== $associado->id) {
+            abort(404);
+        }
+
+        $this->authorize('view', $documento);
+
+        if (!Storage::disk('local')->exists($documento->arquivo_path)) {
             abort(404, 'Arquivo não encontrado.');
         }
 
-        return Storage::disk('public')->download($documento->arquivo_path, $documento->titulo . '.' . pathinfo($documento->arquivo_path, PATHINFO_EXTENSION));
+        return Storage::disk('local')->download($documento->arquivo_path, $documento->titulo . '.' . pathinfo($documento->arquivo_path, PATHINFO_EXTENSION));
     }
 
     public function aprovar(Associado $associado, Documento $documento)
     {
+        $this->authorize('update', $documento);
+
         $documento->update([
             'status' => 'aprovado',
             'motivo_rejeicao' => null,
@@ -70,6 +87,8 @@ class DocumentoController extends Controller
 
     public function rejeitar(Request $request, Associado $associado, Documento $documento)
     {
+        $this->authorize('update', $documento);
+
         $request->validate([
             'motivo_rejeicao' => 'required|string|max:1000',
         ]);

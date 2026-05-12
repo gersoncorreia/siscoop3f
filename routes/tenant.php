@@ -98,10 +98,37 @@ Route::middleware([
                     Route::delete('/documentos/{id}', [\App\Http\Controllers\CooperadoPortalController::class, 'deleteDocumento'])->name('documentos.destroy');
                     Route::get('/documentos/{id}/download', [\App\Http\Controllers\CooperadoPortalController::class, 'downloadDocumento'])->name('documentos.download');
 
+                    // Rede de Prestadores
+                    Route::get('/prestadores', [\App\Http\Controllers\CooperadoPortalController::class, 'prestadores'])->name('prestadores');
+                    Route::get('/prestadores/{id}', [\App\Http\Controllers\CooperadoPortalController::class, 'prestadorDetalhe'])->name('prestadores.show');
+                    Route::get('/minhas-solicitacoes', [\App\Http\Controllers\CooperadoPortalController::class, 'minhasSolicitacoes'])->name('minhas-solicitacoes');
+
                     // Perfil do Cooperado
                     Route::get('/perfil', [\App\Http\Controllers\CooperadoPortalController::class, 'perfil'])->name('perfil');
-                    Route::patch('/perfil', [\App\Http\Controllers\ProfileController::class, 'update'])->name('perfil.update');
-                    Route::delete('/perfil', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('perfil.destroy');
+                    Route::patch('/perfil', [\App\Http\Controllers\CooperadoPortalController::class, 'updatePerfil'])->name('perfil.update');
+                });
+
+            // =====================================================
+            // PORTAL DO PRESTADOR / PARCEIRO (Role: Prestador)
+            // =====================================================
+            Route::middleware(['role:Prestador'])
+                ->prefix('prestador')
+                ->name('prestador.')
+                ->group(function () {
+                    Route::get('/', [\App\Http\Controllers\PrestadorPortalController::class, 'dashboard'])->name('dashboard');
+                    Route::post('/solicitar', [\App\Http\Controllers\PrestadorPortalController::class, 'solicitarAutorizacao'])->name('solicitar');
+                    Route::get('/buscar-cooperado', [\App\Http\Controllers\PrestadorPortalController::class, 'buscarCooperado'])->name('buscar-cooperado');
+                    
+                    Route::get('/servicos', [\App\Http\Controllers\PrestadorPortalController::class, 'servicos'])->name('servicos');
+                    Route::post('/servicos', [\App\Http\Controllers\PrestadorPortalController::class, 'storeServico'])->name('servicos.store');
+                    Route::put('/servicos/{id}', [\App\Http\Controllers\PrestadorPortalController::class, 'updateServico'])->name('servicos.update');
+                    Route::delete('/servicos/{id}', [\App\Http\Controllers\PrestadorPortalController::class, 'deleteServico'])->name('servicos.destroy');
+                    
+                    Route::get('/faturas', [\App\Http\Controllers\PrestadorPortalController::class, 'faturas'])->name('faturas');
+                    
+                    Route::get('/perfil', [\App\Http\Controllers\PrestadorPortalController::class, 'perfil'])->name('perfil');
+                    Route::put('/perfil', [\App\Http\Controllers\PrestadorPortalController::class, 'updatePerfil'])->name('perfil.update');
+                    Route::put('/perfil/senha', [\App\Http\Controllers\PrestadorPortalController::class, 'updateSenha'])->name('perfil.senha');
                 });
 
             // =====================================================
@@ -141,15 +168,27 @@ Route::middleware([
                 Route::prefix('saude')->name('saude.')->group(function () {
                     Route::resource('planos', \App\Http\Controllers\PlanoSaudeController::class);
                     Route::resource('prestadores', \App\Http\Controllers\PrestadorController::class);
+                    
+                    // Autorizações do Fluxo Invertido (Gerência/Hélio)
+                    Route::get('autorizacoes', [\App\Http\Controllers\SaudeController::class, 'autorizacoesPendentes'])->name('autorizacoes.index');
+                    Route::post('autorizacoes/{solicitacao}/aprovar', [\App\Http\Controllers\SaudeController::class, 'aprovarAutorizacao'])->name('autorizacoes.aprovar');
+                    Route::post('autorizacoes/{solicitacao}/rejeitar', [\App\Http\Controllers\SaudeController::class, 'rejeitarAutorizacao'])->name('autorizacoes.rejeitar');
+                    
+                    // Faturamento (Regra do dia 05)
+                    Route::get('faturas', [\App\Http\Controllers\SaudeController::class, 'faturas'])->name('faturas.index');
+                    Route::post('faturas/{fatura}/auditar', [\App\Http\Controllers\SaudeController::class, 'auditarFatura'])->name('faturas.auditar');
+                    Route::post('faturas/{fatura}/pagar', [\App\Http\Controllers\SaudeController::class, 'pagarFatura'])->name('faturas.pagar');
+
                     Route::resource('reembolsos', \App\Http\Controllers\ReembolsoController::class);
                     Route::post('reembolsos/{reembolso}/aprovar', [\App\Http\Controllers\ReembolsoController::class, 'aprovar'])->name('reembolsos.aprovar');
                     Route::post('reembolsos/{reembolso}/rejeitar', [\App\Http\Controllers\ReembolsoController::class, 'rejeitar'])->name('reembolsos.rejeitar');
-                }
-                );
+                });
 
                 // Configurações do Tenant
                 Route::get('configuracoes', [\App\Http\Controllers\ConfiguracaoController::class , 'index'])->name('configuracoes.index');
                 Route::post('configuracoes', [\App\Http\Controllers\ConfiguracaoController::class , 'update'])->name('configuracoes.update');
+                Route::get('configuracoes/pagamentos', [\App\Http\Controllers\ConfiguracaoController::class, 'pagamentos'])->name('configuracoes.pagamentos');
+                Route::post('configuracoes/pagamentos', [\App\Http\Controllers\ConfiguracaoController::class, 'updatePagamentos'])->name('configuracoes.pagamentos.update');
 
                 // Gestão de Usuários Administrativos
                 Route::prefix('configuracoes')->name('configuracoes.')->group(function () {

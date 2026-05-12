@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Associado;
 use App\Models\Reembolso;
+use App\Models\Prestador;
+use App\Models\SolicitacaoServico;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -165,7 +167,7 @@ class CooperadoPortalController extends Controller
             'arquivo' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240', // max 10MB
         ]);
 
-        $path = $request->file('arquivo')->store('reembolsos', 'public');
+        $path = $request->file('arquivo')->store('reembolsos', 'local');
 
         $associado->reembolsos()->create([
             'valor_solicitado' => $validated['valor_solicitado'],
@@ -195,12 +197,12 @@ class CooperadoPortalController extends Controller
         $associado = $this->getAssociado();
         $reembolso = $associado->reembolsos()->findOrFail($id);
 
-        if (empty($reembolso->comprovantes) || !\Illuminate\Support\Facades\Storage::disk('public')->exists($reembolso->comprovantes[0])) {
+        if (empty($reembolso->comprovantes) || !\Illuminate\Support\Facades\Storage::disk('local')->exists($reembolso->comprovantes[0])) {
             abort(404, 'Comprovante não encontrado.');
         }
 
         $path = $reembolso->comprovantes[0];
-        return \Illuminate\Support\Facades\Storage::disk('public')->download(
+        return \Illuminate\Support\Facades\Storage::disk('local')->download(
             $path,
             'comprovante_reembolso_' . $reembolso->id . '.' . pathinfo($path, PATHINFO_EXTENSION)
         );
@@ -215,8 +217,8 @@ class CooperadoPortalController extends Controller
             abort(403, 'Apenas reembolsos rejeitados podem ser excluídos pelo cooperado.');
         }
 
-        if (!empty($reembolso->comprovantes) && \Illuminate\Support\Facades\Storage::disk('public')->exists($reembolso->comprovantes[0])) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($reembolso->comprovantes[0]);
+        if (!empty($reembolso->comprovantes) && \Illuminate\Support\Facades\Storage::disk('local')->exists($reembolso->comprovantes[0])) {
+            \Illuminate\Support\Facades\Storage::disk('local')->delete($reembolso->comprovantes[0]);
         }
 
         $reembolso->delete();
@@ -238,7 +240,7 @@ class CooperadoPortalController extends Controller
             ->map(fn ($d) => [
                 'id' => $d->id,
                 'nome' => $d->nome,
-                'cpf' => $d->cpf,
+                'cpf' => $d->cpf ? substr($d->cpf, 0, 3) . '.***.***-' . substr($d->cpf, -2) : null,
                 'data_nascimento' => $d->data_nascimento,
                 'parentesco' => $d->parentesco,
                 'status' => $d->status,
@@ -352,7 +354,7 @@ class CooperadoPortalController extends Controller
             $associado->dependentes()->findOrFail($request->dependente_id);
         }
 
-        $path = $request->file('arquivo')->store('documentos', 'public');
+        $path = $request->file('arquivo')->store('documentos', 'local');
 
         $associado->documentos()->create([
             'titulo' => $request->titulo,
@@ -386,11 +388,11 @@ class CooperadoPortalController extends Controller
         $associado = $this->getAssociado();
         $documento = $associado->documentos()->findOrFail($id);
 
-        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($documento->arquivo_path)) {
+        if (!\Illuminate\Support\Facades\Storage::disk('local')->exists($documento->arquivo_path)) {
             abort(404, 'Arquivo não encontrado.');
         }
 
-        return \Illuminate\Support\Facades\Storage::disk('public')->download(
+        return \Illuminate\Support\Facades\Storage::disk('local')->download(
             $documento->arquivo_path, 
             $documento->titulo . '.' . pathinfo($documento->arquivo_path, PATHINFO_EXTENSION)
         );
@@ -408,13 +410,110 @@ class CooperadoPortalController extends Controller
             abort(403, 'Apenas documentos rejeitados podem ser excluídos pelo cooperado.');
         }
 
-        if ($documento->arquivo_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($documento->arquivo_path)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($documento->arquivo_path);
+        if ($documento->arquivo_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($documento->arquivo_path)) {
+            \Illuminate\Support\Facades\Storage::disk('local')->delete($documento->arquivo_path);
         }
 
         $documento->delete();
 
         return redirect()->back()->with('success', 'Documento excluído. Você já pode enviar um novo documento.');
+    }
+
+    /**
+     * Lista de Prestadores da Rede Credenciada
+     */
+    public function prestadores()
+    {
+        $associado = $this->getAssociado();
+
+        $prestadores = Prestador::orderBy('nome')->get()->map(fn($p) => [
+            'id' => $p->id,
+            'nome' => $p->nome,
+            'tipo' => $p->tipo,
+            'endereco' => $p->endereco,
+            'especialidades' => is_array($p->especialidades) ? implode(', ', $p->especialidades) : $p->especialidades,
+        ]);
+
+        return Inertia::render('Cooperado/Prestadores', [
+            'prestadores' => $prestadores,
+        ]);
+    }
+
+    /**
+     * Detalhes de um Prestador + Solicitações do Cooperado naquele parceiro
+     */
+    public function prestadorDetalhe($id)
+    {
+        $associado = $this->getAssociado();
+        $prestador = Prestador::findOrFail($id);
+
+        $prestadorData = [
+            'id' => $prestador->id,
+            'nome' => $prestador->nome,
+            'tipo' => $prestador->tipo,
+            'endereco' => $prestador->endereco,
+            'especialidades' => is_array($prestador->especialidades) ? $prestador->especialidades : [],
+        ];
+
+        // Serviços/Produtos oferecidos por este prestador
+        $servicos = $prestador->servicos()
+            ->where('ativo', true)
+            ->get()
+            ->map(fn($s) => [
+                'id' => $s->id,
+                'nome' => $s->nome,
+                'descricao' => $s->descricao,
+                'valor_acordado' => (float) ($s->valor_acordado ?? 0),
+            ]);
+
+        // Solicitações do cooperado neste prestador
+        $solicitacoes = SolicitacaoServico::with('servico')
+            ->where('associado_id', $associado->id)
+            ->where('prestador_id', $prestador->id)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn($s) => [
+                'id' => $s->id,
+                'servico_produto' => $s->servico->nome ?? 'Outros',
+                'valor' => (float) ($s->valor_cobrado ?? 0),
+                'observacoes' => $s->observacoes,
+                'status' => $s->status,
+                'motivo_recusa' => $s->motivo_recusa,
+                'data' => $s->created_at->format('d/m/Y H:i'),
+            ]);
+
+        return Inertia::render('Cooperado/PrestadorDetalhe', [
+            'prestador' => $prestadorData,
+            'servicos' => $servicos,
+            'solicitacoes' => $solicitacoes,
+        ]);
+    }
+
+    /**
+     * Exibe as solicitações (autorizações) feitas para este cooperado
+     */
+    public function minhasSolicitacoes()
+    {
+        $associado = $this->getAssociado();
+
+        $solicitacoes = SolicitacaoServico::with(['prestador', 'servico'])
+            ->where('associado_id', $associado->id)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn($s) => [
+                'id' => $s->id,
+                'prestador' => $s->prestador->nome ?? 'Desconhecido',
+                'servico_produto' => $s->servico->nome ?? 'Outros',
+                'observacoes' => $s->observacoes,
+                'status' => $s->status,
+                'motivo_recusa' => $s->motivo_recusa,
+                'data' => $s->created_at->format('d/m/Y H:i'),
+                'data_realizacao' => $s->data_realizacao ? \Carbon\Carbon::parse($s->data_realizacao)->format('d/m/Y H:i') : null,
+            ]);
+
+        return Inertia::render('Cooperado/MinhasSolicitacoes', [
+            'solicitacoes' => $solicitacoes,
+        ]);
     }
 
     /**

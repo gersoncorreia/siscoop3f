@@ -33,7 +33,7 @@ class TenantUserController extends Controller
         Gate::authorize('configuracoes.users');
 
         return Inertia::render('Configuracoes/Usuarios/Form', [
-            'roles' => Role::all(),
+            'roles' => Role::whereNotIn('name', ['Associado', 'Prestador'])->get(),
             'permissions' => Permission::all(),
         ]);
     }
@@ -46,7 +46,7 @@ class TenantUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|exists:roles,name',
+            'role' => 'required|exists:roles,name|not_in:Associado,Prestador',
             'permissions' => 'array',
         ]);
 
@@ -71,7 +71,7 @@ class TenantUserController extends Controller
 
         return Inertia::render('Configuracoes/Usuarios/Form', [
             'user_edit' => $usuario->load(['roles', 'permissions']),
-            'roles' => Role::all(),
+            'roles' => Role::whereNotIn('name', ['Associado', 'Prestador'])->get(),
             'permissions' => Permission::all(),
         ]);
     }
@@ -80,13 +80,20 @@ class TenantUserController extends Controller
     {
         Gate::authorize('configuracoes.users');
 
-        $request->validate([
+        $isRestricted = $usuario->hasRole(['Associado', 'Prestador']);
+
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:users,email,' . $usuario->id,
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|exists:roles,name',
-            'permissions' => 'array',
-        ]);
+        ];
+
+        if (!$isRestricted) {
+            $rules['role'] = 'required|exists:roles,name|not_in:Associado,Prestador';
+            $rules['permissions'] = 'array';
+        }
+
+        $request->validate($rules);
 
         $usuario->update([
             'name' => $request->name,
@@ -97,8 +104,10 @@ class TenantUserController extends Controller
             $usuario->update(['password' => Hash::make($request->password)]);
         }
 
-        $usuario->syncRoles([$request->role]);
-        $usuario->syncPermissions($request->permissions ?? []);
+        if (!$isRestricted) {
+            $usuario->syncRoles([$request->role]);
+            $usuario->syncPermissions($request->permissions ?? []);
+        }
 
         return Redirect::route('configuracoes.usuarios.index')->with('success', 'Usuário atualizado com sucesso!');
     }

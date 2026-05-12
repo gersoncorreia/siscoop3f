@@ -26,11 +26,25 @@ class LgpdController extends Controller
     {
         $user = $request->user();
 
+        \Illuminate\Support\Facades\Log::info('LGPD Accept clicked', [
+            'user_id' => $user->id ?? null,
+            'before' => $user->accepted_lgpd_at ?? null,
+        ]);
+
         if ($user) {
             $user->update(['accepted_lgpd_at' => now()]);
+            // Refresh to ensure it was saved
+            $user->refresh();
+            
+            \Illuminate\Support\Facades\Log::info('LGPD updated', [
+                'after' => $user->accepted_lgpd_at ?? null,
+            ]);
         }
 
         $url = tenant() ? route('dashboard') : route('master-admin.dashboard');
-        return Redirect::to($url);
+        
+        \Illuminate\Support\Facades\Log::info('LGPD Redirecting to', ['url' => $url]);
+        
+        return Inertia::location($url);
     }
 }

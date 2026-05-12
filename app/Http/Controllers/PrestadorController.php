@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Prestador;
+use App\Models\User;
 use App\Http\Requests\Saude\PrestadorRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class PrestadorController extends Controller
@@ -18,7 +20,26 @@ class PrestadorController extends Controller
 
     public function store(PrestadorRequest $request)
     {
-        Prestador::create($request->validated());
+        $data = $request->validated();
+        
+        $userId = null;
+        if (!empty($data['email']) && !empty($data['password'])) {
+            $user = User::create([
+                'name' => $data['nome'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
+            $user->assignRole('Prestador');
+            $userId = $user->id;
+        }
+
+        Prestador::create([
+            'tipo' => $data['tipo'],
+            'nome' => $data['nome'],
+            'especialidades' => $data['especialidades'] ?? null,
+            'endereco' => $data['endereco'] ?? null,
+            'user_id' => $userId,
+        ]);
 
         return redirect()->back()->with('success', 'Prestador cadastrado com sucesso!');
     }

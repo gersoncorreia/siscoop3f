@@ -35,6 +35,8 @@ const form = useForm({
     nome: '',
     especialidades: [],
     endereco: '',
+    email: '',
+    password: ''
 });
 
 const openCreateModal = () => {
@@ -213,7 +215,23 @@ const deletePrestador = (id) => {
 
                         <div>
                             <InputLabel value="Endereço Completo" />
-                            <textarea v-model="form.endereco" rows="3" class="w-full rounded-xl border-[var(--border-color)] bg-[var(--bg-main)] text-[var(--text-heading)] focus:ring-primary-dynamic focus:border-primary-dynamic py-4 px-5 text-sm font-medium transition-all" placeholder="Ex: Av. Brasil, 123 - Centro"></textarea>
+                            <textarea v-model="form.endereco" rows="2" class="w-full rounded-xl border-[var(--border-color)] bg-[var(--bg-main)] text-[var(--text-heading)] focus:ring-primary-dynamic focus:border-primary-dynamic py-3 px-4 text-sm font-medium transition-all" placeholder="Ex: Av. Brasil, 123 - Centro"></textarea>
+                        </div>
+
+                        <div v-if="!editingPrestador" class="mt-4 pt-4 border-t border-[var(--border-color)]">
+                            <h4 class="text-xs font-black text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-widest">Acesso ao Portal do Parceiro (Opcional)</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <InputLabel value="E-mail de Login" />
+                                    <TextInput type="email" class="w-full" v-model="form.email" placeholder="contato@clinica.com" />
+                                    <InputError class="mt-2" :message="form.errors.email" />
+                                </div>
+                                <div>
+                                    <InputLabel value="Senha de Acesso" />
+                                    <TextInput type="password" class="w-full" v-model="form.password" placeholder="Mínimo 6 caracteres" />
+                                    <InputError class="mt-2" :message="form.errors.password" />
+                                </div>
+                            </div>
                         </div>
                     </div>
 

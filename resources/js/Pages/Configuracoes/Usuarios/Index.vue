@@ -100,15 +100,24 @@ function deleteUser(id) {
                                             <span 
                                                 v-for="role in user.roles" 
                                                 :key="role.id"
-                                                class="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider bg-primary-dynamic/10 text-primary-dynamic border border-primary-dynamic/20 rounded-full inline-flex items-center"
+                                                class="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-full inline-flex items-center border"
+                                                :class="['Associado', 'Prestador'].includes(role.name) 
+                                                    ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' 
+                                                    : 'bg-primary-dynamic/10 text-primary-dynamic border-primary-dynamic/20'"
                                             >
                                                 {{ role.name }}
                                             </span>
                                         </div>
+                                        <div v-if="user.roles.some(r => ['Associado', 'Prestador'].includes(r.name))" class="mt-1">
+                                            <span class="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">Usuário do Portal</span>
+                                        </div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                        <span v-if="!user.roles.some(r => ['Associado', 'Prestador'].includes(r.name))" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                             {{ user.permissions?.length || 0 }} ativas
+                                        </span>
+                                        <span v-else class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">
+                                            Restrito
                                         </span>
                                     </td>
                                     <td class="text-right pr-8 whitespace-nowrap">
@@ -121,13 +130,16 @@ function deleteUser(id) {
                                                 <PencilSquareIcon class="w-4 h-4" />
                                             </Link>
                                             <button 
-                                                v-if="$page.props.auth.user.id !== user.id"
+                                                v-if="$page.props.auth.user.id !== user.id && !user.roles.some(r => ['Associado', 'Prestador'].includes(r.name))"
                                                 @click="deleteUser(user.id)" 
                                                 class="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-all"
                                                 title="Excluir"
                                             >
                                                 <TrashIcon class="w-4 h-4" />
                                             </button>
+                                            <div v-else-if="user.roles.some(r => ['Associado', 'Prestador'].includes(r.name))" class="p-2 text-slate-300 cursor-not-allowed" title="Gestão via Módulo Específico">
+                                                <TrashIcon class="w-4 h-4" />
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>

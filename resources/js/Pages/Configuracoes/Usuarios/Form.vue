@@ -64,6 +64,12 @@ const groupedPermissions = computed(() => {
     });
     return groups;
 });
+
+const isRestrictedUser = computed(() => {
+    if (!props.user_edit) return false;
+    const roleName = props.user_edit.roles?.[0]?.name;
+    return ['Associado', 'Prestador'].includes(roleName);
+});
 </script>
 
 <template>
@@ -138,8 +144,29 @@ const groupedPermissions = computed(() => {
                         </div>
                     </div>
 
+                    <!-- Role Info for Restricted Users -->
+                    <div v-if="isRestrictedUser" class="zynix-card overflow-hidden !p-0">
+                        <div class="p-8 border-b border-[var(--border-color)] bg-slate-50/50 dark:bg-slate-800/20">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-2xl bg-amber-500/10 text-amber-500">
+                                    <ShieldCheckIcon class="w-8 h-8" />
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-black text-[var(--text-heading)] tracking-tight">Perfil de Função Restrito</h3>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Usuário externo: {{ user_edit.roles[0].name }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-8">
+                            <p class="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed">
+                                Este usuário possui um perfil específico do sistema (<strong>{{ user_edit.roles[0].name }}</strong>). 
+                                Permissões adicionais ou alterações de perfil não são permitidas para evitar conflitos nas regras de acesso do portal.
+                            </p>
+                        </div>
+                    </div>
+
                     <!-- Definição de Perfil (Role) -->
-                    <div class="zynix-card overflow-hidden !p-0">
+                    <div v-if="!isRestrictedUser" class="zynix-card overflow-hidden !p-0">
                         <div class="p-8 border-b border-[var(--border-color)] bg-slate-50/50 dark:bg-slate-800/20">
                             <div class="flex items-center">
                                 <div class="p-3 rounded-2xl bg-primary-dynamic/10 text-primary-dynamic">
@@ -179,7 +206,7 @@ const groupedPermissions = computed(() => {
                     </div>
 
                     <!-- Permissões Granulares -->
-                    <div class="zynix-card overflow-hidden !p-0">
+                    <div v-if="!isRestrictedUser" class="zynix-card overflow-hidden !p-0">
                         <div class="p-8 border-b border-[var(--border-color)] bg-slate-50/50 dark:bg-slate-800/20">
                             <div class="flex items-center">
                                 <div class="p-3 rounded-2xl bg-amber-500/10 text-amber-500">

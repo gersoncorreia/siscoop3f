@@ -21,6 +21,11 @@ class DashboardController extends Controller
             return redirect('/cooperado');
         }
 
+        // Redirect Prestador to their dedicated portal
+        if (auth()->user()->hasRole('Prestador')) {
+            return redirect('/prestador');
+        }
+
         $now = Carbon::now();
         $mesAtual = $now->month;
         $anoAtual = $now->year;

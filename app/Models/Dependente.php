@@ -23,6 +23,11 @@ class Dependente extends Model
         'parentesco',
         'status',
     ];
+    
+    protected $casts = [
+        'cpf' => 'encrypted',
+        'data_nascimento' => 'date',
+    ];
 
     public function associado()
     {

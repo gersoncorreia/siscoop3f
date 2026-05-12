@@ -12,6 +12,7 @@ import {
     DocumentTextIcon,
     UserGroupIcon,
     ClipboardDocumentCheckIcon,
+    ClipboardDocumentListIcon,
     BellIcon,
     Bars3Icon,
     XMarkIcon,
@@ -21,7 +22,8 @@ import {
     CheckCircleIcon,
     XCircleIcon,
     CheckBadgeIcon,
-    ExclamationTriangleIcon
+    ExclamationTriangleIcon,
+    BuildingOffice2Icon
 } from '@heroicons/vue/24/outline';
 
 const page = usePage();
@@ -34,7 +36,9 @@ const navItems = [
     { name: 'Meu Painel', href: '/cooperado', icon: Squares2X2Icon, routeMatch: 'cooperado.dashboard' },
     { name: 'Financeiro', href: '/cooperado/financeiro', icon: BanknotesIcon, routeMatch: 'cooperado.financeiro' },
     { name: 'Cotas Capital', href: '/cooperado/cotas', icon: CurrencyDollarIcon, routeMatch: 'cooperado.cotas' },
+    { name: 'Meus Pedidos', href: '/cooperado/minhas-solicitacoes', icon: ClipboardDocumentListIcon, routeMatch: 'cooperado.minhas-solicitacoes' },
     { name: 'Reembolsos', href: '/cooperado/reembolsos', icon: ClipboardDocumentCheckIcon, routeMatch: 'cooperado.reembolsos' },
+    { name: 'Rede de Prestadores', href: '/cooperado/prestadores', icon: BuildingOffice2Icon, routeMatch: 'cooperado.prestadores' },
     { name: 'Dependentes', href: '/cooperado/dependentes', icon: UserGroupIcon, routeMatch: 'cooperado.dependentes' },
     { name: 'Documentos', href: '/cooperado/documentos', icon: DocumentTextIcon, routeMatch: 'cooperado.documentos' },
 ];

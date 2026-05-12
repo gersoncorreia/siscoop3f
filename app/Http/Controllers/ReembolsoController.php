@@ -13,6 +13,8 @@ class ReembolsoController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Reembolso::class);
+
         return Inertia::render('Saude/Reembolsos/Index', [
             'reembolsos' => Reembolso::with('associado')->latest('created_at')->paginate(10),
             'associados' => Associado::select('id', 'nome')->get()
@@ -21,6 +23,8 @@ class ReembolsoController extends Controller
 
     public function store(StoreReembolsoRequest $request)
     {
+        $this->authorize('create', Reembolso::class);
+
         Reembolso::create($request->validated());
 
         return redirect()->back()->with('success', 'Solicitação de reembolso enviada!');
@@ -28,6 +32,8 @@ class ReembolsoController extends Controller
 
     public function update(UpdateReembolsoRequest $request, Reembolso $reembolso)
     {
+        $this->authorize('update', $reembolso);
+
         $reembolso->update($request->validated());
 
         return redirect()->back()->with('success', 'Status do reembolso atualizado!');
@@ -35,6 +41,8 @@ class ReembolsoController extends Controller
 
     public function destroy(Reembolso $reembolso)
     {
+        $this->authorize('delete', $reembolso);
+
         $reembolso->delete();
 
         return redirect()->back()->with('success', 'Solicitação removida!');
@@ -42,6 +50,8 @@ class ReembolsoController extends Controller
 
     public function aprovar(Reembolso $reembolso)
     {
+        $this->authorize('update', $reembolso);
+
         $reembolso->update([
             'status' => 'aprovado',
             'motivo_recusa' => null,
@@ -61,6 +71,8 @@ class ReembolsoController extends Controller
 
     public function rejeitar(Request $request, Reembolso $reembolso)
     {
+        $this->authorize('update', $reembolso);
+
         $request->validate([
             'motivo_recusa' => 'required|string|max:1000',
         ]);

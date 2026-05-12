@@ -20,6 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'lgpd' => \App\Http\Middleware\LgpdMiddleware::class,
             'force.password' => \App\Http\Middleware\ForcePasswordChange::class,
             'cadastro.completo' => \App\Http\Middleware\CheckCadastroCompleto::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
 
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {

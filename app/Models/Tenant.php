@@ -19,4 +19,8 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'deleted_at',
         ];
     }
+
+    protected $casts = [
+        'payment_config' => 'encrypted:json',
+    ];
 }
