@@ -14,6 +14,7 @@ class PrestadorCriadoNotification extends Notification implements ShouldQueue
     private string $password;
     private string $login;
     private string $nome;
+    private string $loginUrl;
 
     /**
      * Create a new notification instance.
@@ -23,6 +24,9 @@ class PrestadorCriadoNotification extends Notification implements ShouldQueue
         $this->nome = $nome;
         $this->login = $login;
         $this->password = $password;
+        // Resolve a URL de login enquanto ainda estamos no contexto da requisição HTTP (tenant ativo)
+        // para evitar que caia no domínio central (APP_URL) quando for executado pela fila em background.
+        $this->loginUrl = route('login');
     }
 
     /**
@@ -47,7 +51,7 @@ class PrestadorCriadoNotification extends Notification implements ShouldQueue
             ->line('Para acessar o portal exclusivo para prestadores, utilize as seguintes credenciais:')
             ->line("**Seu Login de Acesso (E-mail):** {$this->login}")
             ->line("**Código de Acesso Temporário:** {$this->password}")
-            ->action('Acessar o Portal', route('login'))
+            ->action('Acessar o Portal', $this->loginUrl)
             ->line('Por motivos de segurança, você será solicitado a criar uma senha definitiva no seu primeiro acesso.')
             ->line('Agradecemos a parceria!');
     }
