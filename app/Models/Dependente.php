@@ -25,7 +25,7 @@ class Dependente extends Model
     ];
     
     protected $casts = [
-        'cpf' => 'encrypted',
+        'cpf' => \App\Casts\EncryptedOrPlain::class,
         'data_nascimento' => 'date',
     ];
 

@@ -21,6 +21,6 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     }
 
     protected $casts = [
-        'payment_config' => 'encrypted:json',
+        'payment_config' => \App\Casts\EncryptedOrPlainArray::class,
     ];
 }
