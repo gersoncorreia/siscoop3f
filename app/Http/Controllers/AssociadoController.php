@@ -24,6 +24,7 @@ class AssociadoController extends Controller
                 'matricula' => $a->matricula,
                 'status' => $a->status,
                 'cpf_masked' => $a->cpf ? substr($a->cpf, 0, 3) . '.***.***-' . substr($a->cpf, -2) : null,
+                'data_adesao' => $a->data_adesao,
                 'created_at' => $a->created_at->format('d/m/Y'),
             ])
         ]);
