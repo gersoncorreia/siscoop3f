@@ -14,18 +14,17 @@ class PaymentFactory
      */
     public static function resolve(): PaymentGatewayInterface
     {
-        // Check active payment setting
-        $activeSetting = PaymentSetting::where('is_active', true)->first();
+        $tenant = tenant();
+        $config = $tenant ? $tenant->payment_config : null;
 
-        if (!$activeSetting) {
+        if (!$config || empty($config['active_gateway']) || $config['active_gateway'] === 'interno') {
             return new InternalBillingGateway();
         }
 
-        switch ($activeSetting->provider) {
+        switch ($config['active_gateway']) {
             case 'asaas':
-                return new AsaasGateway($activeSetting->credentials ?? []);
+                return new AsaasGateway($config['asaas'] ?? []);
             // Add other gateways like 'stripe', 'mercadopago', 'pix' here in the future
-            case 'interno':
             default:
                 return new InternalBillingGateway();
         }
