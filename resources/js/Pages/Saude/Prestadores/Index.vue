@@ -36,7 +36,6 @@ const form = useForm({
     especialidades: [],
     endereco: '',
     email: '',
-    password: ''
 });
 
 const openCreateModal = () => {
@@ -220,16 +219,14 @@ const deletePrestador = (id) => {
 
                         <div v-if="!editingPrestador" class="mt-4 pt-4 border-t border-[var(--border-color)]">
                             <h4 class="text-xs font-black text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-widest">Acesso ao Portal do Parceiro (Opcional)</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 gap-6">
                                 <div>
                                     <InputLabel value="E-mail de Login" />
                                     <TextInput type="email" class="w-full" v-model="form.email" placeholder="contato@clinica.com" />
                                     <InputError class="mt-2" :message="form.errors.email" />
-                                </div>
-                                <div>
-                                    <InputLabel value="Senha de Acesso" />
-                                    <TextInput type="password" class="w-full" v-model="form.password" placeholder="Mínimo 6 caracteres" />
-                                    <InputError class="mt-2" :message="form.errors.password" />
+                                    <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                                        <span class="font-semibold text-primary-dynamic">Dica:</span> Se informado, uma senha de acesso será gerada e enviada automaticamente para este e-mail.
+                                    </p>
                                 </div>
                             </div>
                         </div>

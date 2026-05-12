@@ -23,14 +23,28 @@ class PrestadorController extends Controller
         $data = $request->validated();
         
         $userId = null;
-        if (!empty($data['email']) && !empty($data['password'])) {
+        if (!empty($data['email'])) {
+            $temporaryPassword = str()->random(8);
+
             $user = User::create([
                 'name' => $data['nome'],
                 'email' => $data['email'],
-                'password' => Hash::make($data['password']),
+                'password' => Hash::make($temporaryPassword),
+                'email_verified_at' => now(),
+                'has_temporary_password' => true,
             ]);
             $user->assignRole('Prestador');
             $userId = $user->id;
+
+            try {
+                $user->notify(new \App\Notifications\PrestadorCriadoNotification(
+                    $data['nome'],
+                    $data['email'],
+                    $temporaryPassword
+                ));
+            } catch (\Exception $ne) {
+                \Illuminate\Support\Facades\Log::error("Erro ao enviar notificação de prestador: " . $ne->getMessage());
+            }
         }
 
         Prestador::create([

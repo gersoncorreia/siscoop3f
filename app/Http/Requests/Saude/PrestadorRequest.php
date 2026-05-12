@@ -19,7 +19,6 @@ class PrestadorRequest extends FormRequest
             'especialidades' => ['nullable', 'array'],
             'endereco' => ['nullable', 'string', 'max:1000'],
             'email' => ['nullable', 'email', 'max:255'],
-            'password' => ['nullable', 'string', 'min:6'],
         ];
     }
 
