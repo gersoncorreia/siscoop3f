@@ -16,10 +16,13 @@ abstract class TestCase extends BaseTestCase
         // Limpamos eles antes de cada teste para grantir o isolamento e evitar 'Database already exists'.
         if (config('database.default') === 'mysql') {
             \Illuminate\Support\Facades\DB::statement("DROP DATABASE IF EXISTS `tenantcooperativa-teste`");
-            \Illuminate\Support\Facades\DB::statement("DROP DATABASE IF EXISTS `tenantstfsaude`");
             \Illuminate\Support\Facades\DB::statement("DROP DATABASE IF EXISTS `tenantintegracao-teste`");
             \Illuminate\Support\Facades\DB::statement("DROP DATABASE IF EXISTS `tenantadesao-teste`");
             \Illuminate\Support\Facades\DB::statement("DROP DATABASE IF EXISTS `tenantfinanceiro-teste`");
+            \Illuminate\Support\Facades\DB::statement("DROP DATABASE IF EXISTS `tenantcooperativa-delete-test`");
+            \Illuminate\Support\Facades\DB::statement("DROP DATABASE IF EXISTS `tenantcooperativa-restore-test`");
+            \Illuminate\Support\Facades\DB::statement("DROP DATABASE IF EXISTS `tenantcooperativa-hard-delete-test`");
+            \Illuminate\Support\Facades\DB::statement("DROP DATABASE IF EXISTS `tenantcooperativa-download-test`");
         }
     }
 }

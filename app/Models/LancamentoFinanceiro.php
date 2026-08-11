@@ -15,7 +15,16 @@ class LancamentoFinanceiro extends Model
         return LogOptions::defaults()->logAll()->logOnlyDirty()->dontSubmitEmptyLogs();
     }
 
-    protected $fillable = ['associado_id', 'tipo', 'valor', 'data_vencimento', 'status'];
+    protected $fillable = [
+        'associado_id',
+        'tipo',
+        'categoria',
+        'valor',
+        'data_vencimento',
+        'status',
+        'gateway',
+        'gateway_id',
+    ];
 
     public function associado()
     {

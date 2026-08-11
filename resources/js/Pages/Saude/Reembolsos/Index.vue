@@ -78,23 +78,23 @@ const deleteReembolso = (id) => {
 <template>
     <Head title="Reembolsos" />
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Saúde' }, { label: 'Reembolsos' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Solicitações de Reembolso
-                        </h1>
-                    </div>
-                    <div>
-                        <PrimaryButton @click="showModal = true" class="shadow-xl">
-                            <PlusIcon class="w-4 h-4 mr-2" />
-                            Nova Solicitação
-                        </PrimaryButton>
-                    </div>
+        <template #header>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <Breadcrumbs :items="[{ label: 'Saúde' }, { label: 'Reembolsos' }]" />
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Solicitações de Reembolso</h2>
+                    <p class="text-sm text-[var(--text-muted)] mt-0.5">Analise e gerencie pedidos de reembolso médico.</p>
                 </div>
+                <div>
+                    <PrimaryButton @click="showModal = true" class="shadow-xl">
+                        <PlusIcon class="w-4 h-4 mr-2" />
+                        Nova Solicitação
+                    </PrimaryButton>
+                </div>
+            </div>
+        </template>
+
+        <div class="space-y-6 pb-12">
 
                 <!-- Reimbursements List -->
                 <div class="zynix-card overflow-hidden !p-0">
@@ -184,7 +184,6 @@ const deleteReembolso = (id) => {
                         </table>
                     </div>
                 </div>
-            </div>
         </div>
 
         <!-- Add Modal -->

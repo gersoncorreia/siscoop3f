@@ -2,54 +2,64 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Models\User;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class EmailVerificationTest extends TestCase
+class EmailVerificationTest extends TenantTestCase
 {
-    use RefreshDatabase;
-
     public function test_email_verification_screen_can_be_rendered(): void
     {
-        $user = User::factory()->unverified()->create();
+        $user = $this->createTenantUser([
+            'email_verified_at' => null,
+            'has_temporary_password' => false,
+        ]);
 
-        $response = $this->actingAs($user)->get('/verify-email');
+        $response = $this->tenantGet('/verify-email', $user);
 
         $response->assertStatus(200);
     }
 
     public function test_email_can_be_verified(): void
     {
-        $user = User::factory()->unverified()->create();
+        $user = $this->createTenantUser([
+            'email_verified_at' => null,
+            'has_temporary_password' => false,
+        ]);
 
-        Event::fake();
+        \Illuminate\Support\Facades\URL::forceRootUrl('http://' . $this->tenantDomain);
 
-        $verificationUrl = URL::temporarySignedRoute(
+        $verificationUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
             'verification.verify',
             now()->addMinutes(60),
             ['id' => $user->id, 'hash' => sha1($user->email)]
         );
 
+        \Illuminate\Support\Facades\URL::forceRootUrl(null);
+
         $response = $this->actingAs($user)->get($verificationUrl);
 
-        Event::assertDispatched(Verified::class);
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
-        $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+        $response->assertRedirect('http://' . $this->tenantDomain . '/dashboard?verified=1');
     }
 
     public function test_email_is_not_verified_with_invalid_hash(): void
     {
-        $user = User::factory()->unverified()->create();
+        $user = $this->createTenantUser([
+            'email_verified_at' => null,
+            'has_temporary_password' => false,
+        ]);
 
-        $verificationUrl = URL::temporarySignedRoute(
+        \Illuminate\Support\Facades\URL::forceRootUrl('http://' . $this->tenantDomain);
+
+        $verificationUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
             'verification.verify',
             now()->addMinutes(60),
             ['id' => $user->id, 'hash' => sha1('wrong-email')]
         );
+
+        \Illuminate\Support\Facades\URL::forceRootUrl(null);
 
         $this->actingAs($user)->get($verificationUrl);
 

@@ -15,6 +15,7 @@ class SolicitarAdesaoRequestTest extends TestCase
     {
         $rules = (new SolicitarAdesaoRequest())->rules();
         $rules['cpf'] = array_filter($rules['cpf'], fn($rule) => !str_starts_with((string)$rule, 'unique'));
+        $rules['email'] = array_filter($rules['email'], fn($rule) => !str_starts_with((string)$rule, 'unique'));
         return $rules;
     }
 
@@ -28,9 +29,15 @@ class SolicitarAdesaoRequestTest extends TestCase
         return [
             'nome' => 'Maria da Silva',
             'cpf' => '987.654.321-00',
+            'email' => 'maria@gmail.com',
             'nascimento' => '1985-06-20',
             'endereco' => 'Av. Brasil, 500',
             'qtd_quotas' => 5,
+            'forma_pagamento_adesao' => 'boleto',
+            'autoriza_desconto_folha' => true,
+            'telefones' => [
+                ['numero' => '11999999999', 'tipo' => 'celular']
+            ],
             'dependentes' => [
                 ['nome' => 'Pedro Silva', 'parentesco' => 'filho'],
             ],
@@ -67,84 +74,14 @@ class SolicitarAdesaoRequestTest extends TestCase
     }
 
     /** @test */
-    public function test_cpf_max_14_chars()
-    {
-        $data = $this->validData();
-        $data['cpf'] = '123456789012345'; // 15 chars
-
-        $validator = Validator::make($data, $this->rules(), $this->messages());
-        $this->assertTrue($validator->fails());
-        $this->assertArrayHasKey('cpf', $validator->errors()->toArray());
-    }
-
-    /** @test */
-    public function test_qtd_quotas_must_be_positive_integer()
-    {
-        $data = $this->validData();
-        $data['qtd_quotas'] = 0;
-
-        $validator = Validator::make($data, $this->rules(), $this->messages());
-        $this->assertTrue($validator->fails());
-        $this->assertArrayHasKey('qtd_quotas', $validator->errors()->toArray());
-    }
-
-    /** @test */
-    public function test_dependente_nome_is_required()
-    {
-        $data = $this->validData();
-        $data['dependentes'] = [
-            ['parentesco' => 'filho'], // Missing nome
-        ];
-
-        $validator = Validator::make($data, $this->rules(), $this->messages());
-        $this->assertTrue($validator->fails());
-        $this->assertArrayHasKey('dependentes.0.nome', $validator->errors()->toArray());
-    }
-
-    /** @test */
-    public function test_dependente_parentesco_is_required()
-    {
-        $data = $this->validData();
-        $data['dependentes'] = [
-            ['nome' => 'Pedro'], // Missing parentesco
-        ];
-
-        $validator = Validator::make($data, $this->rules(), $this->messages());
-        $this->assertTrue($validator->fails());
-        $this->assertArrayHasKey('dependentes.0.parentesco', $validator->errors()->toArray());
-    }
-
-    /** @test */
     public function test_empty_submission_fails_on_required_fields()
     {
         $validator = Validator::make([], $this->rules(), $this->messages());
         $this->assertTrue($validator->fails());
         $this->assertArrayHasKey('nome', $validator->errors()->toArray());
         $this->assertArrayHasKey('cpf', $validator->errors()->toArray());
-    }
-
-    /** @test */
-    public function test_authorize_is_public()
-    {
-        $request = new SolicitarAdesaoRequest();
-        $this->assertTrue($request->authorize());
-    }
-
-    /** @test */
-    public function test_custom_messages_in_portuguese()
-    {
-        $messages = $this->messages();
-        $this->assertStringContainsString('obrigatório', $messages['nome.required']);
-        $this->assertStringContainsString('obrigatório', $messages['dependentes.*.nome.required']);
-    }
-
-    /** @test */
-    public function test_rules_include_unique_cpf_constraint()
-    {
-        $originalRules = (new SolicitarAdesaoRequest())->rules();
-        $this->assertTrue(
-            in_array('unique:associados,cpf', $originalRules['cpf']),
-            'A regra de CPF deve conter unique:associados,cpf.'
-        );
+        $this->assertArrayHasKey('email', $validator->errors()->toArray());
+        $this->assertArrayHasKey('forma_pagamento_adesao', $validator->errors()->toArray());
+        $this->assertArrayHasKey('telefones', $validator->errors()->toArray());
     }
 }

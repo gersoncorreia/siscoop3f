@@ -23,7 +23,9 @@ import {
     XCircleIcon,
     CheckBadgeIcon,
     ExclamationTriangleIcon,
-    BuildingOffice2Icon
+    BuildingOffice2Icon,
+    IdentificationIcon,
+    CalendarDaysIcon
 } from '@heroicons/vue/24/outline';
 
 const page = usePage();
@@ -32,16 +34,50 @@ const associado = computed(() => page.props.associado);
 const primaryColor = computed(() => tenant.value?.primary_color || '#2563eb');
 const showMobileMenu = ref(false);
 
-const navItems = [
-    { name: 'Meu Painel', href: '/cooperado', icon: Squares2X2Icon, routeMatch: 'cooperado.dashboard' },
-    { name: 'Financeiro', href: '/cooperado/financeiro', icon: BanknotesIcon, routeMatch: 'cooperado.financeiro' },
-    { name: 'Cotas Capital', href: '/cooperado/cotas', icon: CurrencyDollarIcon, routeMatch: 'cooperado.cotas' },
-    { name: 'Meus Pedidos', href: '/cooperado/minhas-solicitacoes', icon: ClipboardDocumentListIcon, routeMatch: 'cooperado.minhas-solicitacoes' },
-    { name: 'Reembolsos', href: '/cooperado/reembolsos', icon: ClipboardDocumentCheckIcon, routeMatch: 'cooperado.reembolsos' },
-    { name: 'Rede de Prestadores', href: '/cooperado/prestadores', icon: BuildingOffice2Icon, routeMatch: 'cooperado.prestadores' },
-    { name: 'Dependentes', href: '/cooperado/dependentes', icon: UserGroupIcon, routeMatch: 'cooperado.dependentes' },
-    { name: 'Documentos', href: '/cooperado/documentos', icon: DocumentTextIcon, routeMatch: 'cooperado.documentos' },
+const userRoles = computed(() => page.props.auth?.user?.roles?.map(r => r.name) || []);
+const isDependente = computed(() => userRoles.value.includes('Dependente'));
+
+const isFundacao = computed(() => page.props.tenant?.tipo === 'fundacao');
+const portalTitle = computed(() => isFundacao.value ? 'Portal do Cliente' : 'Portal Cooperado');
+const portalPanelTitle = computed(() => isFundacao.value ? 'Painel do Cliente' : 'Painel Cooperado');
+
+const hasServico = (key) => {
+    const servicos = tenant.value?.servicos;
+    if (isFundacao.value) {
+        if (!servicos) return true;
+        // Para Fundação, a tabela de serviços é core por padrão
+        if (key === 'tabela_servicos') return true;
+        return Array.isArray(servicos) && servicos.includes(key);
+    }
+    if (!servicos) return true;
+    return Array.isArray(servicos) && servicos.includes(key);
+};
+
+const allNavItems = [
+    { name: 'Meu Painel', href: '/cooperado', icon: Squares2X2Icon, routeMatch: 'cooperado.dashboard', hideForDependente: false },
+    { name: 'Minha Carteirinha', href: '/cooperado/carteirinha', icon: IdentificationIcon, routeMatch: 'cooperado.carteirinha', hideForDependente: false, onlyFundacao: true, servicoKey: 'carteirinha_digital' },
+    { name: 'Agendamentos', href: '/cooperado/agendamentos', icon: CalendarDaysIcon, routeMatch: 'cooperado.agendamentos', hideForDependente: false, onlyFundacao: true, servicoKey: 'gestao_consultas' },
+    { name: 'Internações', href: '/cooperado/internacoes', icon: BuildingOffice2Icon, routeMatch: 'cooperado.internacoes', hideForDependente: false, onlyFundacao: true, servicoKey: 'gestao_internacoes' },
+    { name: 'Prontuário', href: '/cooperado/prontuario', icon: ClipboardDocumentListIcon, routeMatch: 'cooperado.prontuario', hideForDependente: false, onlyFundacao: true, servicoKey: 'prontuario_eletronico' },
+    { name: 'Tabela de Serviços', href: '/cooperado/servicos', icon: CurrencyDollarIcon, routeMatch: 'cooperado.servicos', hideForDependente: false, onlyFundacao: true, servicoKey: 'tabela_servicos' },
+    { name: 'Financeiro', href: '/cooperado/financeiro', icon: BanknotesIcon, routeMatch: 'cooperado.financeiro', hideForDependente: true, onlyCooperativa: true },
+    { name: 'Cotas Capital', href: '/cooperado/cotas', icon: CurrencyDollarIcon, routeMatch: 'cooperado.cotas', hideForDependente: true, onlyCooperativa: true },
+    { name: 'Meus Pedidos', href: '/cooperado/minhas-solicitacoes', icon: ClipboardDocumentListIcon, routeMatch: 'cooperado.minhas-solicitacoes', hideForDependente: false },
+    { name: 'Reembolsos', href: '/cooperado/reembolsos', icon: ClipboardDocumentCheckIcon, routeMatch: 'cooperado.reembolsos', hideForDependente: false, onlyCooperativa: true },
+    { name: 'Rede de Prestadores', href: '/cooperado/prestadores', icon: BuildingOffice2Icon, routeMatch: 'cooperado.prestadores', hideForDependente: false },
+    { name: 'Dependentes', href: '/cooperado/dependentes', icon: UserGroupIcon, routeMatch: 'cooperado.dependentes', hideForDependente: true },
+    { name: 'Documentos', href: '/cooperado/documentos', icon: DocumentTextIcon, routeMatch: 'cooperado.documentos', hideForDependente: false },
 ];
+
+const navItems = computed(() => {
+    return allNavItems.filter(item => {
+        if (isDependente.value && item.hideForDependente) return false;
+        if (item.onlyFundacao && !isFundacao.value) return false;
+        if (item.onlyCooperativa && isFundacao.value) return false;
+        if (item.servicoKey && !hasServico(item.servicoKey)) return false;
+        return true;
+    });
+});
 
 const iconMap = {
     BellIcon,
@@ -87,8 +123,19 @@ const markAllAsRead = () => {
 
 function isActive(routeMatch) {
     try {
-        return route().current(routeMatch);
-    } catch {
+        if (!routeMatch) return false;
+        if (route().current(routeMatch + '.*') || route().current(routeMatch)) {
+            return true;
+        }
+        const item = allNavItems.find(i => i.routeMatch === routeMatch);
+        if (item && item.href !== '/cooperado') {
+            return page.url.startsWith(item.href);
+        }
+        if (item && item.href === '/cooperado') {
+            return page.url === '/cooperado' || page.url === '/cooperado/';
+        }
+        return false;
+    } catch (e) {
         return false;
     }
 }
@@ -106,7 +153,7 @@ function isActive(routeMatch) {
                             <path fill-rule="evenodd" d="M22.5 9.75h-21v7.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3v-7.5Zm-18 3.75a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 0 1.5h-6a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clip-rule="evenodd" />
                         </svg>
                     </div>
-                    <span class="font-black text-sm text-[var(--text-heading)] tracking-tight">Portal Cooperado</span>
+                    <span class="font-black text-sm text-[var(--text-heading)] tracking-tight">{{ portalTitle }}</span>
                 </Link>
                 <div class="flex items-center gap-2">
                     <ThemeToggle />
@@ -149,7 +196,7 @@ function isActive(routeMatch) {
                             </div>
                             <div>
                                 <p class="text-sm font-black text-[var(--text-heading)]">{{ $page.props.auth.user.name }}</p>
-                                <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">Cooperado</p>
+                                <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">{{ isFundacao ? 'Cliente' : 'Cooperado' }}</p>
                             </div>
                         </div>
                         <Link href="/cooperado/perfil" class="block px-4 py-2 text-sm font-bold text-[var(--text-muted)] hover:text-primary-dynamic transition-colors mt-2">Meu Perfil</Link>
@@ -172,7 +219,7 @@ function isActive(routeMatch) {
                             </svg>
                         </div>
                         <div class="flex flex-col">
-                            <span class="font-black text-[13px] text-[var(--text-heading)] tracking-tight leading-tight">Painel Cooperado</span>
+                            <span class="font-black text-[13px] text-[var(--text-heading)] tracking-tight leading-tight">{{ portalPanelTitle }}</span>
                             <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest mt-0.5">{{ tenant ? tenant.name : 'Siscoop3F' }}</span>
                         </div>
                     </Link>
@@ -209,7 +256,7 @@ function isActive(routeMatch) {
             <main class="flex-1 min-h-screen flex flex-col overflow-hidden">
                 <!-- Top Header -->
                 <header class="sticky top-0 z-40 bg-[var(--bg-main)]/80 backdrop-blur-md border-b border-[var(--border-color)] transition-all duration-300">
-                    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+                    <div class="w-full px-6 lg:px-8 h-14 flex items-center justify-between">
                         <div>
                              <!-- Welcome dynamic content could go here -->
                         </div>
@@ -296,9 +343,9 @@ function isActive(routeMatch) {
                     </div>
                 </header>
 
-                <div class="p-6 lg:p-10 flex-1 max-w-6xl mx-auto w-full">
+                <div class="p-4 sm:p-6 lg:p-8 flex-1 w-full min-w-0">
                     <!-- Page Title Area -->
-                    <div v-if="$slots.header" class="mb-10">
+                    <div v-if="$slots.header" class="mb-5">
                         <slot name="header" />
                     </div>
 

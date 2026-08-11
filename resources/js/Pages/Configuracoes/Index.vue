@@ -7,11 +7,12 @@ import {
     CheckCircleIcon,
     SwatchIcon,
     VariableIcon,
-    ArrowUpTrayIcon
+    ArrowUpTrayIcon,
+    GlobeAltIcon
 } from '@heroicons/vue/24/outline';
 import Breadcrumbs from '@/Components/Breadcrumbs.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { CheckBadgeIcon } from '@heroicons/vue/24/outline';
+import { CheckBadgeIcon, ShieldCheckIcon, BuildingOffice2Icon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     tenant: Object,
@@ -41,22 +42,17 @@ const onFileChange = (e) => {
     <Head title="Configurações da Unidade" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Ajustes' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Personalização da Unidade
-                        </h1>
-                    </div>
-                </div>
+        <template #header>
+            <Breadcrumbs :items="[{ label: 'Ajustes' }]" />
+            <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Personalização da Unidade</h2>
+            <p class="text-sm text-[var(--text-muted)] mt-0.5">Sincronize a identidade visual e dados cadastrais da sua unidade.</p>
+        </template>
 
-                <div v-if="$page.props.flash?.success" class="mb-8 p-4 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
-                    <CheckBadgeIcon class="w-5 h-5" />
-                    Configurações salvas com sucesso!
-                </div>
+        <div class="space-y-6 pb-12">
+            <div v-if="$page.props.flash?.success" class="p-4 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl font-bold flex items-center gap-3">
+                <CheckBadgeIcon class="w-5 h-5" />
+                Configurações salvas com sucesso!
+            </div>
 
                 <div class="zynix-card overflow-hidden !p-0">
                     <div class="p-8 border-b border-[var(--border-color)] flex items-center justify-between">
@@ -191,6 +187,66 @@ const onFileChange = (e) => {
                         </div>
                     </form>
                 </div>
+                
+                <!-- Configurações de Landing Page (Se ativado para a Entidade) -->
+                <div v-if="tenant.possui_landing_page !== false && tenant.possui_landing_page !== 0 && tenant.possui_landing_page !== '0'" class="zynix-card overflow-hidden !p-0 mt-8">
+                    <div class="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-emerald-500/5 border-b border-[var(--border-color)]">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl shadow-inner border border-emerald-500/20">
+                                <GlobeAltIcon class="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 class="font-black text-[var(--text-heading)] leading-tight tracking-tight text-lg">Página OnePage Pública</h3>
+                                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-1">Configure o site público da entidade</p>
+                            </div>
+                        </div>
+                        <Link :href="route('configuracoes.landing-page')">
+                            <PrimaryButton class="!bg-emerald-600 hover:!bg-emerald-700 !px-8 !py-3 !rounded-full !text-[10px] !font-black !uppercase !tracking-widest">
+                                Configurar Site
+                            </PrimaryButton>
+                        </Link>
+                    </div>
+                </div>
+
+                <!-- Termos de LGPD e Privacidade (Nova Seção) -->
+                <div class="zynix-card overflow-hidden !p-0 mt-8">
+                    <div class="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-amber-500/5 border-b border-[var(--border-color)]">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-amber-500/10 text-amber-500 rounded-xl shadow-inner border border-amber-500/20">
+                                <ShieldCheckIcon class="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 class="font-black text-[var(--text-heading)] leading-tight tracking-tight text-lg">Termos de Uso e LGPD</h3>
+                                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-1">Personalize os termos de privacidade para os seus cooperados/clientes</p>
+                            </div>
+                        </div>
+                        <Link :href="route('configuracoes.lgpd')">
+                            <PrimaryButton class="!bg-amber-600 hover:!bg-amber-700 !px-8 !py-3 !rounded-full !text-[10px] !font-black !uppercase !tracking-widest">
+                                Personalizar LGPD
+                            </PrimaryButton>
+                        </Link>
+                    </div>
+                </div>
+
+                <!-- Contratos de Cooperação / Prestação (Nova Seção) -->
+                <div class="zynix-card overflow-hidden !p-0 mt-8">
+                    <div class="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-blue-500/5 border-b border-[var(--border-color)]">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-blue-500/10 text-blue-500 rounded-xl shadow-inner border border-blue-500/20">
+                                <BuildingOffice2Icon class="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 class="font-black text-[var(--text-heading)] leading-tight tracking-tight text-lg">Contratos Operacionais</h3>
+                                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-1">Gerencie convênios de atendimento com outras fundações ou cooperativas</p>
+                            </div>
+                        </div>
+                        <Link :href="route('configuracoes.contratos')">
+                            <PrimaryButton class="!bg-blue-600 hover:!bg-blue-700 !px-8 !py-3 !rounded-full !text-[10px] !font-black !uppercase !tracking-widest">
+                                Gerenciar Contratos
+                            </PrimaryButton>
+                        </Link>
+                    </div>
+                </div>
 
                 <!-- Gestão de Acessos (Nova Seção) -->
                 <div v-if="$page.props.auth.permissions.includes('configuracoes.users')" class="zynix-card overflow-hidden !p-0 mt-8 mb-12">
@@ -211,7 +267,6 @@ const onFileChange = (e) => {
                         </Link>
                     </div>
                 </div>
-            </div>
         </div>
     </AuthenticatedLayout>
 </template>

@@ -13,7 +13,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            \App\Contracts\AssociadoRepositoryInterface::class,
+            \App\Services\Repositories\AssociadoRepository::class
+        );
+        $this->app->bind(
+            \App\Contracts\ReembolsoRepositoryInterface::class,
+            \App\Services\Repositories\ReembolsoRepository::class
+        );
+        $this->app->singleton(\App\Services\StorageService::class);
+        $this->app->singleton(\App\Services\CooperativeService::class);
     }
 
     /**

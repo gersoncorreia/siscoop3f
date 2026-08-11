@@ -27,10 +27,11 @@ abstract class TenantTestCase extends TestCase
 
         // Criar tenant de teste
         $tenantService = new TenantService();
-        $this->tenant = $tenantService->createTenant([
-            'nome' => 'Integração Teste',
+        $tenantData = $tenantService->createTenant([
+            'nome' => 'Integração Teste ' . \Illuminate\Support\Str::random(5),
             'ramo' => 'saude'
         ]);
+        $this->tenant = $tenantData['tenant'];
 
         $this->tenantDomain = $this->tenant->domains->first()->domain;
 

@@ -129,21 +129,65 @@ const currentTenantActionType = ref(null);
 
 const tenantForm = useForm({
     nome: '',
+    tipo: 'cooperativa',
     ramo: '',
     admin_nome: '',
     admin_email: '',
+    servicos: [],
+    possui_landing_page: true,
 });
+
+const modulosCooperativa = [
+    { key: 'gestao_associados',    label: 'Gestão de Cooperados & Quadro Social' },
+    { key: 'controle_financeiro',  label: 'Controle Financeiro, Fluxo de Caixa e Extrato' },
+    { key: 'cota_capital',         label: 'Gestão de Cota Capital Social e Integralização' },
+    { key: 'planos_saude',         label: 'Planos de Saúde e Tabela de Coberturas' },
+    { key: 'rede_credenciada',     label: 'Rede Credenciada, Clínicas e Prestadores' },
+    { key: 'reembolsos',           label: 'Solicitação e Auditoria de Reembolsos' },
+    { key: 'adesao_online',        label: 'Ficha de Pré-Adesão Pública (Adesão Online)' },
+    { key: 'relatorios_gerenciais',label: 'Gestão de Indicadores e Relatórios Gerenciais' },
+];
+
+const modulosFundacao = [
+    { key: 'adesao_online',        label: 'Realizar sua adesão online' },
+    { key: 'gestao_consultas',     label: 'Agendamento e gestão de consultas' },
+    { key: 'gestao_internacoes',   label: 'Gestão de internações eletivas' },
+    { key: 'gestao_exames',        label: 'Gestão de exames e serviços laboratoriais' },
+    { key: 'tabela_servicos',      label: 'Tabela de Serviços e Preços Própria' },
+    { key: 'carteirinha_digital',  label: 'Carteirinha Digital do Membro' },
+    { key: 'campanhas_saude',      label: 'Campanhas de Prevenção e Promoção da Saúde' },
+    { key: 'indicadores_desempenho',label: 'Indicadores de Desempenho e Métricas' },
+    { key: 'prontuario_eletronico',label: 'Prontuário eletrônico e segurança das informações' },
+    { key: 'controle_financeiro',  label: 'Controle administrativo, financeiro e operacional' },
+    { key: 'relatorios_gerenciais',label: 'Gestão de indicadores e relatórios gerenciais' },
+];
+
+const modulosDisponiveis = computed(() => {
+    return tenantForm.tipo === 'fundacao' ? modulosFundacao : modulosCooperativa;
+});
+
+function onTipoChange() {
+    if (!isEditingTenant.value) {
+        tenantForm.servicos = modulosDisponiveis.value.map(m => m.key);
+    }
+}
 
 function openTenantModal(tenantEdit = null) {
     if (tenantEdit) {
         isEditingTenant.value = true;
         currentTenantId.value = tenantEdit.id;
         tenantForm.nome = tenantEdit.nome;
+        tenantForm.tipo = tenantEdit.tipo || 'cooperativa';
         tenantForm.ramo = tenantEdit.ramo;
+        tenantForm.servicos = Array.isArray(tenantEdit.servicos) ? [...tenantEdit.servicos] : modulosDisponiveis.value.map(m => m.key);
+        tenantForm.possui_landing_page = tenantEdit.possui_landing_page !== false && tenantEdit.possui_landing_page !== 0 && tenantEdit.possui_landing_page !== '0';
     } else {
         isEditingTenant.value = false;
         currentTenantId.value = null;
         tenantForm.reset();
+        tenantForm.tipo = 'cooperativa';
+        tenantForm.servicos = modulosCooperativa.map(m => m.key);
+        tenantForm.possui_landing_page = true;
     }
     isTenantModalOpen.value = true;
 }
@@ -214,7 +258,7 @@ function exportTenant(id) {
                 <div v-if="isCentral" class="flex items-center gap-3">
                     <button @click="openTenantModal()" class="btn-primary flex items-center gap-2">
                         <PlusIcon class="w-4 h-4" />
-                        Nova Cooperativa
+                        Nova Entidade
                     </button>
                 </div>
             </div>
@@ -245,7 +289,7 @@ function exportTenant(id) {
                     </div>
                     <div>
                         <h3 class="text-3xl font-black text-[var(--text-heading)] tracking-tighter">{{ stats.associadosAtivos || 0 }}</h3>
-                        <p class="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Total de {{ stats.totalAssociados || 0 }} membros</p>
+                        <p class="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Total de {{ stats.totalAssociados || 0 }} {{ tenant?.tipo === 'fundacao' ? 'clientes/associados' : 'membros' }}</p>
                     </div>
                     <div class="absolute -bottom-4 -right-4 w-20 h-20 bg-primary-dynamic/5 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
                 </div>
@@ -296,8 +340,8 @@ function exportTenant(id) {
             <!-- Master Admin KPIs Grid -->
             <div v-if="isCentral" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="zynix-card">
-                    <h3 class="text-xs uppercase font-black tracking-widest text-[#94a3b8]">Cooperativas Ativas</h3>
-                    <p class="text-3xl font-black mt-2">{{ superAdminKpis?.totalCooperativas || 0 }}</p>
+                    <h3 class="text-xs uppercase font-black tracking-widest text-[#94a3b8]">Entidades Ativas</h3>
+                    <p class="text-3xl font-black mt-2">{{ superAdminKpis?.totalEntidades || 0 }}</p>
                 </div>
                 <div class="zynix-card">
                     <h3 class="text-xs uppercase font-black tracking-widest text-emerald-500">Novas este Mês</h3>
@@ -394,7 +438,7 @@ function exportTenant(id) {
                 <!-- Right Sidebar Stats -->
                 <div class="space-y-6">
                     <!-- Capital Social -->
-                    <div class="zynix-card bg-primary-gradient !shadow-xl !shadow-primary-dynamic/20">
+                    <div v-if="tenant?.tipo !== 'fundacao'" class="zynix-card bg-primary-gradient !shadow-xl !shadow-primary-dynamic/20">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="p-2 rounded-xl bg-white/20">
                                 <BanknotesIcon class="w-5 h-5 text-white" />
@@ -469,7 +513,8 @@ function exportTenant(id) {
                     <table class="w-full zynix-table text-left">
                         <thead>
                             <tr>
-                                <th class="p-4 uppercase text-[10px] font-black text-slate-400">Cooperativa</th>
+                                <th class="p-4 uppercase text-[10px] font-black text-slate-400">Entidade</th>
+                                <th class="p-4 uppercase text-[10px] font-black text-slate-400">Tipo</th>
                                 <th class="p-4 uppercase text-[10px] font-black text-slate-400">Segmento</th>
                                 <th class="p-4 uppercase text-[10px] font-black text-slate-400">Status</th>
                                 <th class="p-4 uppercase text-[10px] font-black text-slate-400">Domínio Atrelado</th>
@@ -488,6 +533,11 @@ function exportTenant(id) {
                                             <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">ID: {{ t.id }}</p>
                                         </div>
                                     </div>
+                                </td>
+                                <td class="p-4">
+                                    <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest" :class="t.tipo === 'fundacao' ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600' : 'bg-teal-50 dark:bg-teal-500/10 text-teal-600'">
+                                        {{ t.tipo === 'fundacao' ? 'Fundação' : 'Cooperativa' }}
+                                    </span>
                                 </td>
                                 <td class="p-4">
                                     <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md text-[10px] font-bold uppercase tracking-widest">
@@ -530,27 +580,35 @@ function exportTenant(id) {
                                 </td>
                             </tr>
                             <tr v-if="tenants.length === 0">
-                                <td colspan="5" class="p-8 text-center text-[11px] font-bold uppercase tracking-widest text-slate-400">
-                                    Nenhuma cooperativa foi registrada ainda.
+                                <td colspan="6" class="p-8 text-center text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                                    Nenhuma entidade foi registrada ainda.
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
             <!-- Modal Gerenciar Cooperativa -->
             <Modal :show="isTenantModalOpen" @close="closeTenantModal">
                 <div class="p-6">
                     <h2 class="text-xl font-black text-[var(--text-heading)] flex items-center gap-2 mb-6">
                         <BuildingLibraryIcon class="w-5 h-5 text-primary-dynamic"/>
-                        {{ isEditingTenant ? 'Editar Cooperativa' : 'Sancionar Nova Cooperativa' }}
+                        {{ isEditingTenant ? 'Editar Entidade' : 'Sancionar Nova Entidade' }}
                     </h2>
                     
                     <form @submit.prevent="submitTenant" class="space-y-6">
                         <div>
+                            <InputLabel for="tipo" value="Tipo de Entidade" class="!font-black tracking-widest uppercase text-[10px]" />
+                            <select id="tipo" class="block w-full border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 rounded-xl text-xs font-bold text-[var(--text-heading)] focus:ring-primary-dynamic focus:border-primary-dynamic transition-all py-2.5" v-model="tenantForm.tipo" @change="onTipoChange" required :disabled="isEditingTenant">
+                                <option value="cooperativa">Cooperativa</option>
+                                <option value="fundacao">Fundação</option>
+                            </select>
+                            <InputError class="mt-2" :message="tenantForm.errors.tipo" />
+                        </div>
+
+                        <div>
                             <InputLabel for="nome" value="Nome Oficial ou Razão Social" class="!font-black tracking-widest uppercase text-[10px]" />
-                            <TextInput id="nome" type="text" class="block w-full" v-model="tenantForm.nome" required placeholder="Nova Cooperativa Sis" />
+                            <TextInput id="nome" type="text" class="block w-full" v-model="tenantForm.nome" required placeholder="Nova Entidade" />
                             <InputError class="mt-2" :message="tenantForm.errors.nome" />
                         </div>
                         
@@ -560,10 +618,54 @@ function exportTenant(id) {
                             <InputError class="mt-2" :message="tenantForm.errors.ramo" />
                         </div>
 
+                        <!-- Landing Page Pública -->
+                        <div class="p-4 rounded-xl border border-[var(--border-color)] bg-slate-50/50 dark:bg-slate-900/50">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    v-model="tenantForm.possui_landing_page"
+                                    class="w-4 h-4 rounded accent-primary-dynamic mt-0.5"
+                                />
+                                <div>
+                                    <span class="text-xs font-black text-[var(--text-heading)]">Possui Landing Page Pública (Site OnePage)</span>
+                                    <p class="text-[10px] text-slate-400 mt-0.5 leading-relaxed">
+                                        Se desmarcado (ex: a entidade possui site próprio fora do sistema), o acesso à raiz do domínio (<code>/</code>) redirecionará direto para a tela de login.
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Módulos / Serviços Ativos -->
+                        <div class="pt-4 border-t border-[var(--border-color)]">
+                            <p class="text-[10px] font-black text-primary-dynamic uppercase tracking-widest mb-2">
+                                🧩 Módulos / Serviços Ativos — <span class="uppercase font-bold underline">{{ tenantForm.tipo === 'fundacao' ? 'Fundação' : 'Cooperativa' }}</span>
+                            </p>
+                            <p class="text-[9px] font-medium text-slate-400 mb-4">
+                                Selecione quais serviços esta entidade ({{ tenantForm.tipo === 'fundacao' ? 'Fundação' : 'Cooperativa' }}) irá oferecer no sistema.
+                            </p>
+                            <div class="space-y-2">
+                                <label
+                                    v-for="modulo in modulosDisponiveis"
+                                    :key="modulo.key"
+                                    class="flex items-center gap-3 p-3.5 rounded-xl border border-[var(--border-color)] cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-all"
+                                    :class="{ 'bg-primary-dynamic/10 border-primary-dynamic/50': tenantForm.servicos.includes(modulo.key) }"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        :value="modulo.key"
+                                        v-model="tenantForm.servicos"
+                                        class="w-4 h-4 rounded accent-primary-dynamic"
+                                    />
+                                    <span class="text-xs font-bold text-[var(--text-heading)]">{{ modulo.label }}</span>
+                                </label>
+                            </div>
+                            <InputError class="mt-2" :message="tenantForm.errors.servicos" />
+                        </div>
+
                         <!-- Admin Fields (only on create) -->
                         <template v-if="!isEditingTenant">
                             <div class="pt-4 border-t border-[var(--border-color)]">
-                                <p class="text-[10px] font-black text-primary-dynamic uppercase tracking-widest mb-4">👤 Administrador Inicial da Cooperativa</p>
+                                <p class="text-[10px] font-black text-primary-dynamic uppercase tracking-widest mb-4">👤 Administrador Inicial da Entidade</p>
                                 
                                 <div class="space-y-4">
                                     <div>
@@ -574,7 +676,7 @@ function exportTenant(id) {
                                     
                                     <div>
                                         <InputLabel for="admin_email" value="Email de Acesso" class="!font-black tracking-widest uppercase text-[10px]" />
-                                        <TextInput id="admin_email" type="email" class="block w-full" v-model="tenantForm.admin_email" required placeholder="responsavel@cooperativa.com.br" />
+                                        <TextInput id="admin_email" type="email" class="block w-full" v-model="tenantForm.admin_email" required placeholder="responsavel@entidade.com.br" />
                                         <InputError class="mt-2" :message="tenantForm.errors.admin_email" />
                                         <p class="text-[9px] font-medium text-slate-400 mt-1">Uma senha temporária será gerada automaticamente. O usuário deverá alterá-la no primeiro acesso.</p>
                                     </div>
@@ -607,10 +709,10 @@ function exportTenant(id) {
                     </div>
 
                     <p v-if="currentTenantActionType === 'suspend'" class="text-sm text-slate-500 font-medium mb-6">
-                        Você está prestes a <strong class="text-amber-500">Suspender</strong> esta cooperativa. Ela e todos os usuários perderão o acesso ao sistema. O banco de dados permanecerá preservado para o caso de restauração ou auditoria.
+                        Você está prestes a <strong class="text-amber-500">Suspender</strong> esta entidade. Ela e todos os usuários perderão o acesso ao sistema. O banco de dados permanecerá preservado para o caso de restauração ou auditoria.
                     </p>
                     <p v-else class="text-sm text-slate-500 font-medium mb-6">
-                        Você está invocando a flag LGPD para <strong class="text-rose-500">Excluir Permanentemente</strong> esta Cooperativa.<br/><br/>Toda a estrutura do banco de dados relacional (MySQL), dados de dependentes, uploads, faturas e logs serão PURGADOS DEFINITIVAMENTE DO DISCO. Não pode ser revertido. Tem certeza absoluta?
+                        Você está invocando a flag LGPD para <strong class="text-rose-500">Excluir Permanentemente</strong> esta Entidade.<br/><br/>Toda a estrutura do banco de dados relacional (MySQL), dados de dependentes, uploads, faturas e logs serão PURGADOS DEFINITIVAMENTE DO DISCO. Não pode ser revertido. Tem certeza absoluta?
                     </p>
 
                     <div class="flex justify-end gap-3 pt-6 border-t border-[var(--border-color)]">
@@ -630,11 +732,11 @@ function exportTenant(id) {
                 <div class="p-6">
                     <h2 class="text-xl font-black text-[var(--text-heading)] flex items-center gap-2 mb-6">
                         <CheckCircleIcon class="w-5 h-5 text-emerald-500"/>
-                        Reativar Cooperativa
+                        Reativar Entidade
                     </h2>
                     
                     <p class="text-sm text-slate-500 font-medium mb-6">
-                        Esta cooperativa foi suspensa. Ao reativá-la, seus associados poderão logar normalmente de onde pararam.
+                        Esta entidade foi suspensa. Ao reativá-la, seus associados/clientes poderão logar normalmente de onde pararam.
                     </p>
 
                     <div class="flex justify-end pt-6 gap-3 border-t border-[var(--border-color)]">

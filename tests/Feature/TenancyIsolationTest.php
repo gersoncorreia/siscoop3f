@@ -28,7 +28,7 @@ class TenancyIsolationTest extends TestCase
             'domain' => 'cooperativa-teste.localhost'
         ]);
 
-        $this->assertEquals('Cooperativa Teste', $tenant->nome);
+        $this->assertEquals('Cooperativa Teste', $tenant['tenant']->nome);
 
         $this->assertDatabaseHas('domains', [
             'domain' => 'cooperativa-teste.localhost'

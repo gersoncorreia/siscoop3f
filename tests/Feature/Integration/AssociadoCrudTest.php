@@ -14,6 +14,7 @@ class AssociadoCrudTest extends TenantTestCase
     public function test_can_create_associado_with_valid_data()
     {
         $user = $this->createTenantUser();
+        $user->assignRole('Presidente');
 
         $response = $this->tenantPost('/associados', [
             'nome' => 'Maria da Silva',
@@ -27,17 +28,17 @@ class AssociadoCrudTest extends TenantTestCase
         $response->assertSessionHas('success');
 
         // Deve ter sido persistido no banco do tenant
-        $this->assertDatabaseHas('associados', [
-            'nome' => 'Maria da Silva',
-            'cpf' => '123.456.789-00',
-            'status' => 'ativo',
-        ]);
+        $associado = Associado::where('nome', 'Maria da Silva')->first();
+        $this->assertNotNull($associado);
+        $this->assertEquals('123.456.789-00', $associado->cpf);
+        $this->assertEquals('ativo', $associado->status);
     }
 
     /** @test */
     public function test_cannot_create_associado_without_required_fields()
     {
         $user = $this->createTenantUser();
+        $user->assignRole('Presidente');
 
         $response = $this->tenantPost('/associados', [], $user);
 
@@ -49,6 +50,7 @@ class AssociadoCrudTest extends TenantTestCase
     public function test_cannot_create_associado_with_invalid_status()
     {
         $user = $this->createTenantUser();
+        $user->assignRole('Presidente');
 
         $response = $this->tenantPost('/associados', [
             'nome' => 'Carlos Teste',
@@ -63,6 +65,7 @@ class AssociadoCrudTest extends TenantTestCase
     public function test_cannot_create_associado_with_duplicate_cpf()
     {
         $user = $this->createTenantUser();
+        $user->assignRole('Presidente');
 
         Associado::create([
             'nome' => 'Primeiro',
@@ -83,6 +86,7 @@ class AssociadoCrudTest extends TenantTestCase
     public function test_can_update_associado()
     {
         $user = $this->createTenantUser();
+        $user->assignRole('Presidente');
 
         $associado = Associado::create([
             'nome' => 'Original',
@@ -109,6 +113,7 @@ class AssociadoCrudTest extends TenantTestCase
     public function test_can_delete_associado()
     {
         $user = $this->createTenantUser();
+        $user->assignRole('Presidente');
 
         $associado = Associado::create([
             'nome' => 'Para Excluir',

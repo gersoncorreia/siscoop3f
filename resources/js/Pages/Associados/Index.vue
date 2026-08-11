@@ -55,41 +55,42 @@ function deleteAssociado(id) {
     <Head title="Gestão de Associados" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header with Breadcrumbs & Action -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Associados' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Central de Associados
-                        </h1>
-                    </div>
-                    <div>
-                        <Link :href="route('associados.create')">
-                            <PrimaryButton class="shadow-xl">
-                                <PlusIcon class="w-4 h-4 mr-2" />
-                                Novo Associado
-                            </PrimaryButton>
-                        </Link>
-                    </div>
+        <template #header>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <Breadcrumbs :items="[{ label: 'Associados' }]" />
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">
+                        Central de {{ $page.props.tenant?.tipo === 'fundacao' ? 'Clientes' : 'Associados' }}
+                    </h2>
+                    <p class="text-sm text-[var(--text-muted)] mt-0.5">Gerencie os cadastros e status da sua unidade.</p>
                 </div>
-                
-                <!-- Public Onboarding Link Banner -->
-                <div class="mb-8 p-1 bg-gradient-to-r from-primary-dynamic/20 to-transparent rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] shadow-sm opacity-90">
-                    <div class="p-5 flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div class="flex items-center gap-4">
-                            <div class="hidden sm:flex p-3 bg-primary-dynamic/10 text-primary-dynamic rounded-xl shadow-inner">
-                                <ShareIcon class="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h3 class="font-black text-[var(--text-heading)] leading-tight tracking-tight">Link de Adesão Digital</h3>
-                                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Compartilhe com novos cooperados</p>
-                                <div class="mt-2 flex items-center gap-2 font-mono text-[10px] bg-slate-50 dark:bg-slate-800 border border-[var(--border-color)] px-3 py-1.5 rounded-lg text-primary-dynamic select-all">
-                                    {{ publicLink }}
-                                </div>
+                <div>
+                    <Link :href="route('associados.create')">
+                        <PrimaryButton class="shadow-xl">
+                            <PlusIcon class="w-4 h-4 mr-2" />
+                            Novo Cadastro
+                        </PrimaryButton>
+                    </Link>
+                </div>
+            </div>
+        </template>
+
+        <div class="space-y-6 pb-12">
+            <!-- Public Onboarding Link Banner -->
+            <div class="p-1 bg-gradient-to-r from-primary-dynamic/20 to-transparent rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] shadow-sm opacity-90">
+                <div class="p-5 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="hidden sm:flex p-3 bg-primary-dynamic/10 text-primary-dynamic rounded-xl shadow-inner">
+                            <ShareIcon class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 class="font-black text-[var(--text-heading)] leading-tight tracking-tight">Link de Adesão Digital</h3>
+                            <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Compartilhe com novos cooperados</p>
+                            <div class="mt-2 flex items-center gap-2 font-mono text-[10px] bg-slate-50 dark:bg-slate-800 border border-[var(--border-color)] px-3 py-1.5 rounded-lg text-primary-dynamic select-all">
+                                {{ publicLink }}
                             </div>
                         </div>
+                    </div>
                         <div class="flex items-center gap-2 w-full md:w-auto">
                             <button 
                                 @click="copyLink"
@@ -217,7 +218,6 @@ function deleteAssociado(id) {
                           </div>
                     </div>
                 </div>
-            </div>
         </div>
     </AuthenticatedLayout>
 

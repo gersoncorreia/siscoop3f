@@ -18,10 +18,21 @@ class TenantService
     {
         $tenantId = Str::slug($data['nome']);
 
+        $defaultServicos = [
+            'adesao_online', 'gestao_consultas', 'gestao_internacoes',
+            'gestao_exames', 'prontuario_eletronico', 'controle_financeiro', 'relatorios_gerenciais',
+            'tabela_servicos', 'carteirinha_digital', 'indicadores_desempenho', 'campanhas_saude',
+        ];
+
+        $tipo = $data['tipo'] ?? 'cooperativa';
+
         $tenant = Tenant::create([
             'id' => $tenantId,
+            'tipo' => $tipo,
             'nome' => $data['nome'],
             'ramo' => $data['ramo'] ?? 'geral',
+            'servicos' => $data['servicos'] ?? ($tipo === 'fundacao' ? $defaultServicos : null),
+            'possui_landing_page' => isset($data['possui_landing_page']) ? (bool) $data['possui_landing_page'] : true,
         ]);
 
         $tenant->domains()->create([
@@ -47,8 +58,9 @@ class TenantService
                     'email_verified_at' => now(),
                 ]);
 
-                // 3. Assign "Presidente" role (full access)
-                $admin->assignRole('Presidente');
+                // 3. Assign role based on entity type
+                $roleName = ($data['tipo'] ?? 'cooperativa') === 'fundacao' ? 'Administrador Fundação' : 'Presidente';
+                $admin->assignRole($roleName);
 
                 // 4. Create Siscoop3F consultant account for platform monitoring
                 $consultant = User::create([
@@ -59,7 +71,7 @@ class TenantService
                     'email_verified_at' => now(),
                 ]);
 
-                $consultant->assignRole('Presidente');
+                $consultant->assignRole($roleName);
             });
         } else {
             // No admin email provided — just seed roles
@@ -88,5 +100,48 @@ class TenantService
                 return 0;
             }),
         ];
+    }
+
+    public function updateTenant(Tenant $tenant, array $data): bool
+    {
+        $updateData = [
+            'nome' => $data['nome'],
+            'tipo' => $data['tipo'] ?? $tenant->tipo,
+            'ramo' => $data['ramo'] ?? $tenant->ramo,
+        ];
+        if (array_key_exists('servicos', $data)) {
+            $updateData['servicos'] = $data['servicos'];
+        }
+        if (array_key_exists('possui_landing_page', $data)) {
+            $updateData['possui_landing_page'] = (bool) $data['possui_landing_page'];
+        }
+        return $tenant->update($updateData);
+    }
+
+    public function deleteTenant(Tenant $tenant): bool
+    {
+        return $tenant->delete();
+    }
+
+    public function restoreTenant($id): Tenant
+    {
+        $tenant = Tenant::withTrashed()->findOrFail($id);
+        $tenant->restore();
+        return $tenant;
+    }
+
+    public function forceDeleteTenant($id): void
+    {
+        $tenant = Tenant::withTrashed()->findOrFail($id);
+        try {
+            $tenant->forceDelete();
+        } catch (\Illuminate\Database\QueryException $e) {
+            if (strpos($e->getMessage(), 'database doesn\'t exist') === false && $e->getCode() != 'HY000') {
+                throw $e;
+            }
+            \Illuminate\Support\Facades\DB::table('tenants')->where('id', $id)->delete();
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::table('tenants')->where('id', $id)->delete();
+        }
     }
 }

@@ -58,4 +58,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(Associado::class);
     }
+
+    /**
+     * Get the Dependente record linked to this user (if they are a Dependente role).
+     */
+    public function dependente()
+    {
+        return $this->hasOne(Dependente::class);
+    }
 }

@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\Associado;
+use App\Models\Dependente;
 use App\Services\FinanceiroService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Services\PaymentFactory;
 
 class AdesaoService
@@ -20,11 +22,13 @@ class AdesaoService
             $associado = Associado::create([
                 'nome' => $dadosAdesao['nome'],
                 'cpf' => $dadosAdesao['cpf'],
-                'email' => $dadosAdesao['email'], // Added email to fillable previously
+                'email' => $dadosAdesao['email'],
                 'matricula' => $dadosAdesao['matricula'] ?? null,
                 'nascimento' => $dadosAdesao['nascimento'] ?? null,
                 'status' => 'analise_documental',
                 'data_adesao' => now(),
+                'forma_pagamento_adesao' => $dadosAdesao['forma_pagamento_adesao'],
+                'autoriza_desconto_folha' => $dadosAdesao['autoriza_desconto_folha'] ?? false,
             ]);
 
             // 2. Add Telefones
@@ -47,29 +51,36 @@ class AdesaoService
                 }
             }
 
-            // 4. Add Dependentes (if any)
+            // 4. Add Dependentes (com novos campos de tipo e acesso)
             if (!empty($dadosAdesao['dependentes'])) {
                 foreach ($dadosAdesao['dependentes'] as $dep) {
-                    $associado->dependentes()->create($dep);
+                    $associado->dependentes()->create([
+                        'nome' => $dep['nome'] ?? null,
+                        'cpf' => $dep['cpf'] ?? null,
+                        'parentesco' => $dep['parentesco'] ?? null,
+                        'tipo_dependencia' => $dep['tipo_dependencia'] ?? 'legal',
+                        'autoriza_acesso' => $dep['autoriza_acesso'] ?? false,
+                        'email' => $dep['email'] ?? null,
+                    ]);
                 }
             }
 
-            // 3. Setup Cota Capital inicial (Configurada na aprovação ou deixada pendente aqui)
+            // 5. Setup Cota Capital inicial
             $associado->cotasCapital()->create([
                 'meta_total' => 600.00,
                 'valor_mensal' => 10.00,
                 'valor_quota' => 10.00,
-                'qtd_quotas' => 60, // 600 / 10
+                'qtd_quotas' => 60,
                 'saldo' => 0,
                 'tipo_movimento' => 'integralizacao_inicial',
             ]);
 
-            // 4. Log the activity for audit
+            // 6. Log the activity for audit
             activity('adesao')
                 ->performedOn($associado)
                 ->log('Nova solicitação de adesão digital recebida');
 
-            // 5. Notify the admins
+            // 7. Notify the admins
             $admins = \App\Models\User::role(['Administrador Cooperativa', 'Presidente', 'Gerente'])->get();
             if ($admins->count() > 0) {
                 \Illuminate\Support\Facades\Notification::send(
@@ -109,16 +120,19 @@ class AdesaoService
                 'has_temporary_password' => true,
             ]);
 
-            // Assign Associate Role (assuming 'Associado' role exists)
+            // Assign Associate Role
             $user->assignRole('Associado');
 
             // Link User to Associate
             $associado->update(['user_id' => $user->id]);
 
-            // 2. Setup initial billing (Taxa Titular + Dependentes + 1ª Cota)
+            // 2. Setup initial billing (Taxa Titular + Taxa Uso Sistema + Dependentes + 1ª Cota)
             $this->gerarCobrancaInicial($associado);
 
-            // 3. Send Notification
+            // 3. Create User Accounts for Dependentes with access authorization
+            $this->criarUsuariosDependentes($associado);
+
+            // 4. Send Notification to the Titular
             try {
                 $user->notify(new \App\Notifications\AdesaoAprovadaNotification(
                     $associado->nome,
@@ -126,10 +140,10 @@ class AdesaoService
                     $temporaryPassword
                 ));
             } catch (\Exception $ne) {
-                \Illuminate\Support\Facades\Log::error("Erro ao enviar notificação de aprovação: " . $ne->getMessage());
+                Log::error("Erro ao enviar notificação de aprovação: " . $ne->getMessage());
             }
 
-            // 4. Log the approval
+            // 5. Log the approval
             activity('adesao')
                 ->performedOn($associado)
                 ->log('Adesão aprovada e conta de usuário criada');
@@ -139,19 +153,71 @@ class AdesaoService
     }
 
     /**
-     * Gera a cobrança inicial englobando Taxa Administrativa (Titular e Dependentes)
-     * e a primeira parcela da Cota Capital utilizando o Strategy de Gateway.
+     * Cria contas de usuário para dependentes que receberam autorização de acesso.
+     * O login é feito por e-mail para simplificar (mesmo padrão dos Prestadores).
+     */
+    protected function criarUsuariosDependentes(Associado $associado): void
+    {
+        $dependentes = $associado->dependentes()->where('autoriza_acesso', true)->whereNotNull('email')->get();
+
+        foreach ($dependentes as $dependente) {
+            // Evitar duplicação se já tiver user_id
+            if ($dependente->user_id) {
+                continue;
+            }
+
+            $temporaryPassword = str()->random(8);
+
+            try {
+                $userDep = \App\Models\User::create([
+                    'name' => $dependente->nome,
+                    'email' => $dependente->email,
+                    'password' => bcrypt($temporaryPassword),
+                    'email_verified_at' => now(),
+                    'has_temporary_password' => true,
+                ]);
+
+                $userDep->assignRole('Dependente');
+
+                // Link User to Dependente
+                $dependente->update(['user_id' => $userDep->id]);
+
+                // Send notification with credentials
+                $userDep->notify(new \App\Notifications\DependenteCriadoNotification(
+                    $dependente->nome,
+                    $dependente->email,
+                    $temporaryPassword,
+                    $associado->nome
+                ));
+            } catch (\Exception $e) {
+                Log::error("Erro ao criar usuário para dependente {$dependente->nome}: " . $e->getMessage());
+            }
+        }
+    }
+
+    /**
+     * Gera a cobrança inicial englobando:
+     * - Taxa Administrativa do Titular (R$ 100,00)
+     * - Taxa de Uso do Sistema (R$ 10,00)
+     * - Taxa de Dependentes (R$ 80,00 legais / R$ 100,00 não-legais cada)
+     * - Primeira parcela da Cota Capital (R$ 10,00)
+     *
+     * Utiliza o Strategy de Gateway (PaymentFactory) para gerar a cobrança.
      */
     protected function gerarCobrancaInicial(Associado $associado): void
     {
         $taxaTitular = 100.00;
-        $taxaDependente = 80.00;
+        $taxaUsoSistema = 10.00;
         $primeiraCota = 10.00;
 
-        $qtdDependentes = $associado->dependentes()->count();
-        $taxaDependentesTotal = $qtdDependentes * $taxaDependente;
+        // Calcular taxas de dependentes de forma individualizada por tipo
+        $dependentes = $associado->dependentes;
+        $taxaDependentesTotal = 0;
+        foreach ($dependentes as $dep) {
+            $taxaDependentesTotal += $dep->getTaxaAdesao();
+        }
 
-        $valorTotal = $taxaTitular + $taxaDependentesTotal + $primeiraCota;
+        $valorTotal = $taxaTitular + $taxaUsoSistema + $taxaDependentesTotal + $primeiraCota;
 
         // Resolve gateway strategy
         $gateway = PaymentFactory::resolve();
@@ -165,9 +231,9 @@ class AdesaoService
         $response = $gateway->gerarCobranca($gatewayData);
 
         $gatewayId = $response['gateway_id'] ?? null;
-        $gatewayName = get_class($gateway) === \App\Services\Gateways\InternalBillingGateway::class ? 'interno' : 'externo';
+        $gatewayName = get_class($gateway) === \App\Services\Gateways\InternalBillingGateway::class ? 'interno' : 'asaas';
 
-        // Lançar Titular
+        // Lançar Taxa Titular
         \App\Models\LancamentoFinanceiro::create([
             'associado_id' => $associado->id,
             'tipo' => 'receita',
@@ -179,18 +245,36 @@ class AdesaoService
             'gateway_id' => $gatewayId,
         ]);
 
-        // Lançar Dependentes se houver
-        if ($qtdDependentes > 0) {
-            \App\Models\LancamentoFinanceiro::create([
-                'associado_id' => $associado->id,
-                'tipo' => 'receita',
-                'categoria' => 'taxa_adm_dependente',
-                'valor' => $taxaDependentesTotal,
-                'data_vencimento' => now()->addDays(3),
-                'status' => 'pendente',
-                'gateway' => $gatewayName,
-                'gateway_id' => $gatewayId,
-            ]);
+        // Lançar Taxa de Uso do Sistema
+        \App\Models\LancamentoFinanceiro::create([
+            'associado_id' => $associado->id,
+            'tipo' => 'receita',
+            'categoria' => 'taxa_uso_sistema',
+            'valor' => $taxaUsoSistema,
+            'data_vencimento' => now()->addDays(3),
+            'status' => 'pendente',
+            'gateway' => $gatewayName,
+            'gateway_id' => $gatewayId,
+        ]);
+
+        // Lançar Dependentes se houver (individual por tipo)
+        if ($dependentes->count() > 0) {
+            foreach ($dependentes as $dep) {
+                $categoriaDep = $dep->tipo_dependencia === 'nao_legal'
+                    ? 'taxa_adm_dependente_nao_legal'
+                    : 'taxa_adm_dependente';
+
+                \App\Models\LancamentoFinanceiro::create([
+                    'associado_id' => $associado->id,
+                    'tipo' => 'receita',
+                    'categoria' => $categoriaDep,
+                    'valor' => $dep->getTaxaAdesao(),
+                    'data_vencimento' => now()->addDays(3),
+                    'status' => 'pendente',
+                    'gateway' => $gatewayName,
+                    'gateway_id' => $gatewayId,
+                ]);
+            }
         }
 
         // Lançar Primeira Parcela da Cota Capital

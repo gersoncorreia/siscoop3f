@@ -35,11 +35,13 @@ test('usuario pode aceitar lgpd e navegar livremente', function () {
 });
 
 test('lgpd aceita dinamicamente envia para master-admin ou tenant route', function () {
+    tenancy()->end();
     $user = \App\Models\User::factory()->create([
         'accepted_lgpd_at' => null,
     ]);
+    \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
+    $user->assignRole('Super Admin');
 
-    tenancy()->end();
     // Aqui testando acesso a rota central
     $response = $this->actingAs($user)->get('/master-admin/dashboard');
 

@@ -71,23 +71,23 @@ const deleteConta = (id) => {
     <Head title="Contas Bancárias" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Financeiro', href: '/financeiro' }, { label: 'Contas Bancárias' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Contas Bancárias
-                        </h1>
-                    </div>
-                    <div>
-                        <PrimaryButton @click="openCreateModal" class="shadow-xl">
-                            <PlusIcon class="w-4 h-4 mr-2" />
-                            Nova Conta
-                        </PrimaryButton>
-                    </div>
+        <template #header>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <Breadcrumbs :items="[{ label: 'Financeiro', href: '/financeiro' }, { label: 'Contas Bancárias' }]" />
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Contas Bancárias</h2>
+                    <p class="text-sm text-[var(--text-muted)] mt-0.5">Gerencie as contas financeiras e caixas da instituição.</p>
                 </div>
+                <div>
+                    <PrimaryButton @click="openCreateModal" class="shadow-xl">
+                        <PlusIcon class="w-4 h-4 mr-2" />
+                        Nova Conta
+                    </PrimaryButton>
+                </div>
+            </div>
+        </template>
+
+        <div class="space-y-6 pb-12">
                 
                 <!-- Stats Overview -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -153,7 +153,6 @@ const deleteConta = (id) => {
                         </p>
                     </div>
                 </div>
-            </div>
         </div>
 
         <!-- Create/Edit Modal -->

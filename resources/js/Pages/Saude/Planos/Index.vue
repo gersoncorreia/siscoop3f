@@ -89,23 +89,23 @@ const deletePlano = (id) => {
     <Head title="Planos de Saúde" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Saúde' }, { label: 'Planos' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Planos de Saúde
-                        </h1>
-                    </div>
-                    <div>
-                        <PrimaryButton @click="openCreateModal" class="shadow-xl">
-                            <PlusIcon class="w-4 h-4 mr-2" />
-                            Novo Plano
-                        </PrimaryButton>
-                    </div>
+        <template #header>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <Breadcrumbs :items="[{ label: 'Saúde' }, { label: 'Planos' }]" />
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Planos de Saúde</h2>
+                    <p class="text-sm text-[var(--text-muted)] mt-0.5">Cadastre e gerencie os planos e coberturas oferecidos aos associados.</p>
                 </div>
+                <div>
+                    <PrimaryButton @click="openCreateModal" class="shadow-xl">
+                        <PlusIcon class="w-4 h-4 mr-2" />
+                        Novo Plano
+                    </PrimaryButton>
+                </div>
+            </div>
+        </template>
+
+        <div class="space-y-6 pb-12">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div v-for="plano in planos" :key="plano.id" class="zynix-card group hover:scale-[1.02] transition-all duration-300 flex flex-col">
@@ -154,7 +154,6 @@ const deletePlano = (id) => {
                         </p>
                     </div>
                 </div>
-            </div>
         </div>
 
         <!-- Create/Edit Modal -->

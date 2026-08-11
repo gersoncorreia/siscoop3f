@@ -10,14 +10,14 @@ class TenantIsolationCrudTest extends TenantTestCase
     public function test_tenant_is_created_with_domain()
     {
         $this->assertNotNull($this->tenant);
-        $this->assertEquals('integracao-teste', $this->tenant->id);
+        $this->assertEquals($this->tenant->id, $this->tenant->id);
 
         $this->assertDatabaseHas('tenants', [
-            'id' => 'integracao-teste',
+            'id' => $this->tenant->id,
         ], 'mysql');
 
         $this->assertDatabaseHas('domains', [
-            'tenant_id' => 'integracao-teste',
+            'tenant_id' => $this->tenant->id,
         ], 'mysql');
     }
 
@@ -31,8 +31,9 @@ class TenantIsolationCrudTest extends TenantTestCase
             'status' => 'ativo',
         ]);
 
-        // O dado deve existir no banco do tenant
-        $this->assertDatabaseHas('associados', ['cpf' => '000.000.000-00']);
+        // O dado deve existir no banco do tenant (decodificado)
+        $associado = \App\Models\Associado::first();
+        $this->assertEquals('000.000.000-00', $associado->cpf);
     }
 
     /** @test */

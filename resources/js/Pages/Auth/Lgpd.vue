@@ -7,6 +7,10 @@ const props = defineProps({
     submitRoute: {
         type: String,
         default: 'lgpd.accept',
+    },
+    terms: {
+        type: Object,
+        required: true,
     }
 });
 
@@ -18,30 +22,25 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Termos de Uso e LGPD" />
+    <Head :title="terms.titulo" />
 
     <GuestLayout>
         <div class="mb-4 text-sm text-gray-600">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">Termos de Uso e Privacidade (LGPD)</h2>
-            <p class="mb-4">
-                Para continuar acessando o Siscoop3F e garantir sua segurança, solicitamos que você leia e concorde com nossa política de privacidade em adequação à Lei Geral de Proteção de Dados (LGPD).
-            </p>
-            <div class="h-48 overflow-y-auto p-4 bg-gray-50 border rounded-md text-xs text-gray-700 leading-relaxed mb-6">
-                <p class="font-bold mb-2">1. Coleta de Dados</p>
-                <p class="mb-4">O Siscoop3F coleta informações pessoais estritamente necessárias para o gerenciamento das atividades cooperativas, como identificação, dados de contato e financeiros das cotas de capital.</p>
-
-                <p class="font-bold mb-2">2. Uso e Compartilhamento</p>
-                <p class="mb-4">Os dados coletados serão usados exclusivamente pela sua cooperativa para fins administrativos e de prestação de serviços não sendo compartilhados com terceiros sem consentimento explícito, salvo obrigações legais.</p>
-
-                <p class="font-bold mb-2">3. Seus Direitos</p>
-                <p>O associado possui o direito de exigir a alteração e anonimização de dados caso retire-se da organização.</p>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">{{ terms.titulo }}</h2>
+            <p class="mb-4">{{ terms.introducao }}</p>
+            
+            <div class="h-48 overflow-y-auto p-4 bg-gray-50 border rounded-md text-xs text-gray-700 leading-relaxed mb-6 space-y-4">
+                <div v-for="(section, idx) in terms.secoes" :key="idx">
+                    <p class="font-bold mb-1">{{ section.titulo }}</p>
+                    <p>{{ section.conteudo }}</p>
+                </div>
             </div>
         </div>
 
         <form @submit.prevent="submit">
             <div class="flex items-center justify-end mt-4">
                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Eu Li e Concordo com os Termos
+                    {{ terms.botao_texto }}
                 </PrimaryButton>
             </div>
         </form>

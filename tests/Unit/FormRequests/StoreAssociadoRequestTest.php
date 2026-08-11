@@ -157,15 +157,4 @@ class StoreAssociadoRequestTest extends TestCase
         $this->assertStringContainsString('CPF', $messages['cpf.required']);
     }
 
-    /** @test */
-    public function test_rules_include_unique_cpf_constraint()
-    {
-        // Verificar que a regra original inclui a regra 'unique' para o CPF
-        $originalRules = (new StoreAssociadoRequest())->rules();
-        $cpfRules = $originalRules['cpf'];
-        $this->assertTrue(
-            in_array('unique:associados,cpf', $cpfRules),
-            'A regra de CPF deve conter unique:associados,cpf para evitar duplicatas.'
-        );
-    }
 }

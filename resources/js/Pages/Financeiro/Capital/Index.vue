@@ -52,23 +52,23 @@ const deleteCapital = (id) => {
     <Head title="Cota Capital" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Financeiro', href: '/financeiro' }, { label: 'Capital Social' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Cota Capital Social
-                        </h1>
-                    </div>
-                    <div>
-                        <PrimaryButton @click="showModal = true" class="shadow-xl">
-                            <PlusIcon class="w-4 h-4 mr-2" />
-                            Nova Integralização
-                        </PrimaryButton>
-                    </div>
+        <template #header>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <Breadcrumbs :items="[{ label: 'Financeiro', href: '/financeiro' }, { label: 'Capital Social' }]" />
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Gestão de Cota Capital</h2>
+                    <p class="text-sm text-[var(--text-muted)] mt-0.5">Controle de subscrições e integralizações dos cooperados.</p>
                 </div>
+                <div>
+                    <PrimaryButton @click="showModal = true" class="shadow-xl">
+                        <PlusIcon class="w-4 h-4 mr-2" />
+                        Nova Integralização
+                    </PrimaryButton>
+                </div>
+            </div>
+        </template>
+
+        <div class="space-y-6 pb-12">
                 
                 <!-- Global Metrics -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -157,7 +157,6 @@ const deleteCapital = (id) => {
                         </table>
                     </div>
                 </div>
-            </div>
         </div>
 
         <!-- Create Modal -->

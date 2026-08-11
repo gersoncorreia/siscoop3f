@@ -11,6 +11,7 @@ import {
     CalendarDaysIcon,
     CheckCircleIcon,
     ExclamationTriangleIcon,
+    IdentificationIcon,
 } from '@heroicons/vue/24/outline';
 
 const page = usePage();
@@ -30,40 +31,81 @@ function formatCurrency(v) {
     return (v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-const kpis = computed(() => [
-    {
-        label: 'Meu Patrimônio',
-        value: formatCurrency(stats.value.saldoCotaCapital),
-        sub: 'Na Cooperativa (Cota)',
-        icon: CurrencyDollarIcon,
-        color: 'emerald',
-        href: '/cooperado/cotas',
-    },
-    {
-        label: 'Mensalidades',
-        value: stats.value.mensalidadesPendentes,
-        sub: 'Pendentes de pagamento',
-        icon: ClockIcon,
-        color: stats.value.mensalidadesPendentes > 0 ? 'amber' : 'emerald',
-        href: '/cooperado/financeiro',
-    },
-    {
-        label: 'Dependentes',
-        value: stats.value.totalDependentes,
-        sub: 'Registrados',
-        icon: UserGroupIcon,
-        color: 'blue',
-        href: '/cooperado/dependentes',
-    },
-    {
-        label: 'Reembolsos',
-        value: stats.value.reembolsosEmAnalise,
-        sub: 'Em análise',
-        icon: ClipboardDocumentCheckIcon,
-        color: stats.value.reembolsosEmAnalise > 0 ? 'amber' : 'emerald',
-        href: '/cooperado/reembolsos',
-    },
-]);
+const isFundacao = computed(() => page.props.tenant?.tipo === 'fundacao');
+
+const kpis = computed(() => {
+    if (isFundacao.value) {
+        return [
+            {
+                label: 'Minha Carteirinha',
+                value: associado.value?.carteirinha_status === 'ativa' ? 'Ativa' : 'Pendente',
+                sub: associado.value?.carteirinha_numero ? `#${associado.value.carteirinha_numero}` : 'Solicitar digital',
+                icon: IdentificationIcon,
+                color: associado.value?.carteirinha_status === 'ativa' ? 'emerald' : 'amber',
+                href: '/cooperado/carteirinha',
+            },
+            {
+                label: 'Agendamentos',
+                value: stats.value?.agendamentosPendentes || 0,
+                sub: 'Consultas & Exames',
+                icon: CalendarDaysIcon,
+                color: 'blue',
+                href: '/cooperado/agendamentos',
+            },
+            {
+                label: 'Dependentes',
+                value: stats.value?.totalDependentes || 0,
+                sub: 'Registrados',
+                icon: UserGroupIcon,
+                color: 'purple',
+                href: '/cooperado/dependentes',
+            },
+            {
+                label: 'Minhas Solicitações',
+                value: stats.value?.solicitacoesPendentes || 0,
+                sub: 'Em acompanhamento',
+                icon: ClipboardDocumentCheckIcon,
+                color: (stats.value?.solicitacoesPendentes || 0) > 0 ? 'amber' : 'emerald',
+                href: '/cooperado/minhas-solicitacoes',
+            },
+        ];
+    }
+
+    return [
+        {
+            label: 'Meu Patrimônio',
+            value: formatCurrency(stats.value?.saldoCotaCapital),
+            sub: 'Na Cooperativa (Cota)',
+            icon: CurrencyDollarIcon,
+            color: 'emerald',
+            href: '/cooperado/cotas',
+        },
+        {
+            label: 'Mensalidades',
+            value: stats.value?.mensalidadesPendentes || 0,
+            sub: 'Pendentes de pagamento',
+            icon: ClockIcon,
+            color: (stats.value?.mensalidadesPendentes || 0) > 0 ? 'amber' : 'emerald',
+            href: '/cooperado/financeiro',
+        },
+        {
+            label: 'Dependentes',
+            value: stats.value?.totalDependentes || 0,
+            sub: 'Registrados',
+            icon: UserGroupIcon,
+            color: 'blue',
+            href: '/cooperado/dependentes',
+        },
+        {
+            label: 'Reembolsos',
+            value: stats.value?.reembolsosEmAnalise || 0,
+            sub: 'Em análise',
+            icon: ClipboardDocumentCheckIcon,
+            color: (stats.value?.reembolsosEmAnalise || 0) > 0 ? 'amber' : 'emerald',
+            href: '/cooperado/reembolsos',
+        },
+    ];
+});
 </script>
 
 <template>
@@ -219,7 +261,29 @@ const kpis = computed(() => [
                         <div class="p-4 border-b border-[var(--border-color)] bg-slate-50 dark:bg-white/[0.03]">
                             <h4 class="text-[10px] font-black text-[var(--text-heading)] uppercase tracking-widest">Ações Operacionais</h4>
                         </div>
-                        <div class="divide-y divide-[var(--border-color)]">
+                        <div v-if="isFundacao" class="divide-y divide-[var(--border-color)]">
+                            <Link href="/cooperado/servicos" class="flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
+                                <div class="w-8 h-8 rounded bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                    <CurrencyDollarIcon class="w-4 h-4" />
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-xs font-black text-[var(--text-heading)] uppercase tracking-tight">Tabela de Serviços</p>
+                                    <p class="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-wide">Consulte valores e agende</p>
+                                </div>
+                                <ArrowRightIcon class="w-4 h-4 text-[var(--text-muted)] group-hover:text-primary-dynamic transition-all" />
+                            </Link>
+                            <Link href="/cooperado/agendamentos/novo" class="flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
+                                <div class="w-8 h-8 rounded bg-primary-light flex items-center justify-center text-primary-dynamic">
+                                    <CalendarDaysIcon class="w-4 h-4" />
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-xs font-black text-[var(--text-heading)] uppercase tracking-tight">Novo Agendamento</p>
+                                    <p class="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-wide">Solicitar consulta ou exame</p>
+                                </div>
+                                <ArrowRightIcon class="w-4 h-4 text-[var(--text-muted)] group-hover:text-primary-dynamic transition-all" />
+                            </Link>
+                        </div>
+                        <div v-else class="divide-y divide-[var(--border-color)]">
                             <Link href="/cooperado/reembolsos" class="flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
                                 <div class="w-8 h-8 rounded bg-primary-light flex items-center justify-center text-primary-dynamic">
                                     <ClipboardDocumentCheckIcon class="w-4 h-4" />

@@ -23,18 +23,13 @@ function formatCurrency(v) {
     <Head title="Dashboard Financeiro" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
+        <template #header>
+            <Breadcrumbs />
+            <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Painel Financeiro</h2>
+            <p class="text-sm text-[var(--text-muted)] mt-0.5">Acompanhe entradas, saídas e faturamento consolidado.</p>
+        </template>
 
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
-                    <div>
-                        <Breadcrumbs />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Dashboard Financeiro
-                        </h1>
-                    </div>
-                </div>
+        <div class="space-y-6 pb-12">
 
                 <!-- Welcome Banner -->
                 <div class="zynix-card overflow-hidden relative border-none bg-gradient-to-r from-primary-dynamic/10 to-transparent">
@@ -102,7 +97,6 @@ function formatCurrency(v) {
                     </p>
                 </div>
 
-            </div>
         </div>
     </AuthenticatedLayout>
 </template>

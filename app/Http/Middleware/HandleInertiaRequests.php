@@ -32,7 +32,16 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => function () use ($request) {
+                    $user = $request->user();
+                    if (!$user) return null;
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'has_temporary_password' => $user->has_temporary_password ?? false,
+                    ];
+                },
                 'roles' => function () use ($request) {
                     try {
                         return $request->user()?->getRoleNames() ?? [];
@@ -57,14 +66,14 @@ class HandleInertiaRequests extends Middleware
             ],
             'isCooperado' => function () use ($request) {
                 try {
-                    return $request->user()?->hasRole('Associado') ?? false;
+                    return $request->user()?->hasAnyRole(['Associado', 'Cliente', 'Dependente']) ?? false;
                 } catch (\Throwable) {
                     return false;
                 }
             },
             'associado' => function () use ($request) {
                 try {
-                    if (!$request->user() || !$request->user()->hasRole('Associado')) {
+                    if (!$request->user() || !$request->user()->hasAnyRole(['Associado', 'Cliente', 'Dependente'])) {
                         return null;
                     }
                     $associado = \App\Models\Associado::where('user_id', $request->user()->id)->first();
@@ -87,7 +96,11 @@ class HandleInertiaRequests extends Middleware
                     if (!$t) return null;
                     return [
                         'id' => $t->id,
-                        'name' => $t->name ?? $t->id,
+                        'nome' => $t->nome ?? $t->name ?? $t->id,
+                        'name' => $t->nome ?? $t->name ?? $t->id,
+                        'tipo' => $t->tipo ?? 'cooperativa',
+                        'ramo' => $t->ramo ?? null,
+                        'servicos' => $t->servicos ?? [],
                         'primary_color' => $t->primary_color ?? '#2563eb',
                         'logo_url' => $t->logo_path ? asset('storage/' . $t->logo_path) : null,
                     ];

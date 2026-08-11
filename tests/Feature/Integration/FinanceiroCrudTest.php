@@ -12,6 +12,7 @@ class FinanceiroCrudTest extends TenantTestCase
     public function test_can_create_lancamento_with_valid_data()
     {
         $user = $this->createTenantUser();
+        $user->assignRole('Presidente');
 
         $response = $this->tenantPost('/financeiro/lancamentos', [
             'tipo' => 'receita',
@@ -34,6 +35,7 @@ class FinanceiroCrudTest extends TenantTestCase
     public function test_cannot_create_lancamento_with_negative_value()
     {
         $user = $this->createTenantUser();
+        $user->assignRole('Presidente');
 
         $response = $this->tenantPost('/financeiro/lancamentos', [
             'tipo' => 'receita',
@@ -49,6 +51,7 @@ class FinanceiroCrudTest extends TenantTestCase
     public function test_cannot_create_lancamento_with_invalid_tipo()
     {
         $user = $this->createTenantUser();
+        $user->assignRole('Presidente');
 
         $response = $this->tenantPost('/financeiro/lancamentos', [
             'tipo' => 'hack_injection',
@@ -64,6 +67,7 @@ class FinanceiroCrudTest extends TenantTestCase
     public function test_cannot_create_lancamento_without_required()
     {
         $user = $this->createTenantUser();
+        $user->assignRole('Presidente');
 
         $response = $this->tenantPost('/financeiro/lancamentos', [], $user);
 
@@ -74,6 +78,7 @@ class FinanceiroCrudTest extends TenantTestCase
     public function test_can_delete_lancamento()
     {
         $user = $this->createTenantUser();
+        $user->assignRole('Presidente');
 
         $lancamento = LancamentoFinanceiro::create([
             'tipo' => 'despesa',

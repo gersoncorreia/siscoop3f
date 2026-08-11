@@ -1,10 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import {
     Squares2X2Icon,
     BuildingStorefrontIcon,
@@ -28,6 +28,35 @@ const navItems = [
     { name: 'Faturamento Mensal', href: '/prestador/faturas', icon: DocumentTextIcon, routeMatch: 'prestador.faturas' },
     { name: 'Meu Perfil', href: '/prestador/perfil', icon: UserCircleIcon, routeMatch: 'prestador.perfil' },
 ];
+
+let pollingInterval = null;
+
+onMounted(() => {
+    pollingInterval = setInterval(() => {
+        router.reload({ only: ['auth'] });
+    }, 15000);
+});
+
+onUnmounted(() => {
+    if (pollingInterval) clearInterval(pollingInterval);
+});
+
+const markAsRead = (id, url) => {
+    router.post(route('notifications.read', id), {}, {
+        preserveScroll: true,
+        onSuccess: () => {
+            if (url) {
+                router.get(url);
+            }
+        }
+    });
+};
+
+const markAllAsRead = () => {
+    router.post(route('notifications.read-all'), {}, {
+        preserveScroll: true
+    });
+};
 </script>
 
 <template>
@@ -59,17 +88,19 @@ const navItems = [
             
             <!-- Perfil / Logout na base -->
             <div class="p-4 border-t border-[var(--border-color)]">
-                <div class="flex items-center gap-3 mb-4 px-2">
-                    <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-                        <BuildingStorefrontIcon class="w-5 h-5 text-slate-500" />
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-black text-[var(--text-heading)] truncate">{{ $page.props.auth.user.name }}</p>
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Parceiro / Credenciado</p>
+                <div class="flex items-center justify-between mb-2 px-2">
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <div class="w-8 h-8 rounded-full bg-primary-dynamic/10 text-primary-dynamic flex items-center justify-center font-black text-xs shrink-0">
+                            {{ $page.props.auth.user.name.charAt(0) }}
+                        </div>
+                        <div class="truncate">
+                            <p class="text-xs font-black text-[var(--text-heading)] truncate">{{ $page.props.auth.user.name }}</p>
+                            <p class="text-[10px] text-[var(--text-muted)] truncate">{{ $page.props.auth.user.email }}</p>
+                        </div>
                     </div>
                 </div>
-                <Link :href="route('logout')" method="post" as="button" class="w-full flex items-center px-3 py-2 text-sm font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors">
-                    <ArrowLeftOnRectangleIcon class="mr-3 h-5 w-5" /> Sair do Sistema
+                <Link :href="route('logout')" method="post" as="button" class="w-full flex items-center justify-center px-3 py-2 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors">
+                    <ArrowLeftOnRectangleIcon class="mr-2 h-4 w-4" /> Sair da Conta
                 </Link>
             </div>
         </aside>
@@ -131,7 +162,7 @@ const navItems = [
                 <div class="md:hidden px-4 pt-6 pb-2">
                     <slot name="header" />
                 </div>
-                <div class="p-4 sm:p-8 pt-4 sm:pt-6 max-w-7xl mx-auto w-full">
+                <div class="p-4 sm:p-6 lg:p-8 pt-4 sm:pt-6 w-full min-w-0">
                     <slot />
                 </div>
             </main>

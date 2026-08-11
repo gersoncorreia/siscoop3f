@@ -22,17 +22,37 @@ class UpdateAssociadoRequest extends FormRequest
      */
     public function rules(): array
     {
-        // the associado parameter from route
-        $associadoId = $this->route('associado')->id ?? null;
-
         return [
             'nome' => ['required', 'string', 'max:255'],
-            'cpf' => ['required', 'string', 'max:14', 'unique:associados,cpf,' . $associadoId],
+            'cpf' => ['required', 'string', 'max:14'],
             'nascimento' => ['nullable', 'date'],
             'endereco' => ['nullable', 'string', 'max:1000'],
             'status' => ['required', 'string', 'in:ativo,inativo,pendente'],
             'data_adesao' => ['nullable', 'date'],
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $cpf = $this->input('cpf');
+            $associadoId = $this->route('associado')->id ?? null;
+
+            if ($cpf) {
+                $exists = \App\Models\Associado::all()
+                    ->filter(fn($a) => $a->id !== $associadoId)
+                    ->contains(function ($associado) use ($cpf) {
+                        return $associado->cpf === $cpf;
+                    });
+
+                if ($exists) {
+                    $validator->errors()->add('cpf', 'Este CPF já está cadastrado em nossa base com outro associado.');
+                }
+            }
+        });
     }
 
     /**

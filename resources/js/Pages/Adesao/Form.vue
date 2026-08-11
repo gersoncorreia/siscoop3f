@@ -20,6 +20,15 @@ const props = defineProps({
 
 const primaryColor = computed(() => props.tenant?.primary_color || '#2563eb');
 
+const formasPagamento = [
+    { value: 'pix', label: 'PIX' },
+    { value: 'boleto', label: 'Boleto Bancário' },
+    { value: 'cartao_credito', label: 'Cartão de Crédito' },
+    { value: 'cartao_debito', label: 'Cartão de Débito' },
+    { value: 'dinheiro', label: 'Dinheiro' },
+    { value: 'transferencia', label: 'Transferência Bancária' },
+];
+
 const form = useForm({
     nome: '',
     cpf: '',
@@ -29,10 +38,12 @@ const form = useForm({
         { numero: '', tipo: 'celular' }
     ],
     dependentes: [],
+    forma_pagamento_adesao: '',
+    autoriza_desconto_folha: false,
 });
 
 const addDependente = () => {
-    form.dependentes.push({ nome: '', cpf: '', parentesco: '' });
+    form.dependentes.push({ nome: '', cpf: '', parentesco: '', tipo_dependencia: 'legal', autoriza_acesso: false, email: '' });
 };
 
 const removeDependente = (index) => {
@@ -41,15 +52,34 @@ const removeDependente = (index) => {
 
 const resumoFinanceiro = computed(() => {
     const taxaTitular = 100;
-    const taxaDependente = 80;
+    const taxaUsoSistema = 10;
     const primeiraCota = 10;
-    const qtdDependentes = form.dependentes.length;
-    const totalDependentes = qtdDependentes * taxaDependente;
-    const total = taxaTitular + totalDependentes + primeiraCota;
+
+    let totalDependentesLegais = 0;
+    let totalDependentesNaoLegais = 0;
+    let qtdLegais = 0;
+    let qtdNaoLegais = 0;
+
+    form.dependentes.forEach(dep => {
+        if (dep.tipo_dependencia === 'nao_legal') {
+            totalDependentesNaoLegais += 100;
+            qtdNaoLegais++;
+        } else {
+            totalDependentesLegais += 80;
+            qtdLegais++;
+        }
+    });
+
+    const totalDependentes = totalDependentesLegais + totalDependentesNaoLegais;
+    const total = taxaTitular + taxaUsoSistema + totalDependentes + primeiraCota;
     
     return {
         titular: taxaTitular,
-        qtdDependentes,
+        taxaUsoSistema,
+        qtdLegais,
+        qtdNaoLegais,
+        totalDependentesLegais,
+        totalDependentesNaoLegais,
         totalDependentes,
         cota: primeiraCota,
         total
@@ -241,7 +271,7 @@ function submitForm() {
                                         </div>
                                         <div class="space-y-1">
                                             <InputLabel value="Parentesco" class="!font-black text-[9px] uppercase tracking-widest" />
-                                            <select v-model="dep.parentesco" required class="block w-full !py-2.5 text-sm rounded-lg border-slate-200 bg-white focus:border-primary-dynamic focus:ring focus:ring-primary-dynamic/20">
+                                            <select v-model="dep.parentesco" required class="block w-full !py-2.5 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-200 focus:border-primary-dynamic focus:ring focus:ring-primary-dynamic/20">
                                                 <option value="">Selecione</option>
                                                 <option value="Cônjuge">Cônjuge</option>
                                                 <option value="Filho(a)">Filho(a)</option>
@@ -250,7 +280,62 @@ function submitForm() {
                                             </select>
                                         </div>
                                     </div>
+
+                                    <!-- Tipo de Dependência -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                        <div class="space-y-1">
+                                            <InputLabel value="Tipo de Dependência" class="!font-black text-[9px] uppercase tracking-widest" />
+                                            <select v-model="dep.tipo_dependencia" class="block w-full !py-2.5 text-sm rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-slate-200 focus:border-primary-dynamic focus:ring focus:ring-primary-dynamic/20">
+                                                <option value="legal">Dependente Legal (R$ 80,00)</option>
+                                                <option value="nao_legal">Dependente Não Legal (R$ 100,00)</option>
+                                            </select>
+                                            <p class="text-[10px] text-slate-400 mt-1">Dependentes não legais possuem taxa equivalente à do titular.</p>
+                                        </div>
+
+                                        <!-- Autorizar Acesso ao Portal -->
+                                        <div class="space-y-2">
+                                            <div class="flex items-center gap-3 mt-5">
+                                                <input 
+                                                    type="checkbox" 
+                                                    :id="'acesso_dep_' + index" 
+                                                    v-model="dep.autoriza_acesso" 
+                                                    class="w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-primary-dynamic focus:ring-primary-dynamic/30"
+                                                />
+                                                <label :for="'acesso_dep_' + index" class="text-sm font-bold text-[var(--text-heading)] cursor-pointer">
+                                                    Autorizar acesso ao portal
+                                                </label>
+                                            </div>
+                                            <p class="text-[10px] text-slate-400 pl-8">O dependente receberá login e senha próprios por e-mail.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Email do Dependente (se autorizar acesso) -->
+                                    <div v-if="dep.autoriza_acesso" class="mt-4 transition-all">
+                                        <div class="space-y-1">
+                                            <InputLabel :value="'E-mail do Dependente'" class="!font-black text-[9px] uppercase tracking-widest" />
+                                            <TextInput v-model="dep.email" type="email" class="block w-full !py-2.5 text-sm rounded-lg" placeholder="email.dependente@exemplo.com" required />
+                                            <InputError :message="form.errors['dependentes.' + index + '.email']" />
+                                        </div>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Forma de Pagamento -->
+                        <div class="pt-6 border-t border-[var(--border-color)]/30">
+                            <h3 class="text-xl font-black text-[var(--text-heading)] tracking-tighter mb-4">Forma de Pagamento</h3>
+                            <div class="space-y-2">
+                                <InputLabel for="forma_pagamento" value="Como deseja efetuar o pagamento?" class="!font-black text-[10px] uppercase tracking-widest text-[var(--text-heading)]" />
+                                <select 
+                                    id="forma_pagamento" 
+                                    v-model="form.forma_pagamento_adesao" 
+                                    required
+                                    class="block w-full !py-4 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 dark:text-slate-200 focus:border-primary-dynamic focus:ring focus:ring-primary-dynamic/20 text-sm"
+                                >
+                                    <option value="" disabled>Selecione a forma de pagamento</option>
+                                    <option v-for="fp in formasPagamento" :key="fp.value" :value="fp.value">{{ fp.label }}</option>
+                                </select>
+                                <InputError class="mt-2" :message="form.errors.forma_pagamento_adesao" />
                             </div>
                         </div>
 
@@ -264,9 +349,17 @@ function submitForm() {
                                         <span class="text-[var(--text-muted)] font-medium">Taxa Administrativa (Titular)</span>
                                         <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.titular.toFixed(2).replace('.', ',') }}</span>
                                     </div>
-                                    <div v-if="resumoFinanceiro.qtdDependentes > 0" class="flex justify-between items-center text-sm">
-                                        <span class="text-[var(--text-muted)] font-medium">Taxas de Dependentes ({{ resumoFinanceiro.qtdDependentes }}x)</span>
-                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.totalDependentes.toFixed(2).replace('.', ',') }}</span>
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-[var(--text-muted)] font-medium">Taxa de Uso do Sistema</span>
+                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.taxaUsoSistema.toFixed(2).replace('.', ',') }}</span>
+                                    </div>
+                                    <div v-if="resumoFinanceiro.qtdLegais > 0" class="flex justify-between items-center text-sm">
+                                        <span class="text-[var(--text-muted)] font-medium">Dependentes Legais ({{ resumoFinanceiro.qtdLegais }}x R$ 80,00)</span>
+                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.totalDependentesLegais.toFixed(2).replace('.', ',') }}</span>
+                                    </div>
+                                    <div v-if="resumoFinanceiro.qtdNaoLegais > 0" class="flex justify-between items-center text-sm">
+                                        <span class="text-[var(--text-muted)] font-medium">Dependentes Não Legais ({{ resumoFinanceiro.qtdNaoLegais }}x R$ 100,00)</span>
+                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.totalDependentesNaoLegais.toFixed(2).replace('.', ',') }}</span>
                                     </div>
                                     <div class="flex justify-between items-center text-sm">
                                         <span class="text-[var(--text-muted)] font-medium">Cota Capital (Aporte Inicial)</span>
@@ -277,6 +370,29 @@ function submitForm() {
                                     <span class="text-xs font-black uppercase tracking-widest text-primary-dynamic">Total a Pagar Hoje</span>
                                     <span class="text-2xl font-black text-primary-dynamic">R$ {{ resumoFinanceiro.total.toFixed(2).replace('.', ',') }}</span>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Autorização de Desconto em Folha -->
+                        <div class="pt-6 border-t border-[var(--border-color)]/30">
+                            <div class="bg-amber-500/5 dark:bg-amber-500/10 p-6 rounded-2xl border border-amber-500/20">
+                                <div class="flex items-start gap-4">
+                                    <input 
+                                        type="checkbox" 
+                                        id="autoriza_desconto" 
+                                        v-model="form.autoriza_desconto_folha" 
+                                        class="w-6 h-6 mt-1 rounded border-amber-300 dark:border-amber-600 text-amber-500 focus:ring-amber-500/30 flex-shrink-0"
+                                    />
+                                    <label for="autoriza_desconto" class="cursor-pointer">
+                                        <span class="block text-sm font-black text-[var(--text-heading)]">
+                                            Autorizo o desconto em folha de pagamento
+                                        </span>
+                                        <span class="block text-xs text-[var(--text-muted)] mt-1 leading-relaxed">
+                                            Declaro que autorizo a cooperativa a efetuar os descontos referentes às taxas administrativas, cotas de capital e demais encargos diretamente em minha folha de pagamento. Esta autorização é obrigatória para a conclusão da adesão.
+                                        </span>
+                                    </label>
+                                </div>
+                                <InputError class="mt-3" :message="form.errors.autoriza_desconto_folha" />
                             </div>
                         </div>
 

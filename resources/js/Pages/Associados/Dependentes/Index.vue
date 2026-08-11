@@ -92,23 +92,23 @@ function deleteDependente() {
     <Head title="Dependentes" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Associados', href: '/associados' }, { label: 'Dependentes' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Dependentes da Base
-                        </h1>
-                    </div>
-                    <div>
-                        <PrimaryButton @click="openModal()" class="shadow-xl">
-                            <PlusIcon class="w-4 h-4 mr-2" />
-                            Novo Dependente
-                        </PrimaryButton>
-                    </div>
+        <template #header>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <Breadcrumbs :items="[{ label: 'Associados', href: '/associados' }, { label: 'Dependentes' }]" />
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Familiar / Dependentes</h2>
+                    <p class="text-sm text-[var(--text-muted)] mt-0.5">Gerencie os dependentes e vínculos familiares cadastrados.</p>
                 </div>
+                <div>
+                    <PrimaryButton @click="openModal()" class="shadow-xl">
+                        <PlusIcon class="w-4 h-4 mr-2" />
+                        Novo Dependente
+                    </PrimaryButton>
+                </div>
+            </div>
+        </template>
+
+        <div class="space-y-6 pb-12">
 
                 <div v-if="$page.props.flash?.success" class="mb-8 p-4 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
                     <CheckBadgeIcon class="w-5 h-5" />
@@ -216,7 +216,6 @@ function deleteDependente() {
                          </div>
                     </div>
                 </div>
-            </div>
         </div>
 
         <!-- Create/Edit Modal -->

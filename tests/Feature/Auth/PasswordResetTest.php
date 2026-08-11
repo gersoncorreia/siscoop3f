@@ -2,19 +2,15 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class PasswordResetTest extends TestCase
+class PasswordResetTest extends TenantTestCase
 {
-    use RefreshDatabase;
-
     public function test_reset_password_link_screen_can_be_rendered(): void
     {
-        $response = $this->get('/forgot-password');
+        $response = $this->tenantGet('/forgot-password');
 
         $response->assertStatus(200);
     }
@@ -23,9 +19,9 @@ class PasswordResetTest extends TestCase
     {
         Notification::fake();
 
-        $user = User::factory()->create();
+        $user = $this->createTenantUser();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->tenantPost('/forgot-password', ['email' => $user->email]);
 
         Notification::assertSentTo($user, ResetPassword::class);
     }
@@ -34,12 +30,12 @@ class PasswordResetTest extends TestCase
     {
         Notification::fake();
 
-        $user = User::factory()->create();
+        $user = $this->createTenantUser();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->tenantPost('/forgot-password', ['email' => $user->email]);
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-            $response = $this->get('/reset-password/'.$notification->token);
+            $response = $this->tenantGet('/reset-password/'.$notification->token);
 
             $response->assertStatus(200);
 
@@ -51,12 +47,12 @@ class PasswordResetTest extends TestCase
     {
         Notification::fake();
 
-        $user = User::factory()->create();
+        $user = $this->createTenantUser();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->tenantPost('/forgot-password', ['email' => $user->email]);
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-            $response = $this->post('/reset-password', [
+            $response = $this->tenantPost('/reset-password', [
                 'token' => $notification->token,
                 'email' => $user->email,
                 'password' => 'password',
@@ -65,7 +61,7 @@ class PasswordResetTest extends TestCase
 
             $response
                 ->assertSessionHasNoErrors()
-                ->assertRedirect(route('login'));
+                ->assertRedirect('http://' . $this->tenantDomain . '/login');
 
             return true;
         });

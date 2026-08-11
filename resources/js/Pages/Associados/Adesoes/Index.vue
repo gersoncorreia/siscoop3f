@@ -33,17 +33,13 @@ function formatDate(date) {
     <Head title="Solicitações de Adesão" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Associados', href: '/associados' }, { label: 'Adesões' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Solicitações de Adesão
-                        </h1>
-                    </div>
-                </div>
+        <template #header>
+            <Breadcrumbs :items="[{ label: 'Associados', href: '/associados' }, { label: 'Adesões' }]" />
+            <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Solicitações de Adesão</h2>
+            <p class="text-sm text-[var(--text-muted)] mt-0.5">Analise e aprove as pré-adesões enviadas pelo formulário público.</p>
+        </template>
+
+        <div class="space-y-6 pb-12">
                 
                 <!-- Stats Overview -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -140,7 +136,6 @@ function formatDate(date) {
                          </div>
                     </div>
                 </div>
-            </div>
         </div>
     </AuthenticatedLayout>
 </template>

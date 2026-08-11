@@ -2,21 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Associado;
 use App\Models\Prestador;
 use App\Models\PrestadorServico;
-use App\Models\SolicitacaoServico;
-use Illuminate\Http\Request;
+use App\Http\Requests\Prestador\BuscarCooperadoRequest;
+use App\Http\Requests\Prestador\SolicitarAutorizacaoRequest;
+use App\Http\Requests\Prestador\StoreServicoRequest;
+use App\Http\Requests\Prestador\UpdatePerfilRequest;
+use App\Http\Requests\Prestador\UpdateSenhaRequest;
+use App\Services\PrestadorService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class PrestadorPortalController extends Controller
 {
+    protected PrestadorService $prestadorService;
+
+    public function __construct(PrestadorService $prestadorService)
+    {
+        $this->prestadorService = $prestadorService;
+    }
+
     /**
      * Obter o Prestador vinculado ao usuário logado
      */
     protected function getPrestador(): Prestador
     {
-        $prestador = Prestador::where('user_id', auth()->id())->first();
+        $prestador = $this->prestadorService->getPrestadorByUserId(auth()->id());
 
         if (!$prestador) {
             abort(403, 'Acesso restrito: Nenhum cadastro de Prestador/Parceiro vinculado ao seu usuário.');
@@ -28,15 +42,11 @@ class PrestadorPortalController extends Controller
     /**
      * Dashboard do Prestador / Parceiro
      */
-    public function dashboard()
+    public function dashboard(): Response
     {
         $prestador = $this->getPrestador();
         
-        $solicitacoes = SolicitacaoServico::with(['associado', 'servico'])
-            ->where('prestador_id', $prestador->id)
-            ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get()
+        $solicitacoes = $this->prestadorService->getDashboardSolicitacoes($prestador->id, 10)
             ->map(fn($s) => [
                 'id' => $s->id,
                 'paciente' => $s->associado->nome ?? 'N/A',
@@ -55,81 +65,21 @@ class PrestadorPortalController extends Controller
         ]);
     }
 
-    public function buscarCooperado(Request $request)
+    public function buscarCooperado(BuscarCooperadoRequest $request): JsonResponse
     {
-        $term = $request->query('q');
-
-        if (empty($term) || strlen($term) < 3) {
-            return response()->json([]);
-        }
-
-        $termDigits = preg_replace('/[^0-9]/', '', $term);
-
-        // Como o CPF é criptografado no banco, precisamos filtrar pela Collection
-        $associados = Associado::where('status', 'ativo')->get()
-            ->filter(function($a) use ($term, $termDigits) {
-                // Busca por nome exato ou contendo o termo
-                if (stripos($a->nome, $term) !== false) {
-                    return true;
-                }
-                
-                // Se tiver números, tenta buscar por Matrícula ou CPF
-                if (!empty($termDigits)) {
-                    if ($a->id == (int)$termDigits) {
-                        return true;
-                    }
-                    
-                    // Compara o CPF limpo com o termo digitado
-                    $cpfLimpo = preg_replace('/[^0-9]/', '', $a->cpf);
-                    if (strpos($cpfLimpo, $termDigits) !== false) {
-                        return true;
-                    }
-                }
-                
-                return false;
-            })
-            ->take(10)
-            ->values()
-            ->map(fn($a) => [
-                'id' => $a->id,
-                'nome' => $a->nome,
-                'cpf' => $a->cpf,
-                'matricula' => str_pad((string)$a->id, 4, '0', STR_PAD_LEFT),
-            ]);
-
+        $associados = $this->prestadorService->buscarCooperadosAtivos($request->validated()['q']);
         return response()->json($associados);
     }
 
     /**
      * Fluxo Invertido: Prestador inicia o pedido de autorização
      */
-    public function solicitarAutorizacao(Request $request)
+    public function solicitarAutorizacao(SolicitarAutorizacaoRequest $request): RedirectResponse
     {
         $prestador = $this->getPrestador();
+        $data = $request->validated();
 
-        $validated = $request->validate([
-            'identificacao' => 'required|string', // Pode ser CPF ou Matrícula
-            'servico_id' => 'required|exists:prestador_servicos,id',
-            'observacoes' => 'nullable|string|max:1000',
-        ]);
-
-        // 1. Buscar o Cooperado (Por CPF ou ID/Matrícula)
-        $identificacaoOriginal = $validated['identificacao'];
-        $identificacaoDigits = preg_replace('/[^0-9]/', '', $identificacaoOriginal);
-        
-        // Como o CPF é criptografado, buscamos na collection
-        $associado = Associado::all()->first(function($a) use ($identificacaoOriginal, $identificacaoDigits) {
-            if ($a->cpf === $identificacaoOriginal) return true;
-            
-            if (!empty($identificacaoDigits)) {
-                if ($a->id == (int)$identificacaoDigits) return true;
-                
-                $cpfLimpo = preg_replace('/[^0-9]/', '', $a->cpf);
-                if ($cpfLimpo === $identificacaoDigits) return true;
-            }
-            
-            return false;
-        });
+        $associado = $this->prestadorService->findAssociadoByIdentificacao($data['identificacao']);
 
         if (!$associado) {
             return back()->with('error', 'cooperado_nao_encontrado');
@@ -139,28 +89,34 @@ class PrestadorPortalController extends Controller
             return back()->with('error', 'cooperado_inativo');
         }
 
-        // 2. Validação Financeira (A trava de inadimplência)
-        $cotaPendente = $associado->lancamentosFinanceiros()
-            ->where('categoria', 'cota_capital')
-            ->where('status', 'pendente')
-            ->exists();
-
-        if ($cotaPendente) {
-            // Retorna o erro flash para a tela do parceiro
+        if ($this->prestadorService->isAssociadoInadimplente($associado)) {
             return back()->with('error', 'inadimplente');
         }
 
-        // 3. Tudo OK, gera a solicitação
-        $servico = PrestadorServico::findOrFail($validated['servico_id']);
+        $servico = PrestadorServico::findOrFail($data['servico_id']);
 
-        SolicitacaoServico::create([
-            'associado_id' => $associado->id,
-            'prestador_id' => $prestador->id,
-            'servico_id' => $servico->id,
-            'valor_cobrado' => $servico->valor_acordado, // Puxa o valor do catálogo
-            'observacoes' => $validated['observacoes'] ?? null,
-            'status' => 'pendente_autorizacao', // Aguardando aprovação gerencial (Hélio)
-        ]);
+        $solicitacao = $this->prestadorService->criarSolicitacao($associado, $prestador, $servico, $data['observacoes'] ?? null);
+
+        // Notificar o Prestador
+        $prestadorUser = auth()->user();
+        if ($prestadorUser) {
+            $prestadorUser->notify(new \App\Notifications\AppDatabaseNotification(
+                'Solicitação Enviada',
+                "Pedido de autorização para {$associado->nome} ({$servico->nome}) enviado com sucesso.",
+                route('prestador.dashboard'),
+                'ClipboardDocumentListIcon'
+            ));
+        }
+
+        // Notificar o Paciente / Associado se possuir usuário
+        if ($associado->user) {
+            $associado->user->notify(new \App\Notifications\AppDatabaseNotification(
+                'Solicitação de Atendimento',
+                "{$prestador->nome} registrou solicitação de {$servico->nome} para seu perfil.",
+                route('cooperado.minhas-solicitacoes'),
+                'CheckBadgeIcon'
+            ));
+        }
 
         return back()->with('success', 'Pedido de autorização enviado com sucesso. Aguarde a liberação da cooperativa.');
     }
@@ -168,7 +124,7 @@ class PrestadorPortalController extends Controller
     /**
      * Tela de Catálogo de Serviços/Produtos
      */
-    public function servicos()
+    public function servicos(): Response
     {
         $prestador = $this->getPrestador();
         $servicos = $prestador->servicos;
@@ -179,18 +135,10 @@ class PrestadorPortalController extends Controller
         ]);
     }
 
-    public function storeServico(Request $request)
+    public function storeServico(StoreServicoRequest $request): RedirectResponse
     {
         $prestador = $this->getPrestador();
-
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'descricao' => 'nullable|string',
-            'valor_acordado' => 'nullable|numeric|min:0',
-            'ativo' => 'boolean',
-        ]);
-
-        $prestador->servicos()->create($validated);
+        $this->prestadorService->criarServico($prestador, $request->validated());
 
         return back()->with('success', 'Item adicionado ao catálogo com sucesso!');
     }
@@ -198,19 +146,10 @@ class PrestadorPortalController extends Controller
     /**
      * Atualizar um serviço/produto do catálogo
      */
-    public function updateServico(Request $request, $id)
+    public function updateServico(StoreServicoRequest $request, $id): RedirectResponse
     {
         $prestador = $this->getPrestador();
-        $servico = $prestador->servicos()->findOrFail($id);
-
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'descricao' => 'nullable|string',
-            'valor_acordado' => 'nullable|numeric|min:0',
-            'ativo' => 'boolean',
-        ]);
-
-        $servico->update($validated);
+        $this->prestadorService->atualizarServico($prestador, $id, $request->validated());
 
         return back()->with('success', 'Item atualizado com sucesso!');
     }
@@ -218,12 +157,10 @@ class PrestadorPortalController extends Controller
     /**
      * Excluir um serviço/produto do catálogo
      */
-    public function deleteServico($id)
+    public function deleteServico($id): RedirectResponse
     {
         $prestador = $this->getPrestador();
-        $servico = $prestador->servicos()->findOrFail($id);
-
-        $servico->delete();
+        $this->prestadorService->excluirServico($prestador, $id);
 
         return back()->with('success', 'Item removido do catálogo.');
     }
@@ -231,10 +168,9 @@ class PrestadorPortalController extends Controller
     /**
      * Tela de Faturamento (Regra do dia 05)
      */
-    public function faturas()
+    public function faturas(): Response
     {
         $prestador = $this->getPrestador();
-        
         $faturas = $prestador->faturas()->orderBy('created_at', 'desc')->get();
 
         return Inertia::render('Prestador/Faturas', [
@@ -246,7 +182,7 @@ class PrestadorPortalController extends Controller
     /**
      * Perfil do Prestador
      */
-    public function perfil()
+    public function perfil(): Response
     {
         $prestador = $this->getPrestador();
         $user = auth()->user();
@@ -269,31 +205,13 @@ class PrestadorPortalController extends Controller
     /**
      * Atualizar dados do perfil (prestador + user)
      */
-    public function updatePerfil(Request $request)
+    public function updatePerfil(UpdatePerfilRequest $request): RedirectResponse
     {
         $prestador = $this->getPrestador();
         $user = auth()->user();
+        $data = $request->validated();
 
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'tipo' => 'required|string',
-            'especialidades' => 'nullable|array',
-            'endereco' => 'nullable|string|max:1000',
-            'user_name' => 'required|string|max:255',
-            'user_email' => 'required|email|max:255',
-        ]);
-
-        $prestador->update([
-            'nome' => $validated['nome'],
-            'tipo' => $validated['tipo'],
-            'especialidades' => $validated['especialidades'],
-            'endereco' => $validated['endereco'],
-        ]);
-
-        $user->update([
-            'name' => $validated['user_name'],
-            'email' => $validated['user_email'],
-        ]);
+        $this->prestadorService->atualizarPerfil($prestador, $user, $data);
 
         return back()->with('success', 'Perfil atualizado com sucesso!');
     }
@@ -301,22 +219,16 @@ class PrestadorPortalController extends Controller
     /**
      * Alterar senha de acesso
      */
-    public function updateSenha(Request $request)
+    public function updateSenha(UpdateSenhaRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'current_password' => 'required|string',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-
+        $data = $request->validated();
         $user = auth()->user();
 
-        if (!\Illuminate\Support\Facades\Hash::check($validated['current_password'], $user->password)) {
+        if (!Hash::check($data['current_password'], $user->password)) {
             return back()->withErrors(['current_password' => 'A senha atual está incorreta.']);
         }
 
-        $user->update([
-            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
-        ]);
+        $this->prestadorService->alterarSenha($user, $data['password']);
 
         return back()->with('success', 'Senha alterada com sucesso!');
     }

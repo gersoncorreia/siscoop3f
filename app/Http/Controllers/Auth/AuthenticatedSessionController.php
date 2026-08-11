@@ -20,10 +20,17 @@ class AuthenticatedSessionController extends Controller
     {
         $view = tenant() ? 'Auth/TenantLogin' : 'Auth/AdminLogin';
 
+        $t = tenant();
+
         return Inertia::render($view, [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
-            'tenant' => tenant() ? tenant()->only(['id', 'name']) : null,
+            'tenant' => $t ? [
+                'id' => $t->id,
+                'name' => $t->name ?? $t->nome ?? $t->id,
+                'primary_color' => $t->primary_color ?? '#2563eb',
+                'logo_url' => $t->logo_path ? asset('storage/' . $t->logo_path) : null,
+            ] : null,
         ]);
     }
 

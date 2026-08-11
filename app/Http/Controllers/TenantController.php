@@ -4,27 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\Tenant;
 use App\Services\TenantService;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreTenantRequest;
+use App\Http\Requests\UpdateTenantRequest;
 use Illuminate\Support\Facades\Redirect;
 
 class TenantController extends Controller
 {
-    public function store(Request $request, TenantService $tenantService)
-    {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'ramo' => 'nullable|string',
-            'admin_nome' => 'required|string|max:255',
-            'admin_email' => 'required|email|max:255',
-        ]);
+    protected TenantService $tenantService;
 
-        $result = $tenantService->createTenant($validated);
+    public function __construct(TenantService $tenantService)
+    {
+        $this->tenantService = $tenantService;
+    }
+
+    public function store(StoreTenantRequest $request)
+    {
+        $validated = $request->validated();
+
+        $result = $this->tenantService->createTenant($validated);
 
         $tenant = $result['tenant'];
         $tempPassword = $result['temp_password'];
         $domain = $tenant->domains()->first()?->domain ?? 'N/A';
+        $tipoLabel = $tenant->tipo === 'fundacao' ? 'Fundação' : 'Cooperativa';
 
-        $message = "Cooperativa '{$tenant->nome}' criada com sucesso!"
+        $message = "{$tipoLabel} '{$tenant->nome}' criada com sucesso!"
             . "\n\n📌 Credenciais de Acesso Inicial:"
             . "\n🌐 Domínio: {$domain}"
             . "\n👤 Email: {$validated['admin_email']}"
@@ -34,53 +38,37 @@ class TenantController extends Controller
         return Redirect::route('master-admin.dashboard')->with('success', $message);
     }
 
-    public function update(Request $request, Tenant $tenant)
+    public function update(UpdateTenantRequest $request, Tenant $tenant)
     {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'ramo' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
-        $tenant->update($validated);
+        $this->tenantService->updateTenant($tenant, $validated);
 
-        return Redirect::route('master-admin.dashboard')->with('success', 'Cooperativa atualizada com sucesso!');
+        $tipoLabel = $tenant->tipo === 'fundacao' ? 'Fundação' : 'Cooperativa';
+        return Redirect::route('master-admin.dashboard')->with('success', "{$tipoLabel} atualizada com sucesso!");
     }
 
     public function destroy(Tenant $tenant)
     {
-        $tenant->delete(); // Soft delete triggering de-activation
-        return Redirect::route('master-admin.dashboard')->with('success', 'Cooperativa desativada com sucesso!');
+        $this->tenantService->deleteTenant($tenant);
+        $tipoLabel = $tenant->tipo === 'fundacao' ? 'Fundação' : 'Cooperativa';
+        return Redirect::route('master-admin.dashboard')->with('success', "{$tipoLabel} desativada com sucesso!");
     }
 
     public function restore($id)
     {
-        $tenant = Tenant::withTrashed()->findOrFail($id);
-        $tenant->restore();
-
-        return Redirect::route('master-admin.dashboard')->with('success', 'Cooperativa reativada com sucesso!');
+        $tenant = $this->tenantService->restoreTenant($id);
+        $tipoLabel = $tenant->tipo === 'fundacao' ? 'Fundação' : 'Cooperativa';
+        return Redirect::route('master-admin.dashboard')->with('success', "{$tipoLabel} reativada com sucesso!");
     }
 
     public function forceDelete($id)
     {
         $tenant = Tenant::withTrashed()->findOrFail($id);
-        
-        try {
-            $tenant->forceDelete(); // Hard delete triggering database deletion
-        } catch (\Illuminate\Database\QueryException $e) {
-            // Ignorar erro 1008 (Database doesn't exist), util durante falhas de criação ou Testes TDD
-            if (strpos($e->getMessage(), 'database doesn\'t exist') === false && $e->getCode() != 'HY000') {
-                throw $e;
-            }
-            // If it can't drop database but threw, the record might not be deleted.
-            // We manually delete the record without the Events if needed, 
-            // but usually it throws after deleting or from the Observer. 
-            // Stancl observer runs on 'deleting'. If it failed, we forcefully remove it from DB:
-            \Illuminate\Support\Facades\DB::table('tenants')->where('id', $id)->delete();
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\DB::table('tenants')->where('id', $id)->delete();
-        }
+        $tipoLabel = $tenant->tipo === 'fundacao' ? 'Fundação' : 'Cooperativa';
+        $this->tenantService->forceDeleteTenant($id);
 
-        return Redirect::route('master-admin.dashboard')->with('success', 'Cooperativa excluída definitivamente!');
+        return Redirect::route('master-admin.dashboard')->with('success', "{$tipoLabel} excluída definitivamente!");
     }
 
     public function export($id)

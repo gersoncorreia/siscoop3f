@@ -12,6 +12,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^4.2",
+        "maatwebsite/excel": "*",
         "spatie/laravel-activitylog": "*",
         "spatie/laravel-permission": "*",
         "stancl/tenancy": "*",

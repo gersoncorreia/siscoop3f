@@ -31,26 +31,25 @@ function deleteUser(id) {
     <Head title="Gestão de Usuários" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Configurações', href: route('configuracoes.index') }, { label: 'Usuários' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Gestão de Acessos
-                        </h1>
-                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Gerencie os funcionários e permissões da cooperativa</p>
-                    </div>
-                    <div>
-                        <Link :href="route('configuracoes.usuarios.create')">
-                            <PrimaryButton class="shadow-xl">
-                                <PlusIcon class="w-4 h-4 mr-2" />
-                                Cadastrar Usuário
-                            </PrimaryButton>
-                        </Link>
-                    </div>
+        <template #header>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <Breadcrumbs :items="[{ label: 'Ajustes', href: route('configuracoes.index') }, { label: 'Usuários' }]" />
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Gestão de Acessos</h2>
+                    <p class="text-sm text-[var(--text-muted)] mt-0.5">Gerencie a equipe administrativa e suas permissões de acesso.</p>
                 </div>
+                <div>
+                    <Link :href="route('configuracoes.usuarios.create')">
+                        <PrimaryButton class="shadow-xl">
+                            <PlusIcon class="w-4 h-4 mr-2" />
+                            Cadastrar Usuário
+                        </PrimaryButton>
+                    </Link>
+                </div>
+            </div>
+        </template>
+
+        <div class="space-y-6 pb-12">
 
                 <div class="zynix-table-wrapper">
                     <!-- Filters -->
@@ -147,7 +146,6 @@ function deleteUser(id) {
                         </table>
                     </div>
                 </div>
-            </div>
         </div>
     </AuthenticatedLayout>
 </template>

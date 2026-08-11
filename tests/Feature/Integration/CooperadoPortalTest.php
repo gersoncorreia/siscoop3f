@@ -81,7 +81,7 @@ class CooperadoPortalTest extends TenantTestCase
             $page->component('Cooperado/Dashboard')
                 ->has('associado')
                 ->has('stats')
-                ->where('stats.saldoCotaCapital', 200.00)
+                ->where('stats.saldoCotaCapital', 200)
                 ->where('stats.mensalidadesPendentes', 1)
                 ->where('stats.totalDependentes', 1)
         );
@@ -103,7 +103,7 @@ class CooperadoPortalTest extends TenantTestCase
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) =>
             $page->component('Cooperado/Cotas')
-                ->where('saldoTotal', 200.00)
+                ->where('saldoTotal', 200)
                 ->has('cotas', 1)
         );
     }
@@ -114,15 +114,18 @@ class CooperadoPortalTest extends TenantTestCase
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) =>
             $page->component('Cooperado/Reembolsos')
-                ->has('reembolsos', 0)
+                ->has('reembolsos.data', 0)
         );
     }
 
     public function test_cooperado_can_submit_reembolso(): void
     {
+        $file = \Illuminate\Http\UploadedFile::fake()->create('comprovante.pdf', 100);
+
         $response = $this->tenantPost('/cooperado/reembolsos', [
             'valor_solicitado' => 75.50,
             'descricao' => 'Consulta médica',
+            'arquivo' => $file,
         ], $this->cooperadoUser);
 
         $response->assertRedirect();

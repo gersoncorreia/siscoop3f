@@ -30,22 +30,17 @@ function conciliar(id) {
     <Head title="Conciliação Financeira" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Financeiro', href: '/financeiro' }, { label: 'Conciliação' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Conciliação Bancária
-                        </h1>
-                    </div>
-                </div>
+        <template #header>
+            <Breadcrumbs :items="[{ label: 'Financeiro', href: '/financeiro' }, { label: 'Conciliação' }]" />
+            <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Conciliação Bancária</h2>
+            <p class="text-sm text-[var(--text-muted)] mt-0.5">Conforme e valide os extratos bancários com os lançamentos da unidade.</p>
+        </template>
 
-                <div v-if="$page.props.flash?.success" class="mb-8 p-4 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
-                    <CheckBadgeIcon class="w-5 h-5" />
-                    {{ $page.props.flash.success }}
-                </div>
+        <div class="space-y-6 pb-12">
+            <div v-if="$page.props.flash?.success" class="p-4 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl font-bold flex items-center gap-3">
+                <CheckBadgeIcon class="w-5 h-5" />
+                {{ $page.props.flash.success }}
+            </div>
 
                 <div class="zynix-card overflow-hidden !p-0">
                     <div class="p-6 border-b border-[var(--border-color)]">
@@ -127,7 +122,6 @@ function conciliar(id) {
                         </table>
                     </div>
                 </div>
-            </div>
         </div>
     </AuthenticatedLayout>
 </template>

@@ -2,39 +2,37 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class AuthenticationTest extends TestCase
+class AuthenticationTest extends TenantTestCase
 {
-    use RefreshDatabase;
-
     public function test_login_screen_can_be_rendered(): void
     {
-        $response = $this->get('/login');
+        $response = $this->tenantGet('/login');
 
         $response->assertStatus(200);
     }
 
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createTenantUser([
+            'has_temporary_password' => false,
+        ]);
 
-        $response = $this->post('/login', [
+        $response = $this->tenantPost('/login', [
             'email' => $user->email,
             'password' => 'password',
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect('http://' . $this->tenantDomain . '/dashboard');
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createTenantUser();
 
-        $this->post('/login', [
+        $this->tenantPost('/login', [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
@@ -44,11 +42,13 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_logout(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createTenantUser([
+            'has_temporary_password' => false,
+        ]);
 
-        $response = $this->actingAs($user)->post('/logout');
+        $response = $this->tenantPost('/logout', [], $user);
 
         $this->assertGuest();
-        $response->assertRedirect('/');
+        $response->assertRedirect('http://' . $this->tenantDomain);
     }
 }

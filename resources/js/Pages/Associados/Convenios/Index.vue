@@ -95,23 +95,23 @@ function deleteConvenio() {
     <Head title="Convênios e Parcerias" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Associados', href: '/associados' }, { label: 'Convênios' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Convênios e Parcerias
-                        </h1>
-                    </div>
-                    <div>
-                        <PrimaryButton @click="openModal()" class="shadow-xl">
-                            <PlusIcon class="w-4 h-4 mr-2" />
-                            Novo Convênio
-                        </PrimaryButton>
-                    </div>
+        <template #header>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <Breadcrumbs :items="[{ label: 'Associados', href: '/associados' }, { label: 'Convênios' }]" />
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Convênios e Parcerias</h2>
+                    <p class="text-sm text-[var(--text-muted)] mt-0.5">Gerencie os estabelecimentos parceiros e descontos para associados/clientes.</p>
                 </div>
+                <div>
+                    <PrimaryButton @click="openModal()" class="shadow-xl">
+                        <PlusIcon class="w-4 h-4 mr-2" />
+                        Novo Convênio
+                    </PrimaryButton>
+                </div>
+            </div>
+        </template>
+
+        <div class="space-y-6 pb-12">
                 
                 <div v-if="$page.props.flash?.success" class="mb-8 p-4 bg-emerald-500/10 text-emerald-500 rounded-xl border border-emerald-500/20 flex items-center">
                     <CheckCircleIcon class="w-5 h-5 mr-2" />
@@ -286,7 +286,6 @@ function deleteConvenio() {
                         </div>
                     </div>
                 </Modal>
-            </div>
         </div>
     </AuthenticatedLayout>
 </template>

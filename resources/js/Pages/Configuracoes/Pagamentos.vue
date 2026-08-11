@@ -119,23 +119,20 @@ const maskKey = (key) => {
     <Head title="Gateways de Pagamento" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="mb-8 flex items-center justify-between">
-                    <div>
-                        <Breadcrumbs />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Ajustes de Pagamentos
-                        </h1>
-                    </div>
-                </div>
+        <template #header>
+            <div>
+                <Breadcrumbs />
+                <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Ajustes de Pagamentos</h2>
+                <p class="text-sm text-[var(--text-muted)] mt-0.5">Configure os gateways de pagamento e integrações bancárias.</p>
+            </div>
+        </template>
 
-                <!-- Flash -->
-                <div v-if="$page.props.flash?.success" class="mb-6 p-4 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl font-bold flex items-center gap-3">
-                    <CheckBadgeIcon class="w-5 h-5" />
-                    {{ $page.props.flash.success }}
-                </div>
+        <div class="space-y-6 pb-12">
+            <!-- Flash -->
+            <div v-if="$page.props.flash?.success" class="p-4 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl font-bold flex items-center gap-3">
+                <CheckBadgeIcon class="w-5 h-5" />
+                {{ $page.props.flash.success }}
+            </div>
 
                 <!-- Grid de Gateways -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -196,7 +193,6 @@ const maskKey = (key) => {
                     </div>
                 </div>
             </div>
-        </div>
 
         <!-- Modal: Cobrança Interna -->
         <Modal :show="activeModal === 'interno'" @close="closeModal" max-width="md">

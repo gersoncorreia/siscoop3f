@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\CooperativeService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,13 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
+    protected CooperativeService $cooperativeService;
+
+    public function __construct(CooperativeService $cooperativeService)
+    {
+        $this->cooperativeService = $cooperativeService;
+    }
+
     /**
      * Display the user's profile form.
      */
@@ -29,13 +37,7 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
+        $this->cooperativeService->atualizarPerfilUsuario($request->user(), $request->validated());
 
         return Redirect::route('profile.edit');
     }

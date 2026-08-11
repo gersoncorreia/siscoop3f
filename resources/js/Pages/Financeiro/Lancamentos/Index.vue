@@ -49,23 +49,23 @@ const deleteLancamento = (id) => {
     <Head title="Fluxo de Caixa" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Financeiro', href: '/financeiro' }, { label: 'Lançamentos' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Fluxo de Caixa
-                        </h1>
-                    </div>
-                    <div>
-                        <PrimaryButton @click="showModal = true" class="shadow-xl !px-8 !py-3">
-                            <PlusIcon class="w-4 h-4 mr-2" />
-                            Novo Lançamento
-                        </PrimaryButton>
-                    </div>
+        <template #header>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <Breadcrumbs :items="[{ label: 'Financeiro', href: '/financeiro' }, { label: 'Lançamentos' }]" />
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Extrato de Lançamentos</h2>
+                    <p class="text-sm text-[var(--text-muted)] mt-0.5">Gerencie as entradas, saídas e lançamentos financeiros.</p>
                 </div>
+                <div>
+                    <PrimaryButton @click="showModal = true" class="shadow-xl !px-8 !py-3">
+                        <PlusIcon class="w-4 h-4 mr-2" />
+                        Novo Lançamento
+                    </PrimaryButton>
+                </div>
+            </div>
+        </template>
+
+        <div class="space-y-6 pb-12">
                 <!-- Transactions Table -->
                 <div class="zynix-table-wrapper">
                     <div class="zynix-list-header flex items-center justify-between">
@@ -148,7 +148,6 @@ const deleteLancamento = (id) => {
                         </table>
                     </div>
                 </div>
-            </div>
         </div>
 
         <!-- Add Modal -->

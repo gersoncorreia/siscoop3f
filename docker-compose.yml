@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: siscoop_app
+    restart: unless-stopped
+    working_dir: /var/www
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-siscoop3f}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-SuaSenhaSuperSeguraPostgres2026!}
+    volumes:
+      - .:/var/www
+    networks:
+      - siscoop_net
+    depends_on:
+      - db
+
+  web:
+    image: nginx:alpine
+    container_name: siscoop_web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/certbot/conf:/etc/letsencrypt
+      - ./docker/certbot/www:/var/www/certbot
+    networks:
+      - siscoop_net
+    depends_on:
+      - app
+
+  db:
+    image: postgres:16-alpine
+    container_name: siscoop_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-siscoop3f}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-SuaSenhaSuperSeguraPostgres2026!}
+    volumes:
+      - siscoop_pgdata:/var/lib/postgresql/data
+    networks:
+      - siscoop_net
+
+networks:
+  siscoop_net:
+    driver: bridge
+
+volumes:
+  siscoop_pgdata:

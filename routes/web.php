@@ -5,43 +5,50 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-    'canLogin' => false, // Hide on central domain
-    'canRegister' => false, // Hide on central domain
-    'laravelVersion' => Application::VERSION,
-    'phpVersion' => PHP_VERSION,
-    ]);
-});
+foreach (config('tenancy.central_domains', []) as $domain) {
+    Route::domain($domain)->group(function () {
+        Route::get('/', function () {
+            return Inertia::render('Welcome', [
+                'canLogin' => false, // Hide on central domain
+                'canRegister' => false, // Hide on central domain
+                'laravelVersion' => Application::VERSION,
+                'phpVersion' => PHP_VERSION,
+            ]);
+        });
+    });
+}
 
 Route::middleware('auth')->group(function () {
-    Route::get('/master-admin/lgpd', [\App\Http\Controllers\LgpdController::class , 'show'])->name('master-admin.lgpd.show');
-    Route::post('/master-admin/lgpd', [\App\Http\Controllers\LgpdController::class , 'accept'])->name('master-admin.lgpd.accept');
+    Route::get('/master-admin/lgpd', [\App\Http\Controllers\Public\LgpdController::class , 'show'])->name('master-admin.lgpd.show');
+    Route::post('/master-admin/lgpd', [\App\Http\Controllers\Public\LgpdController::class , 'accept'])->name('master-admin.lgpd.accept');
 });
 
-Route::middleware(['auth', \App\Http\Middleware\LgpdMiddleware::class])->group(function () {
+Route::middleware(['auth', \App\Http\Middleware\LgpdMiddleware::class, 'super_admin'])->group(function () {
     Route::resource('tenants', \App\Http\Controllers\TenantController::class)->only(['store', 'update', 'destroy']);
     Route::post('tenants/{tenant}/restore', [\App\Http\Controllers\TenantController::class, 'restore'])->name('tenants.restore');
     Route::delete('tenants/{tenant}/force-delete', [\App\Http\Controllers\TenantController::class, 'forceDelete'])->name('tenants.forceDelete');
     Route::get('tenants/{tenant}/export', [\App\Http\Controllers\TenantController::class, 'export'])->name('tenants.export');
 
+    Route::get('/master-admin/contratos', [\App\Http\Controllers\ContratoCentralController::class, 'index'])->name('master-admin.contratos.index');
+    Route::post('/master-admin/contratos', [\App\Http\Controllers\ContratoCentralController::class, 'store'])->name('master-admin.contratos.store');
+    Route::put('/master-admin/contratos/{id}', [\App\Http\Controllers\ContratoCentralController::class, 'update'])->name('master-admin.contratos.update');
+    Route::delete('/master-admin/contratos/{id}', [\App\Http\Controllers\ContratoCentralController::class, 'destroy'])->name('master-admin.contratos.destroy');
+
     Route::get('/master-admin/dashboard', function () {
-            // Need to get soft deleted tenants as well to display them
-            $tenants = \App\Models\Tenant::withTrashed()->with('domains')->get();
-            return Inertia::render('Dashboard', [
+        // Need to get soft deleted tenants as well to display them
+        $tenants = \App\Models\Tenant::withTrashed()->with('domains')->get();
+        return Inertia::render('Dashboard', [
             'tenants' => $tenants,
             'isCentral' => true,
             'superAdminKpis' => [
-            'totalCooperativas' => $tenants->count(),
-            'novasEsteMes' => $tenants->filter(function ($t) {
+                'totalEntidades' => $tenants->count(),
+                'novasEsteMes' => $tenants->filter(function ($t) {
                     return $t->created_at >= now()->startOfMonth();
-                }
-                )->count(),
+                })->count(),
                 'totalDominios' => \Illuminate\Support\Facades\DB::table('domains')->count(),
-                ]
-                ]);
-            }
-            )->name('master-admin.dashboard');
+            ]
+        ]);
+    })->name('master-admin.dashboard');
 
             // Master Admin Profile
             Route::get('/master-admin/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -58,6 +65,6 @@ Route::group(['prefix' => 'master-admin', 'as' => 'master-admin.'], function () 
 });
 
 // Internal Dev Logs
-Route::get('/internal/zynix-logs-{secret}', [\App\Http\Controllers\InternalLogController::class, 'index'])
+Route::get('/internal/zynix-logs-{secret}', [\App\Http\Controllers\Admin\InternalLogController::class, 'index'])
     ->middleware(\App\Http\Middleware\DevAccessMiddleware::class)
     ->name('internal.logs');
