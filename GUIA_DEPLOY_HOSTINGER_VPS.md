@@ -5,11 +5,17 @@ Este guia prático e detalhado contém o passo a passo completo para configurar,
 ---
 
 ## 📋 Pré-requisitos
-1. Servidor **VPS Hostinger** ativo (recomendado Ubuntu 22.04 / 24.04 LTS).
-2. Endereço **IP Público** do servidor VPS.
-3. Domínio configurado na Hostinger / Registro.br apontando os registros tipo **A** para o IP da VPS:
-   - `seu-dominio.com.br` -> `IP_DA_VPS`
-   - `*.seu-dominio.com.br` -> `IP_DA_VPS` (Apontamento Wildcard para os Tenants)
+1. Servidor **VPS Hostinger** ativo (IP: `72.60.248.191`).
+2. Domínio **`siscoop3f.com.br`** registrado no Registro.br com DNS delegado na Hostgator.
+3. Configuração dos Registros **Tipo A** no cPanel Hostgator (Zone Editor):
+
+| Nome do Registro (Name) | Tipo (Type) | Destino (Record / IP) | Função |
+| :--- | :---: | :--- | :--- |
+| `siscoop3f.com.br.` | **A** | `72.60.248.191` | Domínio Principal (Master Admin / Landing Page) |
+| `www.siscoop3f.com.br.` | **A** | `72.60.248.191` | Subdomínio WWW |
+| `*.siscoop3f.com.br.` | **A** | `72.60.248.191` | Wildcard para todos os Tenants (`santacasa`, `stfsaude`, etc.) |
+
+> ⚠️ **Importante (Serviço de E-mail Titan/Hostgator)**: Os registros de e-mail (MX `mx1.titan.email`, TXT SPF e DKIM `titan1._domainkey`) **NÃO DEVEM SER ALTERADOS**, garantindo que seus e-mails continuem funcionando perfeitamente!
 
 ---
 
