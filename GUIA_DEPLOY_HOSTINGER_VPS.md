@@ -307,22 +307,20 @@ server {
 
 ## 🔒 PASSO 7: Configurar SSL Gratuito (Let's Encrypt Wildcard HTTPS)
 
-Para permitir suporte seguro HTTPS tanto para o domínio principal quanto para todos os tenants em subdomínios (`*.seu-dominio.com.br`):
+O Let's Encrypt exige validação por **registro DNS TXT** para emitir certificados **Wildcard (`*.siscoop3f.com.br`)**:
 
-1. Instale o Certbot na máquina Host:
+1. Instale o Certbot na VPS:
    ```bash
-   apt install -y certbot python3-certbot-nginx
+   apt install -y certbot
    ```
 
-2. Emita o certificado com validação Nginx:
+2. Execute o comando de emissão por desafio DNS:
    ```bash
-   certbot --nginx -d seu-dominio.com.br -d "*.seu-dominio.com.br" --agree-tos -m seu-email@exemplo.com
+   certbot certonly --manual --preferred-challenges dns -d siscoop3f.com.br -d "*.siscoop3f.com.br" --agree-tos -m gersoncorreia12@gmail.com
    ```
 
-3. Teste a renovação automática:
-   ```bash
-   certbot renew --dry-run
-   ```
+3. O Certbot exibirá na tela um **Nome de Registro TXT** (ex: `_acme-challenge.siscoop3f.com.br`) e um **Valor/Conteúdo TXT** (ex: `m16ufsAclp22q_Gro...`).
+4. Acesse o **cPanel Hostgator > Zone Editor**, adicione esse registro do tipo **TXT** e pressione **Enter** no terminal da VPS para validar e gerar os arquivos do certificado!
 
 ---
 
