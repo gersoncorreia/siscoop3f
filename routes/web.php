@@ -51,9 +51,9 @@ Route::middleware(['auth', \App\Http\Middleware\LgpdMiddleware::class, 'super_ad
     })->name('master-admin.dashboard');
 
             // Master Admin Profile
-            Route::get('/master-admin/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-            Route::patch('/master-admin/profile', [ProfileController::class, 'update'])->name('profile.update');
-            Route::delete('/master-admin/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+            Route::get('/master-admin/profile', [ProfileController::class, 'edit'])->name('master-admin.profile.edit');
+            Route::patch('/master-admin/profile', [ProfileController::class, 'update'])->name('master-admin.profile.update');
+            Route::delete('/master-admin/profile', [ProfileController::class, 'destroy'])->name('master-admin.profile.destroy');
         });
 
 // Profile routes for central domain only (master admin)
