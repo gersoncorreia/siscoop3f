@@ -16,30 +16,6 @@ Route::middleware([
 ])->group(function () {
     Route::get('/', [\App\Http\Controllers\Public\LandingPageController::class, 'index'])->name('landing');
 
-        Route::get('/debug-session', function () {
-            $count = session('count', 0);
-            session(['count' => $count + 1]);
-            return response()->json(['count' => $count, 'tenant' => tenant('id')]);
-        });
-
-        Route::get('/debug-login', function() {
-            $user = \App\Models\User::where('email', 'admin@stfsaude.com.br')->first();
-            \Illuminate\Support\Facades\Auth::login($user);
-            return response()->json([
-                'auth_check' => \Illuminate\Support\Facades\Auth::check(),
-                'user' => \Illuminate\Support\Facades\Auth::user()->email,
-                'session_id' => session()->getId(),
-            ]);
-        });
-        
-        Route::get('/debug-check', function() {
-            return response()->json([
-                'auth_check' => \Illuminate\Support\Facades\Auth::check(),
-                'user' => \Illuminate\Support\Facades\Auth::user()?->email,
-                'session_id' => session()->getId(),
-            ]);
-        });
-
         // Rotas Públicas de Adesão
         Route::get('/adesao', [\App\Http\Controllers\Public\AdesaoController::class , 'create'])->name('adesao.create');
         Route::post('/adesao', [\App\Http\Controllers\Public\AdesaoController::class , 'store'])->name('adesao.store');
