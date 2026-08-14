@@ -81,7 +81,7 @@ class AdesaoService
                 ->log('Nova solicitação de adesão digital recebida');
 
             // 7. Notify the admins
-            $admins = \App\Models\User::role(['Administrador Cooperativa', 'Presidente', 'Gerente'])->get();
+            $admins = \App\Models\User::role(['Administrador Cooperativa', 'Administrador Fundação', 'Presidente', 'Gerente'])->get();
             if ($admins->count() > 0) {
                 \Illuminate\Support\Facades\Notification::send(
                     $admins, 
@@ -92,6 +92,14 @@ class AdesaoService
                         'UserPlusIcon'
                     )
                 );
+            }
+
+            // 8. Notify the client via E-mail
+            try {
+                \Illuminate\Support\Facades\Notification::route('mail', $associado->email)
+                    ->notify(new \App\Notifications\AdesaoRecebidaNotification($associado->nome));
+            } catch (\Exception $e) {
+                Log::error("Erro ao enviar e-mail de adesão recebida para {$associado->email}: " . $e->getMessage());
             }
 
             return $associado;
