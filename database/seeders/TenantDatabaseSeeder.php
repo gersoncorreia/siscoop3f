@@ -23,10 +23,8 @@ class TenantDatabaseSeeder extends Seeder
         // 2. Seed Demo Prestadores de Serviços
         $this->call(PrestadorSeeder::class);
 
-        // 2. Only create test users in development/testing
-        if (!app()->environment('production')) {
-            $this->seedTestData();
-        }
+        // 2. Seed test data for foundation and cooperative tenants
+        $this->seedTestData();
     }
 
     /**
