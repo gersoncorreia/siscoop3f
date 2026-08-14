@@ -50,7 +50,9 @@ class DatabaseSeeder extends Seeder
 
         // 2. Setup Tenants
         $centralDomain = env('CENTRAL_DOMAIN', 'localhost');
-        $baseDomain = str_contains($centralDomain, 'localhost') ? 'localhost' : $centralDomain;
+        $baseDomain = preg_replace('#^https?://#', '', $centralDomain);
+        $baseDomain = rtrim($baseDomain, '/');
+        $baseDomain = str_contains($baseDomain, 'localhost') ? 'localhost' : $baseDomain;
 
         $tenantsToSetup = [
             ['id' => 'stfsaude', 'data' => ['nome' => 'STF Saúde Co-op', 'ramo' => 'saude', 'tipo' => 'cooperativa'], 'domain' => 'stfsaude.' . $baseDomain],
