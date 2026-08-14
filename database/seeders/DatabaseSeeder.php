@@ -49,9 +49,12 @@ class DatabaseSeeder extends Seeder
         $master->assignRole($roleSuperAdmin);
 
         // 2. Setup Tenants
+        $centralDomain = env('CENTRAL_DOMAIN', 'localhost');
+        $baseDomain = str_contains($centralDomain, 'localhost') ? 'localhost' : $centralDomain;
+
         $tenantsToSetup = [
-            ['id' => 'stfsaude', 'data' => ['nome' => 'STF Saúde Co-op', 'ramo' => 'saude', 'tipo' => 'cooperativa'], 'domain' => 'stfsaude.localhost'],
-            ['id' => 'agrocoop', 'data' => ['nome' => 'Agro Valley Co-op', 'ramo' => 'agricola', 'tipo' => 'cooperativa'], 'domain' => 'agrocoop.localhost'],
+            ['id' => 'stfsaude', 'data' => ['nome' => 'STF Saúde Co-op', 'ramo' => 'saude', 'tipo' => 'cooperativa'], 'domain' => 'stfsaude.' . $baseDomain],
+            ['id' => 'agrocoop', 'data' => ['nome' => 'Agro Valley Co-op', 'ramo' => 'agricola', 'tipo' => 'cooperativa'], 'domain' => 'agrocoop.' . $baseDomain],
             [
                 'id' => 'santa-casa',
                 'data' => [
@@ -68,7 +71,7 @@ class DatabaseSeeder extends Seeder
                         'relatorios_gerenciais',
                     ],
                 ],
-                'domain' => 'santacasa.localhost',
+                'domain' => 'santacasa.' . $baseDomain,
             ],
         ];
 
@@ -82,7 +85,14 @@ class DatabaseSeeder extends Seeder
                     $tenant->database()->manager()->createDatabase($tenant);
                 }
             }
-            $tenant->domains()->firstOrCreate(['domain' => $tInfo['domain']]);
+
+            // Update or Create domain for tenant
+            $domainRecord = $tenant->domains()->first();
+            if ($domainRecord) {
+                $domainRecord->update(['domain' => $tInfo['domain']]);
+            } else {
+                $tenant->domains()->create(['domain' => $tInfo['domain']]);
+            }
         }
     }
 }
