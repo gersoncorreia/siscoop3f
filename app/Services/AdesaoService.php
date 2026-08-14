@@ -144,7 +144,7 @@ class AdesaoService
             try {
                 $user->notify(new \App\Notifications\AdesaoAprovadaNotification(
                     $associado->nome,
-                    $associado->cpf,
+                    $associado->email,
                     $temporaryPassword
                 ));
             } catch (\Exception $ne) {

@@ -44,16 +44,17 @@ class AdesaoAprovadaNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $tenantName = tenant('nome') ?? 'Fundação Santa Casa da Amazônia';
+
         return (new MailMessage)
             ->subject('Sua Adesão foi Aprovada - Bem-vindo!')
-            ->greeting("Olá, {$this->nome}!")
-            ->line('Temos o prazer de informar que sua adesão à cooperativa foi aprovada com sucesso.')
-            ->line('Para acessar o portal do cooperado pela primeira vez, utilize as seguintes credenciais:')
-            ->line("**Seu Login de Acesso (CPF):** {$this->login}")
-            ->line("**Código de Acesso Temporário:** {$this->password}")
-            ->action('Acessar o Portal', $this->loginUrl)
-            ->line('Por motivos de segurança, você será solicitado a criar uma senha definitiva no seu primeiro acesso.')
-            ->line('Obrigado por fazer parte da nossa cooperativa!');
+            ->view('emails.adesao_aprovada', [
+                'nome' => $this->nome,
+                'login' => $this->login,
+                'password' => $this->password,
+                'loginUrl' => $this->loginUrl,
+                'tenantName' => $tenantName,
+            ]);
     }
 
     /**

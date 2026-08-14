@@ -24,12 +24,13 @@ class AdesaoRecebidaNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
+        $tenantName = tenant('nome') ?? 'Fundação Santa Casa da Amazônia';
+
         return (new MailMessage)
             ->subject('Solicitação de Adesão Recebida com Sucesso')
-            ->greeting("Olá, {$this->nome}!")
-            ->line('Recebemos sua solicitação de adesão com sucesso.')
-            ->line('Seus dados e documentos estão em fase de análise pela nossa equipe administrativa.')
-            ->line('Assim que sua solicitação for aprovada, você receberá um novo e-mail contendo suas credenciais e instruções para o primeiro acesso ao portal.')
-            ->line('Obrigado pelo seu interesse!');
+            ->view('emails.adesao_recebida', [
+                'nome' => $this->nome,
+                'tenantName' => $tenantName,
+            ]);
     }
 }
