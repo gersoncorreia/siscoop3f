@@ -18,6 +18,11 @@ RUN apk add --no-cache \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_pgsql pgsql gd zip bcmath intl opcache
 
+# Configure PHP settings
+RUN echo "memory_limit=512M" > /usr/local/etc/php/conf.d/memory-limit.ini \
+    && echo "upload_max_filesize=50M" >> /usr/local/etc/php/conf.d/memory-limit.ini \
+    && echo "post_max_size=50M" >> /usr/local/etc/php/conf.d/memory-limit.ini
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
