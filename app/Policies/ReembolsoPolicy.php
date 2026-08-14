@@ -9,11 +9,19 @@ use Illuminate\Auth\Access\Response;
 class ReembolsoPolicy
 {
     /**
+     * Determine whether the user can view any models.
+     */
+    public function viewAny(User $user): bool
+    {
+        return $user->can('saude.view') || $user->can('financeiro.view') || $user->hasRole(['Administrador Fundação', 'Administrador Cooperativa', 'Presidente', 'Gerente']);
+    }
+
+    /**
      * Determine whether the user can view the model.
      */
     public function view(User $user, Reembolso $reembolso): bool
     {
-        if ($user->can('financeiro.view')) {
+        if ($user->can('saude.view') || $user->can('financeiro.view') || $user->hasRole(['Administrador Fundação', 'Administrador Cooperativa', 'Presidente', 'Gerente'])) {
             return true;
         }
 
@@ -21,11 +29,19 @@ class ReembolsoPolicy
     }
 
     /**
+     * Determine whether the user can create models.
+     */
+    public function create(User $user): bool
+    {
+        return true;
+    }
+
+    /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, Reembolso $reembolso): bool
     {
-        return $user->can('financeiro.update');
+        return $user->can('saude.update') || $user->can('financeiro.update') || $user->hasRole(['Administrador Fundação', 'Administrador Cooperativa', 'Presidente', 'Gerente']);
     }
 
     /**
@@ -33,7 +49,7 @@ class ReembolsoPolicy
      */
     public function delete(User $user, Reembolso $reembolso): bool
     {
-        if ($user->can('financeiro.delete')) {
+        if ($user->can('saude.delete') || $user->can('financeiro.delete') || $user->hasRole(['Administrador Fundação', 'Administrador Cooperativa', 'Presidente', 'Gerente'])) {
             return true;
         }
 

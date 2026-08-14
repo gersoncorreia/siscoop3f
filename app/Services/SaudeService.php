@@ -11,7 +11,7 @@ class SaudeService
     public function getAutorizacoesPendentes(): Collection
     {
         return SolicitacaoServico::with(['associado', 'prestador', 'servico'])
-            ->orderByRaw("FIELD(status, 'pendente_autorizacao') DESC")
+            ->orderByRaw("CASE WHEN status = 'pendente_autorizacao' THEN 0 ELSE 1 END")
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -32,7 +32,7 @@ class SaudeService
     public function getFaturas(): Collection
     {
         return FaturaPrestador::with(['prestador'])
-            ->orderByRaw("FIELD(status, 'enviada', 'em_auditoria') DESC")
+            ->orderByRaw("CASE WHEN status IN ('enviada', 'em_auditoria') THEN 0 ELSE 1 END")
             ->orderBy('created_at', 'desc')
             ->get();
     }
