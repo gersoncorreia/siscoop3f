@@ -134,22 +134,67 @@ class AdesaoController extends Controller
     {
         Gate::authorize('associados.view');
 
-        $pendentes = Associado::where('status', 'analise_documental')->latest()->paginate(10);
+        $tenant = tenant();
+        $defaultConfig = [
+            'taxas_adesao' => [
+                ['id' => '1', 'titulo' => 'Taxa Administrativa (Titular)', 'valor' => 100.00, 'ativo' => true],
+                ['id' => '2', 'titulo' => 'Taxa de Uso do Sistema', 'valor' => 10.00, 'ativo' => true],
+            ],
+            'taxa_dependente_legal' => 80.00,
+            'taxa_dependente_nao_legal' => 100.00,
+            'cota_capital_config' => [
+                'aporte_inicial' => 10.00,
+            ],
+        ];
+
+        $rawConfig = $tenant->payment_config;
+        if (is_string($rawConfig)) {
+            $rawConfig = json_decode($rawConfig, true) ?? [];
+        }
+        if (!is_array($rawConfig)) {
+            $rawConfig = [];
+        }
+
+        $paymentConfig = array_replace_recursive($defaultConfig, $rawConfig);
+        if (isset($rawConfig['taxas_adesao']) && is_array($rawConfig['taxas_adesao'])) {
+            $paymentConfig['taxas_adesao'] = $rawConfig['taxas_adesao'];
+        }
+
+        $pendentes = Associado::with(['dependentes'])->where('status', 'analise_documental')->latest()->paginate(10);
 
         return Inertia::render('Associados/Adesoes/Index', [
-            'pendentes' => $pendentes
+            'pendentes' => $pendentes,
+            'paymentConfig' => $paymentConfig,
         ]);
     }
 
     /**
      * PAINEL ADMIN: Aprova uma adesão
      */
-    public function aprovar(Associado $associado, AdesaoService $adesaoService)
+    public function aprovar(Associado $associado, Request $request, AdesaoService $adesaoService)
     {
         Gate::authorize('associados.update');
 
+        $validated = $request->validate([
+            'forma_pagamento' => 'required|string',
+            'observacoes_pagamento' => 'nullable|string|max:1000',
+            'parcelas' => 'nullable|integer|min:1|max:12',
+            'comprovante_pix' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:4096',
+        ]);
+
+        $comprovantePath = null;
+        if ($request->hasFile('comprovante_pix')) {
+            $comprovantePath = $request->file('comprovante_pix')->store('comprovantes_pix', 'public');
+        }
+
         try {
-            $adesaoService->aprovarAdesao($associado);
+            $adesaoService->aprovarAdesao(
+                $associado,
+                $validated['forma_pagamento'] ?? 'dinheiro',
+                $validated['observacoes_pagamento'] ?? null,
+                (int) ($validated['parcelas'] ?? 1),
+                $comprovantePath
+            );
             return Redirect::back()->with('success', 'Adesão aprovada com sucesso!');
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Erro ao aprovar adesão no Controller: " . $e->getMessage(), [

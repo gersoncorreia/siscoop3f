@@ -111,9 +111,9 @@ class AdesaoService
     /**
      * Aprovar adesão pendente
      */
-    public function aprovarAdesao(Associado $associado, ?string $formaPagamento = null, ?string $observacoes = null)
+    public function aprovarAdesao(Associado $associado, ?string $formaPagamento = null, ?string $observacoes = null, ?int $parcelas = 1, ?string $comprovantePath = null)
     {
-        return DB::transaction(function () use ($associado, $formaPagamento, $observacoes) {
+        return DB::transaction(function () use ($associado, $formaPagamento, $observacoes, $parcelas, $comprovantePath) {
             $associado->update([
                 'status' => 'ativo',
                 'data_adesao' => now()
@@ -136,8 +136,17 @@ class AdesaoService
             // Link User to Associate
             $associado->update(['user_id' => $user->id]);
 
-            // 2. Setup initial billing (Taxa Titular + Taxa Uso Sistema + Dependentes + 1ª Cota)
-            $this->gerarCobrancaInicial($associado, $formaPagamento, $observacoes);
+            // Formatar observação completa com parcelas e comprovante se houver
+            $obsCompleta = $observacoes;
+            if ($parcelas && $parcelas > 1) {
+                $obsCompleta = ($obsCompleta ? $obsCompleta . ' | ' : '') . "Parcelado em {$parcelas}x";
+            }
+            if ($comprovantePath) {
+                $obsCompleta = ($obsCompleta ? $obsCompleta . ' | ' : '') . "Comprovante: " . tenant_asset($comprovantePath);
+            }
+
+            // 2. Setup initial billing
+            $this->gerarCobrancaInicial($associado, $formaPagamento, $obsCompleta);
 
             // 3. Create User Accounts for Dependentes with access authorization
             $this->criarUsuariosDependentes($associado);
