@@ -18,16 +18,18 @@ class AdesaoService
     {
         return DB::transaction(function () use ($dadosAdesao) {
 
-            // 1. Create Associado
+            // 1. Create Associado (Higienizar CPF para apenas dígitos)
+            $cleanCpf = preg_replace('/\D/', '', $dadosAdesao['cpf']);
+
             $associado = Associado::create([
                 'nome' => $dadosAdesao['nome'],
-                'cpf' => $dadosAdesao['cpf'],
-                'email' => $dadosAdesao['email'],
+                'cpf' => $cleanCpf,
+                'email' => mb_strtolower(trim($dadosAdesao['email'])),
                 'matricula' => $dadosAdesao['matricula'] ?? null,
                 'nascimento' => $dadosAdesao['nascimento'] ?? null,
                 'status' => 'analise_documental',
                 'data_adesao' => now(),
-                'forma_pagamento_adesao' => $dadosAdesao['forma_pagamento_adesao'],
+                'forma_pagamento_adesao' => $dadosAdesao['forma_pagamento_adesao'] ?? null,
                 'autoriza_desconto_folha' => $dadosAdesao['autoriza_desconto_folha'] ?? false,
             ]);
 
