@@ -82,12 +82,20 @@ class ConfiguracaoController extends Controller
             'mercadopago' => ['enabled' => false, 'access_token' => '', 'public_key' => ''],
         ];
 
-        $paymentConfig = array_replace_recursive($defaultConfig, $tenant->payment_config ?? []);
+        $rawConfig = $tenant->payment_config;
+        if (is_string($rawConfig)) {
+            $rawConfig = json_decode($rawConfig, true) ?? [];
+        }
+        if (!is_array($rawConfig)) {
+            $rawConfig = [];
+        }
+
+        $paymentConfig = array_replace_recursive($defaultConfig, $rawConfig);
 
         // Mascarar chaves sensíveis antes de enviar para o frontend
         $maskedConfig = $paymentConfig;
         foreach (['asaas' => ['api_key', 'webhook_token'], 'stripe' => ['secret_key', 'webhook_secret'], 'mercadopago' => ['access_token']] as $gw => $fields) {
-            if (isset($maskedConfig[$gw])) {
+            if (isset($maskedConfig[$gw]) && is_array($maskedConfig[$gw])) {
                 foreach ($fields as $field) {
                     if (!empty($maskedConfig[$gw][$field])) {
                         $maskedConfig[$gw][$field] = '********************' . substr($maskedConfig[$gw][$field], -4);
@@ -109,7 +117,14 @@ class ConfiguracaoController extends Controller
         $tenant = tenant();
 
         $validated = $request->validated();
-        $currentConfig = $tenant->payment_config ?? [];
+        
+        $currentConfig = $tenant->payment_config;
+        if (is_string($currentConfig)) {
+            $currentConfig = json_decode($currentConfig, true) ?? [];
+        }
+        if (!is_array($currentConfig)) {
+            $currentConfig = [];
+        }
 
         $data = array_replace_recursive($currentConfig, $validated);
 

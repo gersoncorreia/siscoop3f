@@ -60,9 +60,15 @@ class AdesaoController extends Controller
                 'aceita_maquininha' => true,
                 'instrucoes' => 'Você também pode realizar o pagamento presencialmente na recepção em dinheiro ou máquina de cartão.',
             ],
-        ];
+        $rawConfig = $tenant->payment_config;
+        if (is_string($rawConfig)) {
+            $rawConfig = json_decode($rawConfig, true) ?? [];
+        }
+        if (!is_array($rawConfig)) {
+            $rawConfig = [];
+        }
 
-        $paymentConfig = array_replace_recursive($defaultPaymentConfig, $tenant->payment_config ?? []);
+        $paymentConfig = array_replace_recursive($defaultPaymentConfig, $rawConfig);
 
         return Inertia::render('Adesao/Success', [
             'associado' => $associado ? [
