@@ -1,17 +1,19 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Head, useForm, Link } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import InputError from '@/Components/InputError.vue';
+import Modal from '@/Components/Modal.vue';
 import { 
     UserIcon, 
     UserGroupIcon, 
     ArrowRightIcon, 
-    CheckCircleIcon
+    CheckCircleIcon,
+    ShieldExclamationIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -19,6 +21,8 @@ const props = defineProps({
 });
 
 const primaryColor = computed(() => props.tenant?.primary_color || '#2563eb');
+const showExistingModal = ref(false);
+const duplicateFields = ref([]);
 
 const form = useForm({
     nome: '',
@@ -93,8 +97,19 @@ function handleCpfInput(event) {
 
 function submitForm() {
     form.post(route('adesao.store'), {
-        onSuccess: () => {
-            // Vue inertia handles redirect to success
+        onError: (errors) => {
+            const fields = [];
+            if (errors.cpf && errors.cpf.includes('Identificamos')) {
+                fields.push(`CPF (${form.cpf})`);
+            }
+            if (errors.email && errors.email.includes('Identificamos')) {
+                fields.push(`E-mail (${form.email})`);
+            }
+
+            if (fields.length > 0) {
+                duplicateFields.value = fields;
+                showExistingModal.value = true;
+            }
         }
     });
 }
@@ -393,6 +408,61 @@ function submitForm() {
                 </div>
             </div>
         </div>
+
+        <!-- Modal Premium de Registro Prévio Identificado -->
+        <Modal :show="showExistingModal" @close="showExistingModal = false" maxWidth="md">
+            <div class="p-6 text-center space-y-4">
+                <!-- Badge Icon de Segurança -->
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-amber-500/10 text-amber-500 rounded-3xl shadow-lg shadow-amber-500/10">
+                    <ShieldExclamationIcon class="w-9 h-9" />
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-black text-[var(--text-heading)] tracking-tight">
+                        Registro Prévio Identificado
+                    </h3>
+                    <p class="text-xs text-[var(--text-muted)] mt-1.5 leading-relaxed">
+                        Identificamos que os seguintes dados informados já constam em nossos registros de solicitações:
+                    </p>
+                </div>
+
+                <!-- Badges de Informações Encontradas -->
+                <div class="flex flex-wrap items-center justify-center gap-2 py-1">
+                    <span v-for="field in duplicateFields" :key="field" class="text-xs font-mono font-bold text-amber-700 bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-200 dark:border-amber-500/20">
+                        {{ field }}
+                    </span>
+                </div>
+
+                <!-- Mensagem Orientadora -->
+                <div class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-[var(--border-color)]/50 text-left text-xs text-slate-600 dark:text-slate-300 leading-relaxed space-y-2">
+                    <p>
+                        Para verificar o andamento da sua proposta, solicitar atualização cadastral ou tirar dúvidas, por favor, entre em contato diretamente com a equipe de atendimento da <strong class="text-[var(--text-heading)]">{{ tenant?.nome || 'Santa Casa da Amazônia' }}</strong>.
+                    </p>
+                    <p class="text-[11px] text-slate-400">
+                        Se a sua adesão já tiver sido aprovada anteriormente, você pode acessar diretamente o Portal com suas credenciais.
+                    </p>
+                </div>
+
+                <!-- Botões de Ação do Pop-up -->
+                <div class="pt-2 space-y-2">
+                    <Link 
+                        :href="route('login')" 
+                        class="w-full py-3 bg-primary-dynamic text-white font-black text-xs uppercase tracking-widest rounded-xl inline-flex items-center justify-center gap-2 shadow-lg shadow-primary-dynamic/20 hover:opacity-95 transition-all"
+                    >
+                        Fazer Login no Portal
+                        <ArrowRightIcon class="w-4 h-4" />
+                    </Link>
+
+                    <button 
+                        type="button"
+                        @click="showExistingModal = false" 
+                        class="w-full py-2.5 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all"
+                    >
+                        Entendido / Fechar
+                    </button>
+                </div>
+            </div>
+        </Modal>
     </GuestLayout>
 </template>
 
