@@ -29,15 +29,57 @@ class AdesaoController extends Controller
     {
         $associado = $adesaoService->processarAdesao($request->validated());
 
-        return Redirect::route('adesao.success')->with('success', 'Cadastro realizado com sucesso! Aguarde a aprovação.');
+        session(['ultimo_associado_id' => $associado->id]);
+
+        return Redirect::route('adesao.success')->with('success', 'Cadastro realizado com sucesso!');
     }
 
     /**
-     * Exibe tela de sucesso após o cadastro público
+     * Exibe tela de sucesso e opções de pagamento após o cadastro público
      */
     public function success()
     {
-        return Inertia::render('Adesao/Success');
+        $tenant = tenant();
+        $associadoId = session('ultimo_associado_id');
+        $associado = $associadoId ? Associado::find($associadoId) : null;
+        $lancamento = $associado ? \App\Models\LancamentoFinanceiro::where('associado_id', $associado->id)->latest()->first() : null;
+
+        $defaultPaymentConfig = [
+            'active_gateway' => 'interno',
+            'pix_manual' => [
+                'enabled' => true,
+                'tipo_chave' => 'cnpj',
+                'chave_pix' => '',
+                'favorecido' => $tenant->nome ?? 'Fundação Santa Casa da Amazônia',
+                'qrcode_image_url' => null,
+                'instrucoes' => 'Efetue o pagamento via PIX apontando a câmera para o QR Code ou copiando a chave abaixo.',
+            ],
+            'presencial' => [
+                'enabled' => true,
+                'aceita_dinheiro' => true,
+                'aceita_maquininha' => true,
+                'instrucoes' => 'Você também pode realizar o pagamento presencialmente na recepção em dinheiro ou máquina de cartão.',
+            ],
+        ];
+
+        $paymentConfig = array_replace_recursive($defaultPaymentConfig, $tenant->payment_config ?? []);
+
+        return Inertia::render('Adesao/Success', [
+            'associado' => $associado ? [
+                'id' => $associado->id,
+                'nome' => $associado->nome,
+                'email' => $associado->email,
+                'status' => $associado->status,
+            ] : null,
+            'lancamento' => $lancamento ? [
+                'id' => $lancamento->id,
+                'valor' => (float)$lancamento->valor,
+                'status' => $lancamento->status,
+                'categoria' => $lancamento->categoria,
+                'data_vencimento' => $lancamento->data_vencimento ? \Carbon\Carbon::parse($lancamento->data_vencimento)->format('d/m/Y') : null,
+            ] : null,
+            'paymentConfig' => $paymentConfig,
+        ]);
     }
 
     /**

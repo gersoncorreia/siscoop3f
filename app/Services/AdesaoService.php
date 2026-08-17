@@ -109,9 +109,9 @@ class AdesaoService
     /**
      * Aprovar adesão pendente
      */
-    public function aprovarAdesao(Associado $associado)
+    public function aprovarAdesao(Associado $associado, ?string $formaPagamento = null, ?string $observacoes = null)
     {
-        return DB::transaction(function () use ($associado) {
+        return DB::transaction(function () use ($associado, $formaPagamento, $observacoes) {
             $associado->update([
                 'status' => 'ativo',
                 'data_adesao' => now()
@@ -135,7 +135,7 @@ class AdesaoService
             $associado->update(['user_id' => $user->id]);
 
             // 2. Setup initial billing (Taxa Titular + Taxa Uso Sistema + Dependentes + 1ª Cota)
-            $this->gerarCobrancaInicial($associado);
+            $this->gerarCobrancaInicial($associado, $formaPagamento, $observacoes);
 
             // 3. Create User Accounts for Dependentes with access authorization
             $this->criarUsuariosDependentes($associado);
@@ -212,7 +212,7 @@ class AdesaoService
      *
      * Utiliza o Strategy de Gateway (PaymentFactory) para gerar a cobrança.
      */
-    protected function gerarCobrancaInicial(Associado $associado): void
+    protected function gerarCobrancaInicial(Associado $associado, ?string $formaPagamento = null, ?string $observacoes = null): void
     {
         $taxaTitular = 100.00;
         $taxaUsoSistema = 10.00;
@@ -226,6 +226,9 @@ class AdesaoService
         }
 
         $valorTotal = $taxaTitular + $taxaUsoSistema + $taxaDependentesTotal + $primeiraCota;
+
+        $statusInicial = $formaPagamento ? 'pago' : 'pendente';
+        $dataPagamento = $formaPagamento ? now() : null;
 
         // Resolve gateway strategy
         $gateway = PaymentFactory::resolve();
@@ -248,7 +251,10 @@ class AdesaoService
             'categoria' => 'taxa_adm_titular',
             'valor' => $taxaTitular,
             'data_vencimento' => now()->addDays(3),
-            'status' => 'pendente',
+            'status' => $statusInicial,
+            'forma_pagamento' => $formaPagamento,
+            'data_pagamento' => $dataPagamento,
+            'observacoes_pagamento' => $observacoes,
             'gateway' => $gatewayName,
             'gateway_id' => $gatewayId,
         ]);
@@ -260,7 +266,10 @@ class AdesaoService
             'categoria' => 'taxa_uso_sistema',
             'valor' => $taxaUsoSistema,
             'data_vencimento' => now()->addDays(3),
-            'status' => 'pendente',
+            'status' => $statusInicial,
+            'forma_pagamento' => $formaPagamento,
+            'data_pagamento' => $dataPagamento,
+            'observacoes_pagamento' => $observacoes,
             'gateway' => $gatewayName,
             'gateway_id' => $gatewayId,
         ]);
@@ -278,7 +287,10 @@ class AdesaoService
                     'categoria' => $categoriaDep,
                     'valor' => $dep->getTaxaAdesao(),
                     'data_vencimento' => now()->addDays(3),
-                    'status' => 'pendente',
+                    'status' => $statusInicial,
+                    'forma_pagamento' => $formaPagamento,
+                    'data_pagamento' => $dataPagamento,
+                    'observacoes_pagamento' => $observacoes,
                     'gateway' => $gatewayName,
                     'gateway_id' => $gatewayId,
                 ]);
@@ -292,7 +304,10 @@ class AdesaoService
             'categoria' => 'cota_capital',
             'valor' => $primeiraCota,
             'data_vencimento' => now()->addDays(3),
-            'status' => 'pendente',
+            'status' => $statusInicial,
+            'forma_pagamento' => $formaPagamento,
+            'data_pagamento' => $dataPagamento,
+            'observacoes_pagamento' => $observacoes,
             'gateway' => $gatewayName,
             'gateway_id' => $gatewayId,
         ]);

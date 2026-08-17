@@ -22,8 +22,17 @@ class LancamentoFinanceiro extends Model
         'valor',
         'data_vencimento',
         'status',
+        'forma_pagamento',
+        'comprovante_path',
+        'data_pagamento',
+        'observacoes_pagamento',
         'gateway',
         'gateway_id',
+    ];
+
+    protected $casts = [
+        'data_pagamento' => 'datetime',
+        'data_vencimento' => 'date',
     ];
 
     public function associado()

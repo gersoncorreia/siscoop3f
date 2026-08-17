@@ -56,11 +56,27 @@ class FinanceiroController extends Controller
     {
         Gate::authorize('financeiro.update');
 
-        $lancamento->update([
-            'status' => 'pago',
-            // In a real scenario, we would save the actual payment date and perhaps link to a bank account transaction
+        $validated = $request->validate([
+            'forma_pagamento' => 'nullable|string|in:dinheiro,cartao_debito,cartao_credito,pix_manual,transferencia,asaas_pix,asaas_boleto',
+            'data_pagamento' => 'nullable|date',
+            'observacoes_pagamento' => 'nullable|string|max:500',
+            'comprovante' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
-        return redirect()->back()->with('success', 'Lançamento conciliado com sucesso.');
+        $data = [
+            'status' => 'pago',
+            'forma_pagamento' => $validated['forma_pagamento'] ?? 'dinheiro',
+            'data_pagamento' => $validated['data_pagamento'] ?? now(),
+            'observacoes_pagamento' => $validated['observacoes_pagamento'] ?? null,
+        ];
+
+        if ($request->hasFile('comprovante')) {
+            $path = $request->file('comprovante')->store('comprovantes_pagamento', 'public');
+            $data['comprovante_path'] = \Illuminate\Support\Facades\Storage::url($path);
+        }
+
+        $lancamento->update($data);
+
+        return redirect()->back()->with('success', 'Lançamento marcado como pago com sucesso!');
     }
 }

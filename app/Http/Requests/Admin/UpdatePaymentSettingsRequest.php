@@ -14,8 +14,22 @@ class UpdatePaymentSettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'active_gateway' => 'required|string|in:interno,asaas,stripe,mercadopago',
+            'active_gateway' => 'required|string|in:interno,pix_manual,presencial,asaas,stripe,mercadopago',
+            'enabled_gateways' => 'nullable|array',
+            'pix_manual' => 'nullable|array',
+            'pix_manual.enabled' => 'nullable|boolean',
+            'pix_manual.tipo_chave' => 'nullable|string|in:cpf,cnpj,email,telefone,evp',
+            'pix_manual.chave_pix' => 'nullable|string|max:255',
+            'pix_manual.favorecido' => 'nullable|string|max:255',
+            'pix_manual.instrucoes' => 'nullable|string|max:1000',
+            'pix_manual.qrcode_image' => 'nullable|image|max:4096',
+            'presencial' => 'nullable|array',
+            'presencial.enabled' => 'nullable|boolean',
+            'presencial.aceita_dinheiro' => 'nullable|boolean',
+            'presencial.aceita_maquininha' => 'nullable|boolean',
+            'presencial.instrucoes' => 'nullable|string|max:1000',
             'asaas' => 'nullable|array',
+            'asaas.enabled' => 'nullable|boolean',
             'asaas.api_key' => 'nullable|string|max:500',
             'asaas.environment' => 'nullable|string|in:sandbox,production',
             'asaas.webhook_token' => 'nullable|string|max:500',

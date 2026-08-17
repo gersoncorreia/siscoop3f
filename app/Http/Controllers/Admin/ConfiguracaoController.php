@@ -60,12 +60,29 @@ class ConfiguracaoController extends Controller
         $tenant = tenant();
 
         // Configurações de pagamento salvas no tenant
-        $paymentConfig = $tenant->payment_config ?? [
+        $defaultConfig = [
             'active_gateway' => 'interno',
-            'asaas' => ['api_key' => '', 'environment' => 'sandbox', 'webhook_token' => ''],
-            'stripe' => ['public_key' => '', 'secret_key' => '', 'webhook_secret' => ''],
-            'mercadopago' => ['access_token' => '', 'public_key' => ''],
+            'enabled_gateways' => ['interno', 'pix_manual', 'presencial'],
+            'pix_manual' => [
+                'enabled' => true,
+                'tipo_chave' => 'cnpj',
+                'chave_pix' => '',
+                'favorecido' => $tenant->nome ?? '',
+                'qrcode_image_url' => null,
+                'instrucoes' => 'Efetue o pagamento via PIX apontando a câmera para o QR Code ou copiando a chave abaixo.',
+            ],
+            'presencial' => [
+                'enabled' => true,
+                'aceita_dinheiro' => true,
+                'aceita_maquininha' => true,
+                'instrucoes' => 'Você também pode realizar o pagamento presencialmente na recepção em dinheiro ou cartão.',
+            ],
+            'asaas' => ['enabled' => false, 'api_key' => '', 'environment' => 'sandbox', 'webhook_token' => ''],
+            'stripe' => ['enabled' => false, 'public_key' => '', 'secret_key' => '', 'webhook_secret' => ''],
+            'mercadopago' => ['enabled' => false, 'access_token' => '', 'public_key' => ''],
         ];
+
+        $paymentConfig = array_replace_recursive($defaultConfig, $tenant->payment_config ?? []);
 
         // Mascarar chaves sensíveis antes de enviar para o frontend
         $maskedConfig = $paymentConfig;
@@ -92,16 +109,25 @@ class ConfiguracaoController extends Controller
         $tenant = tenant();
 
         $validated = $request->validated();
-
-        $data = $validated;
         $currentConfig = $tenant->payment_config ?? [];
+
+        $data = array_replace_recursive($currentConfig, $validated);
+
+        // Upload do QR Code do PIX Manual se enviado
+        if ($request->hasFile('pix_manual.qrcode_image')) {
+            if (!empty($currentConfig['pix_manual']['qrcode_image_url'])) {
+                $oldPath = str_replace('/storage/', '', $currentConfig['pix_manual']['qrcode_image_url']);
+                Storage::disk('public')->delete($oldPath);
+            }
+            $path = $request->file('pix_manual.qrcode_image')->store('pix_qrcodes', 'public');
+            $data['pix_manual']['qrcode_image_url'] = Storage::url($path);
+        }
 
         // Não sobrescrever com as máscaras (estrelinhas) vindas do frontend
         foreach (['asaas' => ['api_key', 'webhook_token'], 'stripe' => ['secret_key', 'webhook_secret'], 'mercadopago' => ['access_token']] as $gw => $fields) {
-            if (isset($data[$gw])) {
+            if (isset($validated[$gw])) {
                 foreach ($fields as $field) {
-                    if (isset($data[$gw][$field]) && str_contains($data[$gw][$field], '***')) {
-                        // Restaurar o valor real do banco
+                    if (isset($validated[$gw][$field]) && str_contains($validated[$gw][$field], '***')) {
                         $data[$gw][$field] = $currentConfig[$gw][$field] ?? '';
                     }
                 }
