@@ -41,7 +41,7 @@ const formatMoney = (val) => {
 <template>
     <Head title="Adesão Concluída - Pagamento" />
 
-    <GuestLayout maxWidthClass="sm:max-w-4xl">
+    <GuestLayout maxWidthClass="sm:max-w-2xl">
         <div class="w-full space-y-6">
             <!-- Header Hero -->
             <div class="text-center">
