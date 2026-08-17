@@ -40,27 +40,27 @@ const formatMoney = (val) => {
 <template>
     <Head title="Adesão Concluída - Pagamento" />
 
-    <GuestLayout>
-        <div class="max-w-4xl mx-auto py-4 sm:py-6 px-4">
-            <!-- Compact Header -->
-            <div class="text-center mb-5">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-2xl shadow-md mb-2">
-                    <CheckCircleIcon class="w-7 h-7" />
+    <GuestLayout maxWidthClass="sm:max-w-4xl">
+        <div class="w-full">
+            <!-- Header Hero -->
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-14 h-14 bg-emerald-500/10 text-emerald-500 rounded-2xl shadow-md mb-3">
+                    <CheckCircleIcon class="w-8 h-8" />
                 </div>
                 <h1 class="text-2xl sm:text-3xl font-black text-[var(--text-heading)] tracking-tight">Cadastro Recebido com Sucesso!</h1>
-                <p class="text-xs text-[var(--text-muted)] mt-1 max-w-md mx-auto">
-                    Olá, <strong class="text-[var(--text-heading)]">{{ associado?.nome }}</strong>. Sua solicitação foi registrada com sucesso.
+                <p class="text-xs text-[var(--text-muted)] mt-1 max-w-lg mx-auto">
+                    Olá, <strong class="text-[var(--text-heading)]">{{ associado?.nome }}</strong>. Sua proposta de adesão foi registrada e está em fase de análise.
                 </p>
             </div>
 
-            <!-- Main Split Grid (2 Colunas em telas médias/grandes) -->
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+            <!-- Grid com 2 Colunas Espaçosas (5 colunas + 7 colunas) -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
                 
-                <!-- Coluna 1: Resumo da Cobrança (5 colunas) -->
+                <!-- Coluna Esquerda: Resumo do Lançamento -->
                 <div class="md:col-span-5 space-y-4">
-                    <div v-if="lancamento" class="zynix-card p-5 border-l-4 border-l-emerald-500 shadow-md">
+                    <div v-if="lancamento" class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 border-l-4 border-l-emerald-500 shadow-sm">
                         <div class="flex items-center justify-between gap-2 mb-3">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-500/20">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-500/20">
                                 Cobrança Inicial
                             </span>
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -76,23 +76,23 @@ const formatMoney = (val) => {
                             <p class="text-[11px] text-slate-500 mt-1">Vencimento: {{ lancamento.data_vencimento || 'Imediato' }}</p>
                         </div>
 
-                        <div class="pt-3 border-t border-[var(--border-color)] text-xs space-y-1.5">
+                        <div class="pt-3 border-t border-slate-200 dark:border-slate-700 text-xs space-y-2">
                             <div class="flex items-center justify-between text-slate-600 dark:text-slate-300">
                                 <span class="font-bold flex items-center gap-1.5"><UserIcon class="w-3.5 h-3.5 text-slate-400" /> Titular:</span>
-                                <span class="font-medium truncate max-w-[150px]">{{ associado?.nome }}</span>
+                                <span class="font-semibold truncate max-w-[170px]">{{ associado?.nome }}</span>
                             </div>
                             <div class="flex items-center justify-between text-slate-600 dark:text-slate-300">
                                 <span class="font-bold flex items-center gap-1.5"><BanknotesIcon class="w-3.5 h-3.5 text-slate-400" /> Destino:</span>
-                                <span class="font-medium">Taxa de Adesão</span>
+                                <span class="font-semibold">Taxa de Adesão</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Botão de Ação -->
-                    <div class="text-center">
+                    <!-- Botão Voltar ao Início -->
+                    <div class="text-center pt-2">
                         <Link 
                             :href="route('adesao.create')" 
-                            class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 rounded-xl font-black text-xs uppercase tracking-widest inline-flex items-center justify-center gap-2 shadow-md transition-all"
+                            class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 rounded-xl font-black text-xs uppercase tracking-widest inline-flex items-center justify-center gap-2 shadow-lg transition-all"
                         >
                             Voltar ao Início
                             <ArrowRightIcon class="w-4 h-4" />
@@ -100,15 +100,15 @@ const formatMoney = (val) => {
                     </div>
                 </div>
 
-                <!-- Coluna 2: Painel de Pagamentos (7 colunas) -->
+                <!-- Coluna Direita: Opções de Pagamento -->
                 <div class="md:col-span-7">
-                    <div class="zynix-card overflow-hidden shadow-md">
-                        <!-- Abas Compactas -->
-                        <div class="border-b border-[var(--border-color)] bg-slate-50/50 dark:bg-slate-800/30 p-1.5 flex gap-1.5">
+                    <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+                        <!-- Abas de Pagamento -->
+                        <div class="border-b border-slate-200 dark:border-slate-700 bg-slate-100/70 dark:bg-slate-800/50 p-1.5 flex gap-2">
                             <button 
                                 @click="activeTab = 'pix'"
                                 :class="[
-                                    'flex-1 py-2 px-3 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all',
+                                    'flex-1 py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all',
                                     activeTab === 'pix' ? 'bg-white dark:bg-slate-800 text-emerald-600 shadow-sm border border-emerald-500/20' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                                 ]"
                             >
@@ -117,7 +117,7 @@ const formatMoney = (val) => {
                             <button 
                                 @click="activeTab = 'presencial'"
                                 :class="[
-                                    'flex-1 py-2 px-3 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all',
+                                    'flex-1 py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all',
                                     activeTab === 'presencial' ? 'bg-white dark:bg-slate-800 text-blue-600 shadow-sm border border-blue-500/20' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                                 ]"
                             >
@@ -125,57 +125,56 @@ const formatMoney = (val) => {
                             </button>
                         </div>
 
-                        <!-- Conteúdo Aba PIX -->
-                        <div v-if="activeTab === 'pix'" class="p-4 sm:p-5 space-y-4">
+                        <!-- Conteúdo PIX -->
+                        <div v-if="activeTab === 'pix'" class="p-5 space-y-4">
                             <p class="text-xs text-slate-500 text-center leading-tight">
                                 {{ paymentConfig?.pix_manual?.instrucoes || 'Efetue o pagamento via PIX apontando a câmera do celular para o QR Code ou copiando a chave.' }}
                             </p>
 
-                            <!-- Layout Lado a Lado no PIX (QRCode + Chave) -->
-                            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 bg-slate-50 dark:bg-slate-800/40 border border-[var(--border-color)] rounded-xl p-3.5">
+                            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
                                 <!-- Imagem do QRCode PIX -->
                                 <div v-if="paymentConfig?.pix_manual?.qrcode_image_url" class="shrink-0">
                                     <div class="p-2 bg-white rounded-xl shadow border border-slate-200 inline-block">
-                                        <img :src="paymentConfig.pix_manual.qrcode_image_url" alt="QRCode PIX" class="w-32 h-32 object-contain mx-auto" />
+                                        <img :src="paymentConfig.pix_manual.qrcode_image_url" alt="QRCode PIX" class="w-36 h-36 object-contain mx-auto" />
                                     </div>
                                 </div>
 
                                 <!-- Copia e Cola -->
-                                <div class="w-full space-y-2">
+                                <div class="w-full space-y-2.5">
                                     <div v-if="paymentConfig?.pix_manual?.chave_pix">
                                         <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase mb-1">
                                             <span>Chave ({{ paymentConfig.pix_manual.tipo_chave?.toUpperCase() }})</span>
-                                            <span v-if="paymentConfig.pix_manual.favorecido" class="truncate max-w-[120px]">{{ paymentConfig.pix_manual.favorecido }}</span>
+                                            <span v-if="paymentConfig.pix_manual.favorecido" class="truncate max-w-[130px]">{{ paymentConfig.pix_manual.favorecido }}</span>
                                         </div>
-                                        <div class="flex items-center gap-1.5">
+                                        <div class="flex items-center gap-2">
                                             <input 
                                                 type="text" 
                                                 readonly 
                                                 :value="paymentConfig.pix_manual.chave_pix" 
-                                                class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-2.5 text-xs font-mono font-bold text-slate-800 dark:text-slate-200"
+                                                class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3 text-xs font-mono font-bold text-slate-800 dark:text-slate-200"
                                             />
                                             <button 
                                                 @click="copyPixKey" 
-                                                class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold text-xs flex items-center gap-1 shrink-0 shadow transition-all"
+                                                class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shrink-0 shadow transition-all"
                                             >
-                                                <component :is="copied ? ClipboardDocumentCheckIcon : ClipboardDocumentIcon" class="w-3.5 h-3.5" />
+                                                <component :is="copied ? ClipboardDocumentCheckIcon : ClipboardDocumentIcon" class="w-4 h-4" />
                                                 {{ copied ? 'Copiado!' : 'Copiar' }}
                                             </button>
                                         </div>
                                     </div>
                                     <div v-else class="text-center py-2 text-xs text-slate-400 italic">
-                                        Chave PIX pendente de cadastro.
+                                        Chave PIX direta pendente de cadastro nas configurações da entidade.
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Conteúdo Aba Presencial -->
-                        <div v-if="activeTab === 'presencial'" class="p-4 sm:p-5">
-                            <div class="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl p-4 text-center">
-                                <CreditCardIcon class="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                        <!-- Conteúdo Presencial -->
+                        <div v-if="activeTab === 'presencial'" class="p-5">
+                            <div class="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl p-5 text-center">
+                                <CreditCardIcon class="w-9 h-9 text-blue-500 mx-auto mb-2" />
                                 <h4 class="text-sm font-black text-blue-900 dark:text-blue-300 uppercase tracking-tight">Pagamento em Dinheiro ou Maquininha</h4>
-                                <p class="text-xs text-blue-800 dark:text-blue-400 mt-1.5 leading-relaxed">
+                                <p class="text-xs text-blue-800 dark:text-blue-400 mt-2 leading-relaxed">
                                     {{ paymentConfig?.presencial?.instrucoes || 'Você também pode realizar o pagamento presencialmente na recepção da instituição em dinheiro ou máquina de cartão de crédito/débito.' }}
                                 </p>
                             </div>
