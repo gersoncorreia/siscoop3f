@@ -18,17 +18,23 @@ import {
     CreditCardIcon,
     QrCodeIcon,
     PaperClipIcon,
-    DocumentCheckIcon
+    DocumentCheckIcon,
+    ShieldCheckIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     pendentes: Object,
+    aprovadas: Object,
     paymentConfig: Object,
 });
 
+const activeTab = ref('pendentes');
 const selectedItem = ref(null);
 const showAprovarModal = ref(false);
 const comprovanteFileName = ref('');
+
+const selectedAuditItem = ref(null);
+const showAuditoriaModal = ref(false);
 
 const aprovarForm = useForm({
     forma_pagamento: 'dinheiro',
@@ -53,6 +59,26 @@ function openAprovarModal(item) {
     aprovarForm.comprovante_pix = null;
     comprovanteFileName.value = '';
     showAprovarModal.value = true;
+}
+
+function openAuditoriaModal(item) {
+    selectedAuditItem.value = item;
+    showAuditoriaModal.value = true;
+}
+
+function getFormaPagamentoLabel(forma, parcelas = 1) {
+    const map = {
+        'dinheiro': '💵 Dinheiro em Espécie',
+        'cartao_debito': '💳 Cartão de Débito',
+        'cartao_credito': '💳 Cartão de Crédito',
+        'pix_manual': '📲 PIX Manual',
+        'transferencia': '🏦 Transferência Bancária / TED'
+    };
+    let label = map[forma] || forma || 'Não informada';
+    if (parcelas > 1) {
+        label += ` (${parcelas}x)`;
+    }
+    return label;
 }
 
 function submitAprovar() {
@@ -144,27 +170,45 @@ const resumoAprovar = computed(() => {
         <template #header>
             <Breadcrumbs :items="[{ label: 'Associados', href: '/associados' }, { label: 'Adesões' }]" />
             <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Solicitações de Adesão</h2>
-            <p class="text-sm text-[var(--text-muted)] mt-0.5">Analise e aprove as pré-adesões enviadas pelo formulário público.</p>
+            <p class="text-sm text-[var(--text-muted)] mt-0.5">Analise, aprove e consulte o histórico de auditoria das adesões.</p>
         </template>
 
         <div class="space-y-6 pb-12">
-            <!-- Stats Overview -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="zynix-card group hover:scale-[1.02] transition-all duration-300">
-                    <div class="flex items-center gap-4">
-                        <div class="p-4 rounded-2xl bg-amber-500/10 text-amber-500 shadow-inner group-hover:bg-amber-500/20 transition-colors">
-                            <ClockIcon class="w-8 h-8" />
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Aguardando Análise</p>
-                            <p class="text-2xl font-black text-[var(--text-heading)] tracking-tighter mt-1">{{ pendentes.total }}</p>
-                        </div>
-                    </div>
+            <!-- Tabs Navigation Header -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[var(--border-color)] pb-4">
+                <div class="flex items-center gap-3">
+                    <button 
+                        @click="activeTab = 'pendentes'"
+                        :class="[
+                            'px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2',
+                            activeTab === 'pendentes' 
+                                ? 'bg-primary-dynamic text-white shadow-lg shadow-primary-dynamic/20' 
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                        ]"
+                    >
+                        <ClockIcon class="w-4 h-4" />
+                        Aguardando Análise
+                        <span class="ml-1 px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ pendentes?.total || 0 }}</span>
+                    </button>
+
+                    <button 
+                        @click="activeTab = 'aprovadas'"
+                        :class="[
+                            'px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2',
+                            activeTab === 'aprovadas' 
+                                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' 
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                        ]"
+                    >
+                        <ShieldCheckIcon class="w-4 h-4" />
+                        Histórico de Aprovadas
+                        <span class="ml-1 px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ aprovadas?.total || 0 }}</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Main Table -->
-            <div class="zynix-table-wrapper">
+            <!-- TAB 1: Adesões Pendentes -->
+            <div v-if="activeTab === 'pendentes'" class="zynix-table-wrapper">
                 <div v-if="pendentes.data.length === 0" class="text-center py-20">
                     <div class="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
                         <ClockIcon class="w-10 h-10 text-slate-300" />
@@ -241,6 +285,76 @@ const resumoAprovar = computed(() => {
                 <div v-if="pendentes.data.length > 0 && pendentes.links" class="p-6 border-t border-[var(--border-color)] flex items-center justify-between">
                      <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                          Mostrando {{ pendentes.from }}-{{ pendentes.to }} de {{ pendentes.total }}
+                     </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Histórico de Adesões Aprovadas (Auditoria) -->
+            <div v-if="activeTab === 'aprovadas'" class="zynix-table-wrapper">
+                <div v-if="!aprovadas || aprovadas.data.length === 0" class="text-center py-20">
+                    <div class="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <ShieldCheckIcon class="w-10 h-10 text-slate-300" />
+                    </div>
+                    <h3 class="text-lg font-black text-[var(--text-heading)] tracking-tight">Nenhuma adesão aprovada registrada</h3>
+                    <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-2 max-w-xs mx-auto leading-relaxed">
+                        As aprovações realizadas pelo painel aparecerão neste histórico com os dados de auditoria completos.
+                    </p>
+                </div>
+
+                <div v-else class="overflow-x-auto">
+                    <table class="zynix-table w-full">
+                        <thead>
+                            <tr>
+                                <th class="pl-8">Associado</th>
+                                <th class="text-center">Autorizado Por (Usuário)</th>
+                                <th class="text-center">Aprovado Em</th>
+                                <th class="text-center">Forma de Pagamento</th>
+                                <th class="text-right pr-8">Ações Auditoria</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in aprovadas.data" :key="item.id">
+                                <td class="pl-8">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 w-9 h-9 p-2 rounded-xl bg-emerald-500/10 text-emerald-600 shadow-inner">
+                                            <UserIcon class="w-full h-full" />
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="font-black text-[var(--text-heading)] tracking-tight">{{ item.nome }}</div>
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">CPF: {{ item.cpf }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center font-bold text-[var(--text-heading)] text-xs">
+                                    {{ item.aprovado_por_nome }}
+                                </td>
+                                <td class="text-center font-mono text-xs text-slate-600 dark:text-slate-400">
+                                    {{ item.aprovado_em || 'N/A' }}
+                                </td>
+                                <td class="text-center">
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full">
+                                        {{ getFormaPagamentoLabel(item.forma_pagamento_aprovacao, item.parcelas_aprovacao) }}
+                                    </span>
+                                </td>
+                                <td class="text-right pr-8 whitespace-nowrap">
+                                    <button 
+                                        @click="openAuditoriaModal(item)" 
+                                        class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-xs font-black uppercase tracking-wider inline-flex items-center gap-1.5 shadow-md shadow-indigo-500/20 transition-all"
+                                        title="Ver Detalhes da Auditoria"
+                                    >
+                                        <ShieldCheckIcon class="w-4 h-4" />
+                                        Ver Auditoria
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Aprovadas -->
+                <div v-if="aprovadas && aprovadas.data.length > 0 && aprovadas.links" class="p-6 border-t border-[var(--border-color)] flex items-center justify-between">
+                     <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                         Mostrando {{ aprovadas.from }}-{{ aprovadas.to }} de {{ aprovadas.total }}
                      </div>
                 </div>
             </div>
@@ -366,6 +480,119 @@ const resumoAprovar = computed(() => {
                             </PrimaryButton>
                         </div>
                     </form>
+                </div>
+            </Modal>
+
+            <!-- Modal Auditoria de Aprovação -->
+            <Modal :show="showAuditoriaModal" @close="showAuditoriaModal = false" max-width="lg">
+                <div v-if="selectedAuditItem" class="p-6 sm:p-8 space-y-6">
+                    <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold shadow-inner">
+                                <ShieldCheckIcon class="w-6 h-6" />
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em]">Auditoria de Aprovação</p>
+                                <h2 class="text-xl font-black text-[var(--text-heading)] tracking-tighter">Detalhes da Adesão Autorizada</h2>
+                            </div>
+                        </div>
+                        <button @click="showAuditoriaModal = false" class="p-2 text-slate-400 hover:text-slate-600 transition-colors">
+                            <XMarkIcon class="w-5 h-5" />
+                        </button>
+                    </div>
+
+                    <!-- Card do Proponente -->
+                    <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-[var(--border-color)] space-y-1">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-black text-[var(--text-heading)]">{{ selectedAuditItem.nome }}</span>
+                            <span class="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                Status: {{ selectedAuditItem.status }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 font-mono">CPF: {{ selectedAuditItem.cpf }} | {{ selectedAuditItem.email }}</p>
+                    </div>
+
+                    <!-- Grid de Detalhes da Autorização -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Quem Autorizou -->
+                        <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-[var(--border-color)] space-y-1">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Usuário Autorizador</span>
+                            <p class="text-xs font-black text-[var(--text-heading)] flex items-center gap-1.5 mt-1">
+                                <UserIcon class="w-4 h-4 text-primary-dynamic" />
+                                {{ selectedAuditItem.aprovado_por_nome }}
+                            </p>
+                            <p class="text-[10px] text-slate-400 font-mono mt-1">Aprovado em: {{ selectedAuditItem.aprovado_em || 'N/A' }}</p>
+                        </div>
+
+                        <!-- Pagamento & Parcelas -->
+                        <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-[var(--border-color)] space-y-1">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Forma de Pagamento</span>
+                            <p class="text-xs font-black text-[var(--text-heading)] mt-1">
+                                {{ getFormaPagamentoLabel(selectedAuditItem.forma_pagamento_aprovacao, selectedAuditItem.parcelas_aprovacao) }}
+                            </p>
+                            <p class="text-[10px] text-slate-400 mt-1">
+                                Data da Adesão: {{ selectedAuditItem.data_adesao }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Comprovante Anexo (se houver) -->
+                    <div v-if="selectedAuditItem.comprovante_pix_url" class="p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/20 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <PaperClipIcon class="w-5 h-5 text-emerald-600" />
+                            <span class="text-xs font-bold text-[var(--text-heading)]">Comprovante PIX Anexado</span>
+                        </div>
+                        <a :href="selectedAuditItem.comprovante_pix_url" target="_blank" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 shadow-sm">
+                            <EyeIcon class="w-4 h-4" />
+                            Visualizar Comprovante
+                        </a>
+                    </div>
+
+                    <!-- Observações / NSU -->
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-[var(--border-color)] space-y-1">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Observações / Código da Transação (NSU)</span>
+                        <p class="text-xs text-[var(--text-heading)] font-mono leading-relaxed mt-1">
+                            {{ selectedAuditItem.observacoes_aprovacao || 'Nenhuma observação informada.' }}
+                        </p>
+                    </div>
+
+                    <!-- Resumo Financeiro Baixado na Época da Aprovação -->
+                    <div v-if="selectedAuditItem.detalhes_financeiro_aprovacao" class="p-4 bg-primary-dynamic/5 rounded-2xl border border-primary-dynamic/15 space-y-3">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-primary-dynamic flex items-center gap-1.5">
+                            <DocumentCheckIcon class="w-4 h-4" />
+                            Lançamentos Financeiros Registrados na Aprovação
+                        </span>
+
+                        <div class="space-y-1.5 text-xs text-[var(--text-muted)] border-t border-primary-dynamic/10 pt-3">
+                            <div v-for="(item, idx) in selectedAuditItem.detalhes_financeiro_aprovacao.itensAtivos" :key="idx" class="flex justify-between items-center">
+                                <span>{{ item.titulo }}</span>
+                                <span class="font-bold text-[var(--text-heading)]">R$ {{ Number(item.valor).toFixed(2).replace('.', ',') }}</span>
+                            </div>
+                            <div v-if="selectedAuditItem.detalhes_financeiro_aprovacao.qtdLegais > 0" class="flex justify-between items-center">
+                                <span>Dependentes Legais ({{ selectedAuditItem.detalhes_financeiro_aprovacao.qtdLegais }}x R$ {{ Number(selectedAuditItem.detalhes_financeiro_aprovacao.taxaDepLegal).toFixed(2).replace('.', ',') }})</span>
+                                <span class="font-bold text-[var(--text-heading)]">R$ {{ Number(selectedAuditItem.detalhes_financeiro_aprovacao.totalDepLegal).toFixed(2).replace('.', ',') }}</span>
+                            </div>
+                            <div v-if="selectedAuditItem.detalhes_financeiro_aprovacao.qtdNaoLegais > 0" class="flex justify-between items-center">
+                                <span>Dependentes Não Legais ({{ selectedAuditItem.detalhes_financeiro_aprovacao.qtdNaoLegais }}x R$ {{ Number(selectedAuditItem.detalhes_financeiro_aprovacao.taxaDepNaoLegal).toFixed(2).replace('.', ',') }})</span>
+                                <span class="font-bold text-[var(--text-heading)]">R$ {{ Number(selectedAuditItem.detalhes_financeiro_aprovacao.totalDepNaoLegal).toFixed(2).replace('.', ',') }}</span>
+                            </div>
+                            <div v-if="selectedAuditItem.detalhes_financeiro_aprovacao.isCooperativa" class="flex justify-between items-center">
+                                <span>Cota Capital (Aporte Inicial)</span>
+                                <span class="font-bold text-[var(--text-heading)]">R$ {{ Number(selectedAuditItem.detalhes_financeiro_aprovacao.cotaVal).toFixed(2).replace('.', ',') }}</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-primary-dynamic/15 flex justify-between items-center">
+                            <span class="text-xs font-black uppercase tracking-widest text-[var(--text-heading)]">Total Baixado:</span>
+                            <span class="text-lg font-black text-emerald-600 dark:text-emerald-400 font-mono">R$ {{ Number(selectedAuditItem.detalhes_financeiro_aprovacao.totalGeral).toFixed(2).replace('.', ',') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex justify-end border-t border-[var(--border-color)]">
+                        <SecondaryButton @click="showAuditoriaModal = false" type="button" class="!rounded-full !py-2.5 !px-6">
+                            Fechar Auditoria
+                        </SecondaryButton>
+                    </div>
                 </div>
             </Modal>
         </div>

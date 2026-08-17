@@ -109,14 +109,29 @@ class AdesaoService
     }
 
     /**
-     * Aprovar adesão pendente
+     * Aprovar adesão pendente e registrar auditoria completa
      */
-    public function aprovarAdesao(Associado $associado, ?string $formaPagamento = null, ?string $observacoes = null, ?int $parcelas = 1, ?string $comprovantePath = null)
-    {
-        return DB::transaction(function () use ($associado, $formaPagamento, $observacoes, $parcelas, $comprovantePath) {
+    public function aprovarAdesao(
+        Associado $associado, 
+        ?string $formaPagamento = null, 
+        ?string $observacoes = null, 
+        ?int $parcelas = 1, 
+        ?string $comprovantePath = null,
+        ?\App\Models\User $aprovadorUser = null,
+        ?array $detalhesFinanceiroSnapshot = null
+    ) {
+        return DB::transaction(function () use ($associado, $formaPagamento, $observacoes, $parcelas, $comprovantePath, $aprovadorUser, $detalhesFinanceiroSnapshot) {
             $associado->update([
                 'status' => 'ativo',
-                'data_adesao' => now()
+                'data_adesao' => now(),
+                'aprovado_por_user_id' => $aprovadorUser?->id,
+                'aprovado_por_nome' => $aprovadorUser?->name ?? 'Administrador',
+                'aprovado_em' => now(),
+                'forma_pagamento_aprovacao' => $formaPagamento,
+                'observacoes_aprovacao' => $observacoes,
+                'parcelas_aprovacao' => $parcelas ?? 1,
+                'comprovante_pix_path' => $comprovantePath,
+                'detalhes_financeiro_aprovacao' => $detalhesFinanceiroSnapshot,
             ]);
 
             $temporaryPassword = str()->random(8);

@@ -33,6 +33,15 @@ class Associado extends Model
         'carteirinha_validade',
         'carteirinha_status',
         'carteirinha_emitida_em',
+        // Auditoria de Aprovação
+        'aprovado_por_user_id',
+        'aprovado_por_nome',
+        'aprovado_em',
+        'forma_pagamento_aprovacao',
+        'observacoes_aprovacao',
+        'parcelas_aprovacao',
+        'comprovante_pix_path',
+        'detalhes_financeiro_aprovacao',
     ];
 
     protected $casts = [
@@ -42,11 +51,18 @@ class Associado extends Model
         'data_adesao' => 'date',
         'carteirinha_validade' => 'date',
         'carteirinha_emitida_em' => 'datetime',
+        'aprovado_em' => 'datetime',
+        'detalhes_financeiro_aprovacao' => 'array',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function aprovador()
+    {
+        return $this->belongsTo(User::class, 'aprovado_por_user_id');
     }
 
     public function dependentes()
