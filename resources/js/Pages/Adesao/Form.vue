@@ -95,15 +95,33 @@ function handleCpfInput(event) {
     form.cpf = formatCPF(event.target.value);
 }
 
+function maskCPF(value) {
+    if (!value) return '';
+    const digits = value.replace(/\D/g, '');
+    if (digits.length < 11) return value;
+    return digits.substring(0, 3) + '.***.***-' + digits.substring(9, 11);
+}
+
+function maskEmail(value) {
+    if (!value || !value.includes('@')) return value;
+    const [user, domain] = value.split('@');
+    if (user.length <= 3) {
+        return user[0] + '***@' + domain;
+    }
+    const visible = user.substring(0, 3);
+    const hidden = '*'.repeat(Math.min(user.length - 3, 8));
+    return `${visible}${hidden}@${domain}`;
+}
+
 function submitForm() {
     form.post(route('adesao.store'), {
         onError: (errors) => {
             const fields = [];
             if (errors.cpf && errors.cpf.includes('Identificamos')) {
-                fields.push(`CPF (${form.cpf})`);
+                fields.push(`CPF (${maskCPF(form.cpf)})`);
             }
             if (errors.email && errors.email.includes('Identificamos')) {
-                fields.push(`E-mail (${form.email})`);
+                fields.push(`E-mail (${maskEmail(form.email)})`);
             }
 
             if (fields.length > 0) {
