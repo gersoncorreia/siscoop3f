@@ -54,7 +54,7 @@ const formatMoney = (val) => {
                 </p>
             </div>
 
-            <!-- Faixa de Resumo do Lançamento / Cobrança Inicial (Full Width) -->
+            <!-- Faixa de Resumo do Lançamento / Cobrança Inicial -->
             <div v-if="lancamento" class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 border-l-4 border-l-emerald-500 shadow-sm">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div class="space-y-1">
@@ -88,9 +88,9 @@ const formatMoney = (val) => {
                 </div>
             </div>
 
-            <!-- Painel Principal de Opções de Pagamento (Full Width para Futuras Abas) -->
+            <!-- Painel Principal de Opções de Pagamento -->
             <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
-                <!-- Abas de Pagamento (Pronto para receber novos gateways como Asaas, Boleto, etc) -->
+                <!-- Abas de Pagamento -->
                 <div class="border-b border-slate-200 dark:border-slate-700 bg-slate-100/70 dark:bg-slate-800/50 p-2 flex flex-wrap gap-2">
                     <button 
                         @click="activeTab = 'pix'"
@@ -112,45 +112,44 @@ const formatMoney = (val) => {
                     </button>
                 </div>
 
-                <!-- Conteúdo Aba PIX -->
-                <div v-if="activeTab === 'pix'" class="p-6 space-y-5">
-                    <p class="text-xs text-slate-500 text-center max-w-xl mx-auto leading-relaxed">
-                        {{ paymentConfig?.pix_manual?.instrucoes || 'Efetue o pagamento via PIX apontando a câmera do celular para o QR Code abaixo ou copiando a chave.' }}
+                <!-- Conteúdo Aba PIX (Sem cards cinzas extras e sem borda ao redor do QRCode) -->
+                <div v-if="activeTab === 'pix'" class="p-5 sm:p-6 space-y-4">
+                    <p v-if="paymentConfig?.pix_manual?.instrucoes" class="text-xs text-slate-500 text-center max-w-xl mx-auto leading-relaxed">
+                        {{ paymentConfig.pix_manual.instrucoes }}
                     </p>
 
-                    <div class="flex flex-col md:flex-row items-center justify-center gap-6 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
-                        <!-- Imagem do QRCode PIX -->
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 pt-2">
+                        <!-- QRCode diretamente na tela (Sem caixa com borda) -->
                         <div v-if="paymentConfig?.pix_manual?.qrcode_image_url" class="shrink-0 text-center">
-                            <div class="p-3 bg-white rounded-2xl shadow-md border border-slate-200 inline-block">
-                                <img :src="paymentConfig.pix_manual.qrcode_image_url" alt="QRCode PIX" class="w-40 h-40 object-contain mx-auto" />
-                            </div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-2">Abra o app do seu banco</p>
+                            <img :src="paymentConfig.pix_manual.qrcode_image_url" alt="QRCode PIX" class="w-36 h-36 sm:w-40 sm:h-40 object-contain mx-auto" />
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">Abra o app do seu banco</p>
                         </div>
 
-                        <!-- Chave PIX Copia e Cola -->
-                        <div class="w-full max-w-md space-y-3">
-                            <div v-if="paymentConfig?.pix_manual?.chave_pix">
-                                <div class="flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">
-                                    <span class="text-[10px] font-black text-slate-400">CHAVE PIX ({{ paymentConfig.pix_manual.tipo_chave?.toUpperCase() }})</span>
-                                    <span v-if="paymentConfig.pix_manual.favorecido" class="truncate max-w-[180px]">Favorecido: {{ paymentConfig.pix_manual.favorecido }}</span>
+                        <!-- Chave PIX em Texto Grande + Favorecido Completo Embaixo -->
+                        <div class="w-full sm:w-auto space-y-3">
+                            <div v-if="paymentConfig?.pix_manual?.chave_pix" class="space-y-2">
+                                <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                    Chave PIX ({{ paymentConfig.pix_manual.tipo_chave?.toUpperCase() }})
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <input 
-                                        type="text" 
-                                        readonly 
-                                        :value="paymentConfig.pix_manual.chave_pix" 
-                                        class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-3.5 text-xs font-mono font-bold text-slate-800 dark:text-slate-200 shadow-sm"
-                                    />
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xl sm:text-2xl font-black font-mono text-slate-900 dark:text-white tracking-tight select-all">
+                                        {{ paymentConfig.pix_manual.chave_pix }}
+                                    </span>
                                     <button 
                                         @click="copyPixKey" 
-                                        class="px-5 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-xs flex items-center gap-2 shrink-0 shadow-md transition-all"
+                                        class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shrink-0 shadow transition-all"
                                     >
                                         <component :is="copied ? ClipboardDocumentCheckIcon : ClipboardDocumentIcon" class="w-4 h-4" />
                                         {{ copied ? 'Copiado!' : 'Copiar Chave' }}
                                     </button>
                                 </div>
+
+                                <!-- Favorecido por Extenso (Sem corte de texto) -->
+                                <div v-if="paymentConfig.pix_manual.favorecido" class="text-xs text-slate-500 dark:text-slate-400 pt-1">
+                                    <span class="font-bold text-slate-700 dark:text-slate-300">Favorecido:</span> {{ paymentConfig.pix_manual.favorecido }}
+                                </div>
                             </div>
-                            <div v-else class="text-center py-4 text-xs text-slate-400 italic">
+                            <div v-else class="text-xs text-slate-400 italic">
                                 Chave PIX direta pendente de cadastro nas configurações da entidade.
                             </div>
                         </div>
@@ -169,7 +168,7 @@ const formatMoney = (val) => {
                 </div>
             </div>
 
-            <!-- Botão Voltar ao Início (Posicionado ao Final Abaixo de Tudo) -->
+            <!-- Botão Voltar ao Início (Ao Final) -->
             <div class="text-center pt-2">
                 <Link 
                     :href="route('adesao.create')" 
