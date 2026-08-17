@@ -184,6 +184,8 @@ Route::middleware([
                     Route::prefix('agendamentos')->name('agendamentos.')->group(function () {
                         Route::get('/', [\App\Http\Controllers\Admin\AgendamentoAdminController::class, 'index'])->name('index');
                         Route::post('{agendamento}/confirmar', [\App\Http\Controllers\Admin\AgendamentoAdminController::class, 'confirmar'])->name('confirmar');
+                        Route::post('{agendamento}/aprovar', [\App\Http\Controllers\Admin\AgendamentoAdminController::class, 'aprovarEAgendar'])->name('aprovar');
+                        Route::post('{agendamento}/recusar', [\App\Http\Controllers\Admin\AgendamentoAdminController::class, 'recusar'])->name('recusar');
                         Route::post('{agendamento}/cancelar', [\App\Http\Controllers\Admin\AgendamentoAdminController::class, 'cancelar'])->name('cancelar');
                         Route::post('{agendamento}/realizar', [\App\Http\Controllers\Admin\AgendamentoAdminController::class, 'realizar'])->name('realizar');
                     });
