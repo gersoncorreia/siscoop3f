@@ -60,6 +60,8 @@ class AdesaoController extends Controller
                 'aceita_maquininha' => true,
                 'instrucoes' => 'Você também pode realizar o pagamento presencialmente na recepção em dinheiro ou máquina de cartão.',
             ],
+        ];
+
         $rawConfig = $tenant->payment_config;
         if (is_string($rawConfig)) {
             $rawConfig = json_decode($rawConfig, true) ?? [];
