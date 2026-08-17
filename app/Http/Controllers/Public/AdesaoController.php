@@ -19,7 +19,37 @@ class AdesaoController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Adesao/Form');
+        $tenant = tenant();
+        $defaultConfig = [
+            'taxas_adesao' => [
+                ['id' => '1', 'titulo' => 'Taxa Administrativa (Titular)', 'valor' => 100.00, 'ativo' => true],
+                ['id' => '2', 'titulo' => 'Taxa de Uso do Sistema', 'valor' => 10.00, 'ativo' => true],
+            ],
+            'taxa_dependente_legal' => 80.00,
+            'taxa_dependente_nao_legal' => 100.00,
+            'cota_capital_config' => [
+                'aporte_inicial' => 10.00,
+            ],
+        ];
+
+        $rawConfig = $tenant->payment_config;
+        if (is_string($rawConfig)) {
+            $rawConfig = json_decode($rawConfig, true) ?? [];
+        }
+        if (!is_array($rawConfig)) {
+            $rawConfig = [];
+        }
+
+        $paymentConfig = array_replace_recursive($defaultConfig, $rawConfig);
+
+        if (isset($rawConfig['taxas_adesao']) && is_array($rawConfig['taxas_adesao'])) {
+            $paymentConfig['taxas_adesao'] = $rawConfig['taxas_adesao'];
+        }
+
+        return Inertia::render('Adesao/Form', [
+            'tenant' => $tenant,
+            'paymentConfig' => $paymentConfig,
+        ]);
     }
 
     /**

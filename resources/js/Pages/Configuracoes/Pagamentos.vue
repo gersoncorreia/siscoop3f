@@ -20,6 +20,11 @@ import {
     BoltIcon,
     CheckBadgeIcon,
     PhotoIcon,
+    PlusIcon,
+    TrashIcon,
+    CurrencyDollarIcon,
+    UserPlusIcon,
+    BuildingOffice2Icon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -28,6 +33,7 @@ const props = defineProps({
 
 const page = usePage();
 const baseUrl = computed(() => window.location.origin);
+const isCooperativa = computed(() => page.props.tenant?.tipo !== 'fundacao');
 
 const form = useForm({
     active_gateway: props.paymentConfig.active_gateway || 'interno',
@@ -51,7 +57,38 @@ const form = useForm({
         environment: props.paymentConfig.asaas?.environment || 'sandbox',
         webhook_token: props.paymentConfig.asaas?.webhook_token || '',
     },
+    taxas_adesao: Array.isArray(props.paymentConfig.taxas_adesao) ? props.paymentConfig.taxas_adesao.map((t, idx) => ({
+        id: t.id || String(idx + 1),
+        titulo: t.titulo || '',
+        valor: parseFloat(t.valor) || 0,
+        ativo: Boolean(t.ativo ?? true),
+    })) : [
+        { id: '1', titulo: 'Taxa Administrativa (Titular)', valor: 100, ativo: true },
+        { id: '2', titulo: 'Taxa de Uso do Sistema', valor: 10, ativo: true }
+    ],
+    taxa_dependente_legal: parseFloat(props.paymentConfig.taxa_dependente_legal ?? 80),
+    taxa_dependente_nao_legal: parseFloat(props.paymentConfig.taxa_dependente_nao_legal ?? 100),
+    cota_capital_config: {
+        meta_total: parseFloat(props.paymentConfig.cota_capital_config?.meta_total ?? 600),
+        valor_quota: parseFloat(props.paymentConfig.cota_capital_config?.valor_quota ?? 10),
+        qtd_quotas: parseInt(props.paymentConfig.cota_capital_config?.qtd_quotas ?? 60),
+        valor_mensal: parseFloat(props.paymentConfig.cota_capital_config?.valor_mensal ?? 10),
+        aporte_inicial: parseFloat(props.paymentConfig.cota_capital_config?.aporte_inicial ?? 10),
+    }
 });
+
+const addTaxaAdesao = () => {
+    form.taxas_adesao.push({
+        id: String(Date.now()),
+        titulo: 'Nova Cobrança',
+        valor: 0,
+        ativo: true
+    });
+};
+
+const removeTaxaAdesao = (index) => {
+    form.taxas_adesao.splice(index, 1);
+};
 
 const activeModal = ref(null);
 const qrcodePreview = ref(props.paymentConfig.pix_manual?.qrcode_image_url || null);
@@ -133,6 +170,107 @@ const submitForm = () => {
             <div v-if="$page.props.flash?.success" class="p-4 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl font-bold flex items-center gap-3">
                 <CheckBadgeIcon class="w-5 h-5" />
                 {{ $page.props.flash.success }}
+            </div>
+
+            <!-- Card: Gerenciamento dos Valores do Resumo Financeiro da Adesão -->
+            <div class="zynix-card overflow-hidden">
+                <div class="p-6 border-b border-[var(--border-color)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-primary-dynamic/10 text-primary-dynamic flex items-center justify-center font-bold">
+                            <CurrencyDollarIcon class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-[var(--text-heading)] tracking-tight">Valores e Cobranças da Adesão Digital</h3>
+                            <p class="text-xs text-[var(--text-muted)] mt-0.5">Gerencie os itens e valores exibidos no Resumo Financeiro do formulário público de adesão.</p>
+                        </div>
+                    </div>
+
+                    <PrimaryButton type="button" @click="submitForm" :disabled="form.processing" class="!py-2.5 !px-5 !rounded-xl !text-xs !font-black uppercase tracking-widest">
+                        Salvar Cobranças
+                    </PrimaryButton>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <!-- Tabela de Taxas Customizáveis -->
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-black uppercase tracking-widest text-[var(--text-heading)]">Taxas e Cobranças Fixas do Titular</span>
+                            <button type="button" @click="addTaxaAdesao" class="inline-flex items-center gap-1.5 text-xs font-bold text-primary-dynamic hover:underline">
+                                <PlusIcon class="w-4 h-4" />
+                                Adicionar Nova Cobrança
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div v-for="(taxa, index) in form.taxas_adesao" :key="taxa.id" class="flex flex-col sm:flex-row items-center gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-[var(--border-color)]">
+                                <div class="flex-1 w-full">
+                                    <InputLabel value="Descrição da Cobrança" class="!text-[9px] !font-black uppercase tracking-widest mb-1" />
+                                    <TextInput v-model="taxa.titulo" type="text" class="w-full !py-2 text-xs" placeholder="Ex: Taxa Administrativa, Taxa de Inscrição..." required />
+                                </div>
+                                <div class="w-full sm:w-40">
+                                    <InputLabel value="Valor (R$)" class="!text-[9px] !font-black uppercase tracking-widest mb-1" />
+                                    <TextInput v-model="taxa.valor" type="number" step="0.01" min="0" class="w-full !py-2 text-xs font-mono font-bold" required />
+                                </div>
+                                <div class="flex items-center gap-4 pt-3 sm:pt-4">
+                                    <label class="flex items-center gap-2 text-xs font-bold text-[var(--text-heading)] cursor-pointer">
+                                        <input type="checkbox" v-model="taxa.ativo" class="w-4 h-4 rounded text-primary-dynamic focus:ring-primary-dynamic" />
+                                        Ativo
+                                    </label>
+                                    <button type="button" @click="removeTaxaAdesao(index)" class="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors">
+                                        <TrashIcon class="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div v-if="form.taxas_adesao.length === 0" class="p-6 text-center text-xs text-[var(--text-muted)] italic bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-[var(--border-color)]">
+                                Nenhuma taxa cadastrada. Clique em "Adicionar Nova Cobrança" acima.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Taxas por Dependente -->
+                    <div class="pt-4 border-t border-[var(--border-color)]/50">
+                        <span class="block text-xs font-black uppercase tracking-widest text-[var(--text-heading)] mb-4">Taxas de Adesão por Dependente</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-[var(--border-color)] space-y-1">
+                                <InputLabel value="Taxa por Dependente Legal (R$)" class="!text-[10px] !font-black uppercase tracking-widest" />
+                                <TextInput v-model="form.taxa_dependente_legal" type="number" step="0.01" min="0" class="w-full !py-2 text-xs font-mono font-bold" />
+                                <p class="text-[10px] text-slate-400">Valor cobrado na adesão por cada dependente legal adicionado.</p>
+                            </div>
+                            <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-[var(--border-color)] space-y-1">
+                                <InputLabel value="Taxa por Dependente Não-Legal (R$)" class="!text-[10px] !font-black uppercase tracking-widest" />
+                                <TextInput v-model="form.taxa_dependente_nao_legal" type="number" step="0.01" min="0" class="w-full !py-2 text-xs font-mono font-bold" />
+                                <p class="text-[10px] text-slate-400">Valor cobrado na adesão por dependentes não-legais (agregados).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cota Capital (Apenas Cooperativas, Omitido para Fundação) -->
+                    <div v-if="isCooperativa" class="pt-4 border-t border-[var(--border-color)]/50">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="text-xs font-black uppercase tracking-widest text-[var(--text-heading)]">Configuração de Cota Capital (Apenas Cooperativas)</span>
+                            <span class="text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-500/20 uppercase">Cooperativa</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-[var(--border-color)] space-y-1">
+                                <InputLabel value="Aporte Inicial na Adesão (R$)" class="!text-[10px] !font-black uppercase tracking-widest" />
+                                <TextInput v-model="form.cota_capital_config.aporte_inicial" type="number" step="0.01" min="0" class="w-full !py-2 text-xs font-mono font-bold" />
+                                <p class="text-[10px] text-slate-400">Valor da 1ª cota cobrado hoje na adesão.</p>
+                            </div>
+                            <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-[var(--border-color)] space-y-1">
+                                <InputLabel value="Meta Total da Cota (R$)" class="!text-[10px] !font-black uppercase tracking-widest" />
+                                <TextInput v-model="form.cota_capital_config.meta_total" type="number" step="0.01" min="0" class="w-full !py-2 text-xs font-mono font-bold" />
+                                <p class="text-[10px] text-slate-400">Meta total acumulada da cota capital do cooperado.</p>
+                            </div>
+                            <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-[var(--border-color)] space-y-1">
+                                <InputLabel value="Valor Mensal da Quota (R$)" class="!text-[10px] !font-black uppercase tracking-widest" />
+                                <TextInput v-model="form.cota_capital_config.valor_quota" type="number" step="0.01" min="0" class="w-full !py-2 text-xs font-mono font-bold" />
+                                <p class="text-[10px] text-slate-400">Valor de cada quota mensal adicional.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Grid de Opções de Pagamento -->

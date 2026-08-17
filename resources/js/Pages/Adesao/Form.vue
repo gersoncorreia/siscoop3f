@@ -17,7 +17,8 @@ import {
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
-    tenant: Object
+    tenant: Object,
+    paymentConfig: Object,
 });
 
 const primaryColor = computed(() => props.tenant?.primary_color || '#2563eb');
@@ -46,37 +47,59 @@ const removeDependente = (index) => {
 };
 
 const resumoFinanceiro = computed(() => {
-    const taxaTitular = 100;
-    const taxaUsoSistema = 10;
-    const primeiraCota = 10;
+    const taxasAdesao = props.paymentConfig?.taxas_adesao || [
+        { id: '1', titulo: 'Taxa Administrativa (Titular)', valor: 100, ativo: true },
+        { id: '2', titulo: 'Taxa de Uso do Sistema', valor: 10, ativo: true },
+    ];
 
-    let totalDependentesLegais = 0;
-    let totalDependentesNaoLegais = 0;
+    const taxaDepLegal = parseFloat(props.paymentConfig?.taxa_dependente_legal ?? 80);
+    const taxaDepNaoLegal = parseFloat(props.paymentConfig?.taxa_dependente_nao_legal ?? 100);
+    const aporteCotaInicial = parseFloat(props.paymentConfig?.cota_capital_config?.aporte_inicial ?? 10);
+
+    let totalFixos = 0;
+    const itensAtivos = [];
+
+    taxasAdesao.forEach(taxa => {
+        if (taxa.ativo) {
+            const val = parseFloat(taxa.valor) || 0;
+            totalFixos += val;
+            itensAtivos.push({
+                titulo: taxa.titulo,
+                valor: val
+            });
+        }
+    });
+
     let qtdLegais = 0;
     let qtdNaoLegais = 0;
 
     form.dependentes.forEach(dep => {
         if (dep.tipo_dependencia === 'nao_legal') {
-            totalDependentesNaoLegais += 100;
             qtdNaoLegais++;
         } else {
-            totalDependentesLegais += 80;
             qtdLegais++;
         }
     });
 
-    const totalDependentes = totalDependentesLegais + totalDependentesNaoLegais;
-    const total = taxaTitular + taxaUsoSistema + totalDependentes + primeiraCota;
-    
+    const totalDependentesLegais = qtdLegais * taxaDepLegal;
+    const totalDependentesNaoLegais = qtdNaoLegais * taxaDepNaoLegal;
+
+    // Cota Capital apenas se for Cooperativa (omitir completamente para Fundação)
+    const isCooperativa = props.tenant?.tipo !== 'fundacao';
+    const cotaVal = isCooperativa ? aporteCotaInicial : 0;
+
+    const total = totalFixos + totalDependentesLegais + totalDependentesNaoLegais + cotaVal;
+
     return {
-        titular: taxaTitular,
-        taxaUsoSistema,
+        itensAtivos,
         qtdLegais,
-        qtdNaoLegais,
+        taxaDepLegal,
         totalDependentesLegais,
+        qtdNaoLegais,
+        taxaDepNaoLegal,
         totalDependentesNaoLegais,
-        totalDependentes,
-        cota: primeiraCota,
+        isCooperativa,
+        cotaVal,
         total
     };
 });
@@ -363,25 +386,28 @@ function submitForm() {
                             
                             <div class="bg-primary-dynamic/5 rounded-2xl border border-primary-dynamic/10 overflow-hidden">
                                 <div class="p-6 space-y-3">
-                                    <div class="flex justify-between items-center text-sm">
-                                        <span class="text-[var(--text-muted)] font-medium">Taxa Administrativa (Titular)</span>
-                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.titular.toFixed(2).replace('.', ',') }}</span>
+                                    <!-- Taxas Fixas Configuráveis -->
+                                    <div v-for="(item, idx) in resumoFinanceiro.itensAtivos" :key="idx" class="flex justify-between items-center text-sm">
+                                        <span class="text-[var(--text-muted)] font-medium">{{ item.titulo }}</span>
+                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ item.valor.toFixed(2).replace('.', ',') }}</span>
                                     </div>
-                                    <div class="flex justify-between items-center text-sm">
-                                        <span class="text-[var(--text-muted)] font-medium">Taxa de Uso do Sistema</span>
-                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.taxaUsoSistema.toFixed(2).replace('.', ',') }}</span>
-                                    </div>
+
+                                    <!-- Dependentes Legais (se houver) -->
                                     <div v-if="resumoFinanceiro.qtdLegais > 0" class="flex justify-between items-center text-sm">
-                                        <span class="text-[var(--text-muted)] font-medium">Dependentes Legais ({{ resumoFinanceiro.qtdLegais }}x R$ 80,00)</span>
+                                        <span class="text-[var(--text-muted)] font-medium">Dependentes Legais ({{ resumoFinanceiro.qtdLegais }}x R$ {{ resumoFinanceiro.taxaDepLegal.toFixed(2).replace('.', ',') }})</span>
                                         <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.totalDependentesLegais.toFixed(2).replace('.', ',') }}</span>
                                     </div>
+
+                                    <!-- Dependentes Não Legais (se houver) -->
                                     <div v-if="resumoFinanceiro.qtdNaoLegais > 0" class="flex justify-between items-center text-sm">
-                                        <span class="text-[var(--text-muted)] font-medium">Dependentes Não Legais ({{ resumoFinanceiro.qtdNaoLegais }}x R$ 100,00)</span>
+                                        <span class="text-[var(--text-muted)] font-medium">Dependentes Não Legais ({{ resumoFinanceiro.qtdNaoLegais }}x R$ {{ resumoFinanceiro.taxaDepNaoLegal.toFixed(2).replace('.', ',') }})</span>
                                         <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.totalDependentesNaoLegais.toFixed(2).replace('.', ',') }}</span>
                                     </div>
-                                    <div class="flex justify-between items-center text-sm">
+
+                                    <!-- Cota Capital (Exclusiva para Cooperativa, Omitida para Fundação) -->
+                                    <div v-if="resumoFinanceiro.isCooperativa" class="flex justify-between items-center text-sm">
                                         <span class="text-[var(--text-muted)] font-medium">Cota Capital (Aporte Inicial)</span>
-                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.cota.toFixed(2).replace('.', ',') }}</span>
+                                        <span class="font-bold text-[var(--text-heading)]">R$ {{ resumoFinanceiro.cotaVal.toFixed(2).replace('.', ',') }}</span>
                                     </div>
                                 </div>
                                 <div class="bg-primary-dynamic/10 p-5 flex justify-between items-center">

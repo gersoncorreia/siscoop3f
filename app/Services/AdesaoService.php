@@ -206,28 +206,47 @@ class AdesaoService
     }
 
     /**
-     * Gera a cobrança inicial englobando:
-     * - Taxa Administrativa do Titular (R$ 100,00)
-     * - Taxa de Uso do Sistema (R$ 10,00)
-     * - Taxa de Dependentes (R$ 80,00 legais / R$ 100,00 não-legais cada)
-     * - Primeira parcela da Cota Capital (R$ 10,00)
+     * Gera a cobrança inicial englobando as taxas dinâmicas e adicionais configuradas no tenant
      *
      * Utiliza o Strategy de Gateway (PaymentFactory) para gerar a cobrança.
      */
     protected function gerarCobrancaInicial(Associado $associado, ?string $formaPagamento = null, ?string $observacoes = null): void
     {
-        $taxaTitular = 100.00;
-        $taxaUsoSistema = 10.00;
-        $primeiraCota = 10.00;
-
-        // Calcular taxas de dependentes de forma individualizada por tipo
-        $dependentes = $associado->dependentes;
-        $taxaDependentesTotal = 0;
-        foreach ($dependentes as $dep) {
-            $taxaDependentesTotal += $dep->getTaxaAdesao();
+        $tenant = tenant();
+        $rawConfig = $tenant->payment_config;
+        if (is_string($rawConfig)) {
+            $rawConfig = json_decode($rawConfig, true) ?? [];
+        }
+        if (!is_array($rawConfig)) {
+            $rawConfig = [];
         }
 
-        $valorTotal = $taxaTitular + $taxaUsoSistema + $taxaDependentesTotal + $primeiraCota;
+        $taxasAdesao = $rawConfig['taxas_adesao'] ?? [
+            ['id' => '1', 'titulo' => 'Taxa Administrativa (Titular)', 'valor' => 100.00, 'ativo' => true],
+            ['id' => '2', 'titulo' => 'Taxa de Uso do Sistema', 'valor' => 10.00, 'ativo' => true],
+        ];
+
+        $taxaDepLegal = (float) ($rawConfig['taxa_dependente_legal'] ?? 80.00);
+        $taxaDepNaoLegal = (float) ($rawConfig['taxa_dependente_nao_legal'] ?? 100.00);
+        $cotaAporteInicial = (float) ($rawConfig['cota_capital_config']['aporte_inicial'] ?? 10.00);
+
+        // Calcular valor total dinâmico
+        $valorTotal = 0;
+        foreach ($taxasAdesao as $taxa) {
+            if (!empty($taxa['ativo'])) {
+                $valorTotal += (float) ($taxa['valor'] ?? 0);
+            }
+        }
+
+        $dependentes = $associado->dependentes;
+        foreach ($dependentes as $dep) {
+            $valorTotal += $dep->tipo_dependencia === 'nao_legal' ? $taxaDepNaoLegal : $taxaDepLegal;
+        }
+
+        $isCooperativa = $tenant->tipo !== 'fundacao';
+        if ($isCooperativa) {
+            $valorTotal += $cotaAporteInicial;
+        }
 
         $statusInicial = $formaPagamento ? 'pago' : 'pendente';
         $dataPagamento = $formaPagamento ? now() : null;
@@ -238,7 +257,7 @@ class AdesaoService
         $gatewayData = [
             'associado_id' => $associado->id,
             'total' => $valorTotal,
-            'descricao' => 'Adesão Cooperativa Siscoop3F',
+            'descricao' => 'Adesão ' . ($tenant->nome ?? 'Siscoop3F'),
         ];
 
         $response = $gateway->gerarCobranca($gatewayData);
@@ -246,48 +265,15 @@ class AdesaoService
         $gatewayId = $response['gateway_id'] ?? null;
         $gatewayName = get_class($gateway) === \App\Services\Gateways\InternalBillingGateway::class ? 'interno' : 'asaas';
 
-        // Lançar Taxa Titular
-        \App\Models\LancamentoFinanceiro::create([
-            'associado_id' => $associado->id,
-            'tipo' => 'receita',
-            'categoria' => 'taxa_adm_titular',
-            'valor' => $taxaTitular,
-            'data_vencimento' => now()->addDays(3),
-            'status' => $statusInicial,
-            'forma_pagamento' => $formaPagamento,
-            'data_pagamento' => $dataPagamento,
-            'observacoes_pagamento' => $observacoes,
-            'gateway' => $gatewayName,
-            'gateway_id' => $gatewayId,
-        ]);
-
-        // Lançar Taxa de Uso do Sistema
-        \App\Models\LancamentoFinanceiro::create([
-            'associado_id' => $associado->id,
-            'tipo' => 'receita',
-            'categoria' => 'taxa_uso_sistema',
-            'valor' => $taxaUsoSistema,
-            'data_vencimento' => now()->addDays(3),
-            'status' => $statusInicial,
-            'forma_pagamento' => $formaPagamento,
-            'data_pagamento' => $dataPagamento,
-            'observacoes_pagamento' => $observacoes,
-            'gateway' => $gatewayName,
-            'gateway_id' => $gatewayId,
-        ]);
-
-        // Lançar Dependentes se houver (individual por tipo)
-        if ($dependentes->count() > 0) {
-            foreach ($dependentes as $dep) {
-                $categoriaDep = $dep->tipo_dependencia === 'nao_legal'
-                    ? 'taxa_adm_dependente_nao_legal'
-                    : 'taxa_adm_dependente';
-
+        // 1. Lançar taxas dinâmicas ativas
+        foreach ($taxasAdesao as $taxa) {
+            if (!empty($taxa['ativo'])) {
+                $slugCategoria = \Illuminate\Support\Str::slug($taxa['titulo'] ?? 'taxa_adesao', '_');
                 \App\Models\LancamentoFinanceiro::create([
                     'associado_id' => $associado->id,
                     'tipo' => 'receita',
-                    'categoria' => $categoriaDep,
-                    'valor' => $dep->getTaxaAdesao(),
+                    'categoria' => $slugCategoria,
+                    'valor' => (float) ($taxa['valor'] ?? 0),
                     'data_vencimento' => now()->addDays(3),
                     'status' => $statusInicial,
                     'forma_pagamento' => $formaPagamento,
@@ -299,19 +285,44 @@ class AdesaoService
             }
         }
 
-        // Lançar Primeira Parcela da Cota Capital
-        \App\Models\LancamentoFinanceiro::create([
-            'associado_id' => $associado->id,
-            'tipo' => 'receita',
-            'categoria' => 'cota_capital',
-            'valor' => $primeiraCota,
-            'data_vencimento' => now()->addDays(3),
-            'status' => $statusInicial,
-            'forma_pagamento' => $formaPagamento,
-            'data_pagamento' => $dataPagamento,
-            'observacoes_pagamento' => $observacoes,
-            'gateway' => $gatewayName,
-            'gateway_id' => $gatewayId,
-        ]);
+        // 2. Lançar Dependentes se houver (individual por tipo)
+        if ($dependentes->count() > 0) {
+            foreach ($dependentes as $dep) {
+                $isNaoLegal = $dep->tipo_dependencia === 'nao_legal';
+                $categoriaDep = $isNaoLegal ? 'taxa_adm_dependente_nao_legal' : 'taxa_adm_dependente';
+                $valDep = $isNaoLegal ? $taxaDepNaoLegal : $taxaDepLegal;
+
+                \App\Models\LancamentoFinanceiro::create([
+                    'associado_id' => $associado->id,
+                    'tipo' => 'receita',
+                    'categoria' => $categoriaDep,
+                    'valor' => $valDep,
+                    'data_vencimento' => now()->addDays(3),
+                    'status' => $statusInicial,
+                    'forma_pagamento' => $formaPagamento,
+                    'data_pagamento' => $dataPagamento,
+                    'observacoes_pagamento' => $observacoes,
+                    'gateway' => $gatewayName,
+                    'gateway_id' => $gatewayId,
+                ]);
+            }
+        }
+
+        // 3. Lançar Primeira Parcela da Cota Capital (Apenas para Cooperativas, Omitir para Fundação)
+        if ($isCooperativa) {
+            \App\Models\LancamentoFinanceiro::create([
+                'associado_id' => $associado->id,
+                'tipo' => 'receita',
+                'categoria' => 'cota_capital',
+                'valor' => $cotaAporteInicial,
+                'data_vencimento' => now()->addDays(3),
+                'status' => $statusInicial,
+                'forma_pagamento' => $formaPagamento,
+                'data_pagamento' => $dataPagamento,
+                'observacoes_pagamento' => $observacoes,
+                'gateway' => $gatewayName,
+                'gateway_id' => $gatewayId,
+            ]);
+        }
     }
 }

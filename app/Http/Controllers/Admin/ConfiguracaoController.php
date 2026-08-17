@@ -80,6 +80,19 @@ class ConfiguracaoController extends Controller
             'asaas' => ['enabled' => false, 'api_key' => '', 'environment' => 'sandbox', 'webhook_token' => ''],
             'stripe' => ['enabled' => false, 'public_key' => '', 'secret_key' => '', 'webhook_secret' => ''],
             'mercadopago' => ['enabled' => false, 'access_token' => '', 'public_key' => ''],
+            'taxas_adesao' => [
+                ['id' => '1', 'titulo' => 'Taxa Administrativa (Titular)', 'valor' => 100.00, 'ativo' => true],
+                ['id' => '2', 'titulo' => 'Taxa de Uso do Sistema', 'valor' => 10.00, 'ativo' => true],
+            ],
+            'taxa_dependente_legal' => 80.00,
+            'taxa_dependente_nao_legal' => 100.00,
+            'cota_capital_config' => [
+                'meta_total' => 600.00,
+                'valor_quota' => 10.00,
+                'qtd_quotas' => 60,
+                'valor_mensal' => 10.00,
+                'aporte_inicial' => 10.00,
+            ],
         ];
 
         $rawConfig = $tenant->payment_config;
@@ -91,6 +104,11 @@ class ConfiguracaoController extends Controller
         }
 
         $paymentConfig = array_replace_recursive($defaultConfig, $rawConfig);
+
+        // Se o array de taxas_adesao existir no banco, ele deve sobrescrever a lista default
+        if (isset($rawConfig['taxas_adesao']) && is_array($rawConfig['taxas_adesao'])) {
+            $paymentConfig['taxas_adesao'] = $rawConfig['taxas_adesao'];
+        }
 
         if (!empty($paymentConfig['pix_manual']['qrcode_image_path'])) {
             $paymentConfig['pix_manual']['qrcode_image_url'] = tenant_asset($paymentConfig['pix_manual']['qrcode_image_path']);
@@ -117,7 +135,7 @@ class ConfiguracaoController extends Controller
     }
 
     /**
-     * Salvar configurações de Gateway de Pagamento
+     * Salvar configurações de Gateway de Pagamento e Taxas de Adesão
      */
     public function updatePagamentos(UpdatePaymentSettingsRequest $request)
     {
@@ -134,6 +152,22 @@ class ConfiguracaoController extends Controller
         }
 
         $data = array_replace_recursive($currentConfig, $validated);
+
+        if (isset($validated['taxas_adesao'])) {
+            $data['taxas_adesao'] = array_values($validated['taxas_adesao']);
+        }
+
+        if (isset($validated['taxa_dependente_legal'])) {
+            $data['taxa_dependente_legal'] = (float) $validated['taxa_dependente_legal'];
+        }
+
+        if (isset($validated['taxa_dependente_nao_legal'])) {
+            $data['taxa_dependente_nao_legal'] = (float) $validated['taxa_dependente_nao_legal'];
+        }
+
+        if (isset($validated['cota_capital_config'])) {
+            $data['cota_capital_config'] = $validated['cota_capital_config'];
+        }
 
         // Upload do QR Code do PIX Manual se enviado
         if ($request->hasFile('pix_manual.qrcode_image')) {

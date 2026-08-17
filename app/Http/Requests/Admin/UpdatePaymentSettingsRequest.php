@@ -40,6 +40,18 @@ class UpdatePaymentSettingsRequest extends FormRequest
             'mercadopago' => 'nullable|array',
             'mercadopago.access_token' => 'nullable|string|max:500',
             'mercadopago.public_key' => 'nullable|string|max:500',
+            'taxas_adesao' => 'nullable|array',
+            'taxas_adesao.*.id' => 'nullable|string',
+            'taxas_adesao.*.titulo' => 'nullable|string|max:255',
+            'taxas_adesao.*.valor' => 'nullable|numeric|min:0',
+            'taxas_adesao.*.ativo' => 'nullable|boolean',
+            'taxa_dependente_legal' => 'nullable|numeric|min:0',
+            'taxa_dependente_nao_legal' => 'nullable|numeric|min:0',
+            'cota_capital_config' => 'nullable|array',
+            'cota_capital_config.meta_total' => 'nullable|numeric|min:0',
+            'cota_capital_config.valor_quota' => 'nullable|numeric|min:0',
+            'cota_capital_config.qtd_quotas' => 'nullable|integer|min:1',
+            'cota_capital_config.aporte_inicial' => 'nullable|numeric|min:0',
         ];
     }
 }
