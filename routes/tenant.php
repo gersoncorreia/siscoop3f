@@ -53,9 +53,10 @@ Route::middleware([
                         Route::get('/', [\App\Http\Controllers\Cooperado\CooperadoDashboardController::class, 'index'])->name('dashboard');
                         Route::get('/cotas', [\App\Http\Controllers\Cooperado\CooperadoFinanceiroController::class, 'cotaCapital'])->name('cotas');
                         
-                        // Rotas que exigem cadastro completo
+                        Route::get('/financeiro', [\App\Http\Controllers\Cooperado\CooperadoFinanceiroController::class, 'index'])->name('financeiro');
+                        
+                        // Rotas que exigem cadastro completo para solicitação de serviços específicos
                         Route::middleware('cadastro.completo')->group(function () {
-                            Route::get('/financeiro', [\App\Http\Controllers\Cooperado\CooperadoFinanceiroController::class, 'index'])->name('financeiro');
                             Route::get('/reembolsos', [\App\Http\Controllers\Cooperado\CooperadoReembolsoController::class, 'index'])->name('reembolsos');
                             Route::post('/reembolsos', [\App\Http\Controllers\Cooperado\CooperadoReembolsoController::class, 'store'])->name('reembolsos.store');
                             Route::get('/reembolsos/{id}/download', [\App\Http\Controllers\Cooperado\CooperadoReembolsoController::class, 'download'])->name('reembolsos.download');

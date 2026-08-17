@@ -22,8 +22,13 @@ class CheckCadastroCompleto
         if (auth()->check()) {
             $user = auth()->user();
             
-            // Somente para cooperados, admins continuam
+            // Somente para cooperados/clientes, admins continuam
             if ($user->hasAnyRole(['Associado', 'Cliente']) && $user->associado) {
+                // Permitir visualizar extrato financeiro sem bloqueio
+                if ($request->is('*/financeiro') || $request->is('financeiro')) {
+                    return $next($request);
+                }
+
                 if (!$user->associado->isCadastroCompleto()) {
                     return redirect()->route('profile.edit')->with('error', 'Por favor, antes de solicitar serviços, complete seu cadastro com seu endereço e data de nascimento.');
                 }
