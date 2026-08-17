@@ -72,6 +72,13 @@ class AdesaoController extends Controller
 
         $paymentConfig = array_replace_recursive($defaultPaymentConfig, $rawConfig);
 
+        if (!empty($paymentConfig['pix_manual']['qrcode_image_path'])) {
+            $paymentConfig['pix_manual']['qrcode_image_url'] = tenant_asset($paymentConfig['pix_manual']['qrcode_image_path']);
+        } elseif (!empty($paymentConfig['pix_manual']['qrcode_image_url']) && !str_starts_with($paymentConfig['pix_manual']['qrcode_image_url'], 'http')) {
+            $path = str_replace('/storage/', '', $paymentConfig['pix_manual']['qrcode_image_url']);
+            $paymentConfig['pix_manual']['qrcode_image_url'] = tenant_asset($path);
+        }
+
         return Inertia::render('Adesao/Success', [
             'associado' => $associado ? [
                 'id' => $associado->id,

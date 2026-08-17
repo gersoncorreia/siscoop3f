@@ -92,6 +92,13 @@ class ConfiguracaoController extends Controller
 
         $paymentConfig = array_replace_recursive($defaultConfig, $rawConfig);
 
+        if (!empty($paymentConfig['pix_manual']['qrcode_image_path'])) {
+            $paymentConfig['pix_manual']['qrcode_image_url'] = tenant_asset($paymentConfig['pix_manual']['qrcode_image_path']);
+        } elseif (!empty($paymentConfig['pix_manual']['qrcode_image_url']) && !str_starts_with($paymentConfig['pix_manual']['qrcode_image_url'], 'http')) {
+            $path = str_replace('/storage/', '', $paymentConfig['pix_manual']['qrcode_image_url']);
+            $paymentConfig['pix_manual']['qrcode_image_url'] = tenant_asset($path);
+        }
+
         // Mascarar chaves sensíveis antes de enviar para o frontend
         $maskedConfig = $paymentConfig;
         foreach (['asaas' => ['api_key', 'webhook_token'], 'stripe' => ['secret_key', 'webhook_secret'], 'mercadopago' => ['access_token']] as $gw => $fields) {
@@ -130,12 +137,16 @@ class ConfiguracaoController extends Controller
 
         // Upload do QR Code do PIX Manual se enviado
         if ($request->hasFile('pix_manual.qrcode_image')) {
-            if (!empty($currentConfig['pix_manual']['qrcode_image_url'])) {
+            if (!empty($currentConfig['pix_manual']['qrcode_image_path'])) {
+                Storage::disk('public')->delete($currentConfig['pix_manual']['qrcode_image_path']);
+            } elseif (!empty($currentConfig['pix_manual']['qrcode_image_url'])) {
                 $oldPath = str_replace('/storage/', '', $currentConfig['pix_manual']['qrcode_image_url']);
                 Storage::disk('public')->delete($oldPath);
             }
+
             $path = $request->file('pix_manual.qrcode_image')->store('pix_qrcodes', 'public');
-            $data['pix_manual']['qrcode_image_url'] = Storage::url($path);
+            $data['pix_manual']['qrcode_image_path'] = $path;
+            $data['pix_manual']['qrcode_image_url'] = tenant_asset($path);
         }
 
         // Não sobrescrever com as máscaras (estrelinhas) vindas do frontend
