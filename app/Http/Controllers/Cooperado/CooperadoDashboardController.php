@@ -17,7 +17,7 @@ class CooperadoDashboardController extends Controller
     }
 
     /**
-     * Dashboard principal do cooperado
+     * Dashboard principal do cliente/cooperado
      */
     public function index(): Response
     {
@@ -25,27 +25,50 @@ class CooperadoDashboardController extends Controller
         $associado->load(['dependentes', 'cotasCapital', 'lancamentosFinanceiros', 'reembolsos']);
 
         $saldoCotaCapital = $associado->cotasCapital->sum('saldo');
-        $mensalidadesPendentes = $associado->lancamentosFinanceiros
-            ->where('status', 'pendente')
-            ->count();
-        $totalDependentes = $associado->dependentes->count();
-        $reembolsosEmAnalise = $associado->reembolsos
-            ->where('status', 'pendente')
-            ->count();
+        
+        $lancamentos = $associado->lancamentosFinanceiros;
+        $mensalidadesPendentes = $lancamentos->where('status', 'pendente')->count();
+        $totalPago = $lancamentos->where('status', 'pago')->sum('valor');
+        $totalPendente = $lancamentos->where('status', 'pendente')->sum('valor');
 
-        // Últimas 5 atividades (lançamentos recentes)
+        $totalDependentes = $associado->dependentes->count();
+        $reembolsosEmAnalise = $associado->reembolsos->where('status', 'pendente')->count();
+
+        $categoriaLabels = [
+            'taxa_adm_titular' => 'Taxa Administrativa (Titular)',
+            'taxa_uso_sistema' => 'Taxa de Uso do Sistema',
+            'taxa_adm_dependente' => 'Taxa Dependente Legal',
+            'taxa_adm_dependente_nao_legal' => 'Taxa Dependente Não Legal',
+            'cota_capital' => 'Cota Capital (Aporte Inicial)',
+            'consulta_medica' => 'Consulta Médica Especializada',
+            'exame' => 'Exame Laboratorial / Imagem',
+            'mensalidade' => 'Mensalidade do Plano',
+        ];
+
+        // Últimas 5 atividades (lançamentos recentes com nomes humanizados)
         $atividadesRecentes = $associado->lancamentosFinanceiros()
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get()
-            ->map(fn ($l) => [
-                'id' => $l->id,
-                'tipo' => $l->tipo,
-                'valor' => (float) $l->valor,
-                'status' => $l->status,
-                'data_vencimento' => $l->data_vencimento,
-                'created_at' => $l->created_at->format('d/m/Y'),
-            ]);
+            ->map(function ($l) use ($categoriaLabels) {
+                $catSlug = $l->categoria;
+                $label = $categoriaLabels[$catSlug] ?? null;
+                if (!$label) {
+                    $label = ucwords(str_replace(['_', '-'], ' ', $catSlug ?: 'Taxa / Serviço'));
+                }
+
+                return [
+                    'id' => $l->id,
+                    'tipo' => $l->tipo,
+                    'categoria' => $l->categoria,
+                    'categoria_label' => $label,
+                    'valor' => (float) $l->valor,
+                    'status' => $l->status,
+                    'data_vencimento' => $l->data_vencimento ? \Carbon\Carbon::parse($l->data_vencimento)->format('d/m/Y') : null,
+                    'created_at' => $l->created_at->format('d/m/Y'),
+                    'observacoes' => $l->observacoes_pagamento ?? $l->observacoes,
+                ];
+            });
 
         $agendamentosPendentes = \App\Models\Agendamento::where('user_id', auth()->id())->where('status', 'pendente')->count();
         $solicitacoesPendentes = \App\Models\Agendamento::where('user_id', auth()->id())->count();
@@ -62,6 +85,8 @@ class CooperadoDashboardController extends Controller
             'stats' => [
                 'saldoCotaCapital' => (float) $saldoCotaCapital,
                 'mensalidadesPendentes' => $mensalidadesPendentes,
+                'totalPago' => (float) $totalPago,
+                'totalPendente' => (float) $totalPendente,
                 'totalDependentes' => $totalDependentes,
                 'reembolsosEmAnalise' => $reembolsosEmAnalise,
                 'agendamentosPendentes' => $agendamentosPendentes,

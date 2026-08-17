@@ -63,14 +63,30 @@ const tipoLabel = (tipo) => tipo === 'consulta' ? '🩺 Consulta' : '🔬 Exame'
                         </span>
                     </div>
 
-                    <h3 class="text-base font-black text-[var(--text-heading)] leading-tight mb-1">{{ ag.especialidade }}</h3>
-                    <p v-if="ag.prestador" class="text-xs font-bold text-slate-400 mb-3">{{ ag.prestador.nome }}</p>
+                    <h3 class="text-base font-black text-[var(--text-heading)] leading-tight mb-1">
+                        {{ ag.tabela_servico?.nome || ag.especialidade }}
+                    </h3>
+                    <p v-if="ag.tabela_servico" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Especialidade: {{ ag.especialidade }}</p>
+                    <p v-if="ag.prestador" class="text-xs font-bold text-slate-400 mb-3">Prestador: {{ ag.prestador.nome }}</p>
 
                     <div class="flex items-center gap-2 text-xs font-medium text-slate-500 mt-3">
                         <CalendarDaysIcon class="w-4 h-4" />
                         {{ new Date(ag.data_hora).toLocaleDateString('pt-BR') }}
                         <ClockIcon class="w-4 h-4 ml-2" />
                         {{ new Date(ag.data_hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) }}
+                    </div>
+
+                    <!-- Payment Details Badge -->
+                    <div class="mt-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-[var(--border-color)] flex items-center justify-between">
+                        <div>
+                            <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 block">Valor do Serviço</span>
+                            <span class="text-xs font-black text-[var(--text-heading)] font-mono">
+                                {{ (ag.valor_cobrado || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                            </span>
+                        </div>
+                        <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-primary-dynamic/10 text-primary-dynamic uppercase tracking-wider">
+                            {{ ag.status_pagamento_label }}
+                        </span>
                     </div>
 
                     <p v-if="ag.observacoes" class="mt-3 text-[10px] text-slate-400 italic leading-relaxed border-t border-[var(--border-color)] pt-2">

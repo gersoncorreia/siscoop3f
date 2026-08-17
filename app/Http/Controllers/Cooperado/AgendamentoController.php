@@ -13,9 +13,39 @@ class AgendamentoController extends Controller
     public function index()
     {
         $agendamentos = Agendamento::where('user_id', auth()->id())
-            ->with('prestador')
+            ->with(['prestador', 'tabelaServico'])
             ->orderBy('data_hora', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($ag) {
+                $valor = (float) ($ag->valor_cobrado ?? $ag->tabelaServico?->valor_base ?? 0);
+                $statusPagamentoLabel = 'Pagamento Presencial na Recepção';
+                if ($valor == 0) {
+                    $statusPagamentoLabel = 'Incluso no Plano / Isento';
+                }
+
+                return [
+                    'id' => $ag->id,
+                    'tipo' => $ag->tipo,
+                    'especialidade' => $ag->especialidade,
+                    'modalidade' => $ag->modalidade,
+                    'data_hora' => $ag->data_hora ? $ag->data_hora->format('Y-m-d H:i:s') : null,
+                    'status' => $ag->status,
+                    'observacoes' => $ag->observacoes,
+                    'valor_cobrado' => $valor,
+                    'status_pagamento_label' => $statusPagamentoLabel,
+                    'prestador' => $ag->prestador ? [
+                        'id' => $ag->prestador->id,
+                        'nome' => $ag->prestador->nome,
+                    ] : null,
+                    'tabela_servico' => $ag->tabelaServico ? [
+                        'id' => $ag->tabelaServico->id,
+                        'codigo' => $ag->tabelaServico->codigo,
+                        'nome' => $ag->tabelaServico->nome,
+                        'categoria' => $ag->tabelaServico->categoria,
+                        'valor_base' => (float) $ag->tabelaServico->valor_base,
+                    ] : null,
+                ];
+            });
 
         return Inertia::render('Cooperado/Agendamentos/Index', [
             'agendamentos' => $agendamentos,
@@ -61,14 +91,33 @@ class AgendamentoController extends Controller
         $validated['user_id'] = auth()->id();
         $validated['status']  = 'pendente';
 
+        $servicoObj = null;
         if (!empty($validated['tabela_servico_id'])) {
-            $servico = \App\Models\TabelaServico::find($validated['tabela_servico_id']);
-            if ($servico) {
-                $validated['valor_cobrado'] = $servico->valor_base;
+            $servicoObj = \App\Models\TabelaServico::find($validated['tabela_servico_id']);
+            if ($servicoObj) {
+                $validated['valor_cobrado'] = $servicoObj->valor_base;
             }
         }
 
         $agendamento = Agendamento::create($validated);
+
+        // Gerar lançamento financeiro do serviço se houver valor a ser cobrado
+        $associado = \App\Models\Associado::where('user_id', auth()->id())->first();
+        if ($associado && !empty($validated['valor_cobrado']) && $validated['valor_cobrado'] > 0) {
+            $categoriaFinanceira = $validated['tipo'] === 'exame' ? 'exame' : 'consulta_medica';
+            $nomeServico = $servicoObj ? $servicoObj->nome : $validated['especialidade'];
+
+            \App\Models\LancamentoFinanceiro::create([
+                'associado_id' => $associado->id,
+                'tipo' => 'receita',
+                'categoria' => $categoriaFinanceira,
+                'valor' => $validated['valor_cobrado'],
+                'data_vencimento' => $validated['data_hora'],
+                'status' => 'pendente',
+                'observacoes' => "Agendamento Santa Casa: {$nomeServico} ({$validated['especialidade']})",
+                'gateway' => 'presencial',
+            ]);
+        }
 
         // Disparar Notificação para o Usuário
         $user = auth()->user();
@@ -76,7 +125,7 @@ class AgendamentoController extends Controller
             $tipoLabel = ucfirst($validated['tipo']);
             $user->notify(new \App\Notifications\AppDatabaseNotification(
                 'Agendamento Solicitado',
-                "Seu agendamento de {$tipoLabel} ({$validated['especialidade']}) foi registrado com sucesso.",
+                "Seu agendamento de {$tipoLabel} ({$validated['especialidade']}) foi registrado com sucesso na Santa Casa.",
                 route('cooperado.agendamentos.index'),
                 'CalendarDaysIcon'
             ));

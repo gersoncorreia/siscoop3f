@@ -45,6 +45,14 @@ const kpis = computed(() => {
                 href: '/cooperado/carteirinha',
             },
             {
+                label: 'Meus Pagamentos',
+                value: formatCurrency(stats.value?.totalPago),
+                sub: (stats.value?.totalPendente || 0) > 0 ? `${formatCurrency(stats.value?.totalPendente)} pendente` : 'Pagamentos em dia',
+                icon: CurrencyDollarIcon,
+                color: (stats.value?.totalPendente || 0) > 0 ? 'amber' : 'emerald',
+                href: '/cooperado/financeiro',
+            },
+            {
                 label: 'Agendamentos',
                 value: stats.value?.agendamentosPendentes || 0,
                 sub: 'Consultas & Exames',
@@ -59,14 +67,6 @@ const kpis = computed(() => {
                 icon: UserGroupIcon,
                 color: 'purple',
                 href: '/cooperado/dependentes',
-            },
-            {
-                label: 'Minhas Solicitações',
-                value: stats.value?.solicitacoesPendentes || 0,
-                sub: 'Em acompanhamento',
-                icon: ClipboardDocumentCheckIcon,
-                color: (stats.value?.solicitacoesPendentes || 0) > 0 ? 'amber' : 'emerald',
-                href: '/cooperado/minhas-solicitacoes',
             },
         ];
     }
@@ -200,15 +200,15 @@ const kpis = computed(() => {
                                 <!-- Content -->
                                 <div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                     <div>
-                                        <p class="text-xs font-black text-[var(--text-heading)] uppercase tracking-tight">
-                                            {{ atividade.tipo === 'entrada' ? 'Pagamento' : 'Cobrança' }}
+                                        <p class="text-xs font-black text-[var(--text-heading)] tracking-tight">
+                                            {{ atividade.categoria_label || (atividade.tipo === 'entrada' ? 'Pagamento' : 'Cobrança') }}
                                         </p>
                                         <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">
                                             Vencimento: {{ atividade.data_vencimento }}
                                         </p>
                                     </div>
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-sm font-black" :class="atividade.tipo === 'entrada' ? 'text-emerald-600' : 'text-rose-600'">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-sm font-black text-[var(--text-heading)]">
                                             {{ formatCurrency(atividade.valor) }}
                                         </span>
                                         <span
@@ -221,6 +221,9 @@ const kpis = computed(() => {
                                         >
                                             {{ atividade.status }}
                                         </span>
+                                        <Link v-if="atividade.status === 'pendente'" href="/cooperado/financeiro" class="text-[10px] font-bold text-primary-dynamic hover:underline">
+                                            Pagar
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
