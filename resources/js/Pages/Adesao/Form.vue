@@ -100,7 +100,7 @@ function maskName(value) {
     const parts = value.trim().split(/\s+/);
     return parts.map(part => {
         if (part.length <= 2) return part;
-        return part.substring(0, 3) + '*'.repeat(Math.min(part.length - 3, 5));
+        return part.substring(0, 2) + '*'.repeat(Math.min(part.length - 2, 5));
     }).join(' ');
 }
 
