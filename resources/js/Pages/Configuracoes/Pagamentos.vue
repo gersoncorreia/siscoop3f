@@ -32,7 +32,7 @@ const baseUrl = computed(() => window.location.origin);
 const form = useForm({
     active_gateway: props.paymentConfig.active_gateway || 'interno',
     pix_manual: {
-        enabled: props.paymentConfig.pix_manual?.enabled ?? true,
+        enabled: Boolean(props.paymentConfig.pix_manual?.enabled ?? true),
         tipo_chave: props.paymentConfig.pix_manual?.tipo_chave || 'cnpj',
         chave_pix: props.paymentConfig.pix_manual?.chave_pix || '',
         favorecido: props.paymentConfig.pix_manual?.favorecido || '',
@@ -40,13 +40,13 @@ const form = useForm({
         qrcode_image: null,
     },
     presencial: {
-        enabled: props.paymentConfig.presencial?.enabled ?? true,
-        aceita_dinheiro: props.paymentConfig.presencial?.aceita_dinheiro ?? true,
-        aceita_maquininha: props.paymentConfig.presencial?.aceita_maquininha ?? true,
+        enabled: Boolean(props.paymentConfig.presencial?.enabled ?? true),
+        aceita_dinheiro: Boolean(props.paymentConfig.presencial?.aceita_dinheiro ?? true),
+        aceita_maquininha: Boolean(props.paymentConfig.presencial?.aceita_maquininha ?? true),
         instrucoes: props.paymentConfig.presencial?.instrucoes || '',
     },
     asaas: {
-        enabled: props.paymentConfig.asaas?.enabled ?? false,
+        enabled: Boolean(props.paymentConfig.asaas?.enabled ?? false),
         api_key: props.paymentConfig.asaas?.api_key || '',
         environment: props.paymentConfig.asaas?.environment || 'sandbox',
         webhook_token: props.paymentConfig.asaas?.webhook_token || '',

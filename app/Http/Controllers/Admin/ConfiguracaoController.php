@@ -160,6 +160,23 @@ class ConfiguracaoController extends Controller
             }
         }
 
+        // Normalizar booleans em $data
+        if (isset($data['pix_manual']['enabled'])) {
+            $data['pix_manual']['enabled'] = filter_var($data['pix_manual']['enabled'], FILTER_VALIDATE_BOOLEAN);
+        }
+        if (isset($data['presencial']['enabled'])) {
+            $data['presencial']['enabled'] = filter_var($data['presencial']['enabled'], FILTER_VALIDATE_BOOLEAN);
+        }
+        if (isset($data['presencial']['aceita_dinheiro'])) {
+            $data['presencial']['aceita_dinheiro'] = filter_var($data['presencial']['aceita_dinheiro'], FILTER_VALIDATE_BOOLEAN);
+        }
+        if (isset($data['presencial']['aceita_maquininha'])) {
+            $data['presencial']['aceita_maquininha'] = filter_var($data['presencial']['aceita_maquininha'], FILTER_VALIDATE_BOOLEAN);
+        }
+        if (isset($data['asaas']['enabled'])) {
+            $data['asaas']['enabled'] = filter_var($data['asaas']['enabled'], FILTER_VALIDATE_BOOLEAN);
+        }
+
         // Remover o objeto File do pix_manual se presente no array para não corromper o JSON
         if (isset($data['pix_manual']['qrcode_image'])) {
             unset($data['pix_manual']['qrcode_image']);
