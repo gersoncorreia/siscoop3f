@@ -18,7 +18,7 @@ Route::middleware([
 
         // Rotas Públicas de Adesão
         Route::get('/adesao', [\App\Http\Controllers\Public\AdesaoController::class , 'create'])->name('adesao.create');
-        Route::post('/adesao', [\App\Http\Controllers\Public\AdesaoController::class , 'store'])->name('adesao.store');
+        Route::post('/adesao', [\App\Http\Controllers\Public\AdesaoController::class , 'store'])->middleware('throttle:5,1')->name('adesao.store');
         Route::get('/adesao/sucesso', [\App\Http\Controllers\Public\AdesaoController::class , 'success'])->name('adesao.success');
 
         Route::middleware('auth')->group(function () {

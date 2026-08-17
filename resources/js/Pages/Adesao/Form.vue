@@ -95,6 +95,15 @@ function handleCpfInput(event) {
     form.cpf = formatCPF(event.target.value);
 }
 
+function maskName(value) {
+    if (!value) return '';
+    const parts = value.trim().split(/\s+/);
+    return parts.map(part => {
+        if (part.length <= 2) return part;
+        return part.substring(0, 3) + '*'.repeat(Math.min(part.length - 3, 5));
+    }).join(' ');
+}
+
 function maskCPF(value) {
     if (!value) return '';
     const digits = value.replace(/\D/g, '');
@@ -117,6 +126,9 @@ function submitForm() {
     form.post(route('adesao.store'), {
         onError: (errors) => {
             const fields = [];
+            if (errors.nome && errors.nome.includes('Identificamos')) {
+                fields.push(`Nome (${maskName(form.nome)})`);
+            }
             if (errors.cpf && errors.cpf.includes('Identificamos')) {
                 fields.push(`CPF (${maskCPF(form.cpf)})`);
             }
