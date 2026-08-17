@@ -35,13 +35,27 @@ class Agendamento extends Model
         'modalidade',
         'data_hora',
         'status',
+        'forma_pagamento',
+        'comprovante_pix_path',
         'observacoes',
+    ];
+
+    protected $appends = [
+        'comprovante_pix_url',
     ];
 
     protected $casts = [
         'data_hora' => 'datetime',
         'valor_cobrado' => 'decimal:2',
     ];
+
+    public function getComprovantePixUrlAttribute(): ?string
+    {
+        if (!$this->comprovante_pix_path) {
+            return null;
+        }
+        return tenant_asset($this->comprovante_pix_path);
+    }
 
     /**
      * Available types with labels.

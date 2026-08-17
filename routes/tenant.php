@@ -85,6 +85,7 @@ Route::middleware([
                         Route::get('/agendamentos', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'index'])->name('agendamentos.index');
                         Route::get('/agendamentos/novo', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'create'])->name('agendamentos.create');
                         Route::post('/agendamentos', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'store'])->name('agendamentos.store');
+                        Route::post('/agendamentos/{agendamento}/comprovante', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'anexarComprovante'])->name('agendamentos.comprovante');
                         Route::delete('/agendamentos/{agendamento}', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'destroy'])->name('agendamentos.destroy');
 
                         // Internações Eletivas

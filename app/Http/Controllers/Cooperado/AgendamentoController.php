@@ -10,15 +10,55 @@ use Inertia\Inertia;
 
 class AgendamentoController extends Controller
 {
+    protected function getPaymentConfig(): array
+    {
+        $tenant = tenant();
+        $defaultConfig = [
+            'pix_manual' => [
+                'enabled' => true,
+                'tipo_chave' => 'cnpj',
+                'chave_pix' => '',
+                'favorecido' => $tenant->nome ?? 'Santa Casa da Amazônia'
+            ]
+        ];
+
+        $rawConfig = $tenant->payment_config;
+        if (is_string($rawConfig)) {
+            $rawConfig = json_decode($rawConfig, true) ?? [];
+        }
+        if (!is_array($rawConfig)) {
+            $rawConfig = [];
+        }
+        $paymentConfig = array_replace_recursive($defaultConfig, $rawConfig);
+
+        if (!empty($paymentConfig['pix_manual']['qrcode_image_path'])) {
+            $paymentConfig['pix_manual']['qrcode_image_url'] = tenant_asset($paymentConfig['pix_manual']['qrcode_image_path']);
+        } elseif (!empty($paymentConfig['pix_manual']['qrcode_image_url']) && !str_starts_with($paymentConfig['pix_manual']['qrcode_image_url'], 'http')) {
+            $path = str_replace('/storage/', '', $paymentConfig['pix_manual']['qrcode_image_url']);
+            $paymentConfig['pix_manual']['qrcode_image_url'] = tenant_asset($path);
+        }
+
+        return $paymentConfig;
+    }
+
     public function index()
     {
+        $paymentConfig = $this->getPaymentConfig();
+
         $agendamentos = Agendamento::where('user_id', auth()->id())
             ->with(['prestador', 'tabelaServico'])
             ->orderBy('data_hora', 'desc')
             ->get()
             ->map(function ($ag) {
                 $valor = (float) ($ag->valor_cobrado ?? $ag->tabelaServico?->valor_base ?? 0);
-                $statusPagamentoLabel = 'Pagamento Presencial na Recepção';
+                
+                $mapPagamento = [
+                    'pix_manual' => '📲 Pagamento via PIX (Online)',
+                    'cartao_presencial' => '💳 Cartão no Guichê da Santa Casa',
+                    'presencial' => '💵 Dinheiro na Recepção',
+                ];
+
+                $statusPagamentoLabel = $mapPagamento[$ag->forma_pagamento] ?? 'Pagamento Presencial na Recepção';
                 if ($valor == 0) {
                     $statusPagamentoLabel = 'Incluso no Plano / Isento';
                 }
@@ -30,6 +70,8 @@ class AgendamentoController extends Controller
                     'modalidade' => $ag->modalidade,
                     'data_hora' => $ag->data_hora ? $ag->data_hora->format('Y-m-d H:i:s') : null,
                     'status' => $ag->status,
+                    'forma_pagamento' => $ag->forma_pagamento ?? 'presencial',
+                    'comprovante_pix_url' => $ag->comprovante_pix_url,
                     'observacoes' => $ag->observacoes,
                     'valor_cobrado' => $valor,
                     'status_pagamento_label' => $statusPagamentoLabel,
@@ -49,6 +91,7 @@ class AgendamentoController extends Controller
 
         return Inertia::render('Cooperado/Agendamentos/Index', [
             'agendamentos' => $agendamentos,
+            'paymentConfig' => $paymentConfig,
         ]);
     }
 
@@ -69,11 +112,13 @@ class AgendamentoController extends Controller
         }
 
         $tabelaServicos = \App\Models\TabelaServico::ativos()->ordenado()->get(['id', 'codigo', 'nome', 'categoria', 'valor_base']);
+        $paymentConfig = $this->getPaymentConfig();
 
         return Inertia::render('Cooperado/Agendamentos/Criar', [
             'prestadores' => $prestadores,
             'tabelaServicos' => $tabelaServicos,
             'selectedServico' => $selectedServico,
+            'paymentConfig' => $paymentConfig,
         ]);
     }
 
@@ -85,11 +130,18 @@ class AgendamentoController extends Controller
             'prestador_id'      => 'nullable|exists:prestadors,id',
             'tabela_servico_id' => 'nullable|exists:tabela_servicos,id',
             'data_hora'         => 'required|date|after:now',
+            'forma_pagamento'   => 'required|in:presencial,pix_manual,cartao_presencial',
+            'comprovante_pix'   => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:4096',
             'observacoes'       => 'nullable|string|max:1000',
         ]);
 
         $validated['user_id'] = auth()->id();
         $validated['status']  = 'pendente';
+
+        if ($request->hasFile('comprovante_pix')) {
+            $path = $request->file('comprovante_pix')->store('agendamentos/comprovantes', 'public');
+            $validated['comprovante_pix_path'] = $path;
+        }
 
         $servicoObj = null;
         if (!empty($validated['tabela_servico_id'])) {
@@ -107,6 +159,11 @@ class AgendamentoController extends Controller
             $categoriaFinanceira = $validated['tipo'] === 'exame' ? 'exame' : 'consulta_medica';
             $nomeServico = $servicoObj ? $servicoObj->nome : $validated['especialidade'];
 
+            $obs = "Agendamento Santa Casa: {$nomeServico} ({$validated['especialidade']})";
+            if (!empty($validated['comprovante_pix_path'])) {
+                $obs .= ' - Comprovante PIX Anexado pelo Cliente';
+            }
+
             \App\Models\LancamentoFinanceiro::create([
                 'associado_id' => $associado->id,
                 'tipo' => 'receita',
@@ -114,7 +171,8 @@ class AgendamentoController extends Controller
                 'valor' => $validated['valor_cobrado'],
                 'data_vencimento' => $validated['data_hora'],
                 'status' => 'pendente',
-                'observacoes' => "Agendamento Santa Casa: {$nomeServico} ({$validated['especialidade']})",
+                'forma_pagamento' => $validated['forma_pagamento'],
+                'observacoes' => $obs,
                 'gateway' => 'presencial',
             ]);
         }
@@ -133,6 +191,25 @@ class AgendamentoController extends Controller
 
         return redirect()->route('cooperado.agendamentos.index')
             ->with('success', 'Agendamento solicitado com sucesso! Aguarde confirmação.');
+    }
+
+    public function anexarComprovante(Request $request, Agendamento $agendamento)
+    {
+        if ($agendamento->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'comprovante_pix' => 'required|file|mimes:jpeg,jpg,png,pdf|max:4096',
+        ]);
+
+        $path = $request->file('comprovante_pix')->store('agendamentos/comprovantes', 'public');
+        $agendamento->update([
+            'comprovante_pix_path' => $path,
+            'forma_pagamento' => 'pix_manual',
+        ]);
+
+        return back()->with('success', 'Comprovante PIX anexado ao agendamento com sucesso!');
     }
 
     public function destroy(Agendamento $agendamento)

@@ -14,7 +14,18 @@ const props = defineProps({
     prestadores: Array,
     tabelaServicos: Array,
     selectedServico: Object,
+    paymentConfig: Object,
 });
+
+const copied = ref(false);
+function copyPix() {
+    const key = props.paymentConfig?.pix_manual?.chave_pix || '';
+    if (key) {
+        navigator.clipboard.writeText(key);
+        copied.value = true;
+        setTimeout(() => copied.value = false, 2000);
+    }
+}
 
 function isExameCategoria(categoria) {
     if (!categoria) return false;
@@ -40,6 +51,8 @@ const form = useForm({
     tabela_servico_id: props.selectedServico ? props.selectedServico.id : '',
     prestador_id: '',
     data_hora: '',
+    forma_pagamento: 'presencial',
+    comprovante_pix: null,
     observacoes: '',
 });
 
@@ -264,6 +277,80 @@ const submitForm = () => {
                             class="block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs font-medium text-[var(--text-heading)] focus:ring-primary-dynamic focus:border-primary-dynamic transition-all p-3 resize-none"
                         ></textarea>
                         <InputError :message="form.errors.observacoes" class="mt-2" />
+                    </div>
+
+                    <!-- Opções de Pagamento do Serviço -->
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-[var(--border-color)] space-y-4">
+                        <InputLabel value="Forma de Pagamento Desejada *" class="!font-black tracking-widest uppercase text-[10px]" />
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label 
+                                :class="[
+                                    'p-3.5 rounded-xl border cursor-pointer transition-all flex flex-col justify-between gap-2',
+                                    form.forma_pagamento === 'presencial' ? 'border-primary-dynamic bg-primary-dynamic/5 ring-1 ring-primary-dynamic' : 'border-[var(--border-color)] bg-[var(--bg-card)] hover:border-slate-300'
+                                ]"
+                            >
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-black text-[var(--text-heading)]">💵 Presencial</span>
+                                    <input type="radio" v-model="form.forma_pagamento" value="presencial" class="text-primary-dynamic focus:ring-primary-dynamic" />
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-medium">Dinheiro na Recepção da Santa Casa</span>
+                            </label>
+
+                            <label 
+                                :class="[
+                                    'p-3.5 rounded-xl border cursor-pointer transition-all flex flex-col justify-between gap-2',
+                                    form.forma_pagamento === 'pix_manual' ? 'border-emerald-500 bg-emerald-500/5 ring-1 ring-emerald-500' : 'border-[var(--border-color)] bg-[var(--bg-card)] hover:border-slate-300'
+                                ]"
+                            >
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-black text-emerald-600 dark:text-emerald-400">📲 PIX Manual</span>
+                                    <input type="radio" v-model="form.forma_pagamento" value="pix_manual" class="text-emerald-500 focus:ring-emerald-500" />
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-medium">Pagamento Online via Chave PIX</span>
+                            </label>
+
+                            <label 
+                                :class="[
+                                    'p-3.5 rounded-xl border cursor-pointer transition-all flex flex-col justify-between gap-2',
+                                    form.forma_pagamento === 'cartao_presencial' ? 'border-indigo-500 bg-indigo-500/5 ring-1 ring-indigo-500' : 'border-[var(--border-color)] bg-[var(--bg-card)] hover:border-slate-300'
+                                ]"
+                            >
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-black text-indigo-600 dark:text-indigo-400">💳 Cartão (Maquininha)</span>
+                                    <input type="radio" v-model="form.forma_pagamento" value="cartao_presencial" class="text-indigo-500 focus:ring-indigo-500" />
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-medium">Débito/Crédito no Guichê</span>
+                            </label>
+                        </div>
+
+                        <!-- Informativo de Cartão -->
+                        <div v-if="form.forma_pagamento === 'cartao_presencial'" class="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-xs text-indigo-700 dark:text-indigo-300 font-medium">
+                            ℹ️ <strong>Aviso de Pagamento:</strong> O pagamento com Cartão de Débito/Crédito deverá ser finalizado presencialmente na maquininha do guichê da Santa Casa no dia do atendimento.
+                        </div>
+
+                        <!-- Caixa de Chave PIX + Comprovante -->
+                        <div v-if="form.forma_pagamento === 'pix_manual'" class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-black uppercase text-emerald-700 dark:text-emerald-300">Dados do PIX (Santa Casa)</span>
+                                <span class="text-[10px] font-bold text-slate-500">Favorecido: {{ paymentConfig?.pix_manual?.favorecido || $page.props.tenant?.nome }}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input 
+                                    type="text" 
+                                    readonly 
+                                    :value="paymentConfig?.pix_manual?.chave_pix || 'Consulte na Recepção'" 
+                                    class="w-full bg-white dark:bg-slate-900 border border-[var(--border-color)] rounded-xl py-2 px-3 text-xs font-mono font-bold" 
+                                />
+                                <button type="button" @click="copyPix" class="px-4 py-2 bg-emerald-500 text-white rounded-xl text-xs font-bold shrink-0">
+                                    {{ copied ? 'Copiado!' : 'Copiar Chave' }}
+                                </button>
+                            </div>
+                            <div>
+                                <InputLabel value="Anexar Comprovante PIX (opcional)" class="!font-black text-[10px] uppercase text-emerald-700 dark:text-emerald-400" />
+                                <input type="file" @change="e => form.comprovante_pix = e.target.files[0]" accept="image/*,application/pdf" class="mt-1 block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-500 file:text-white hover:file:bg-emerald-600 cursor-pointer" />
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Card de Resumo de Valor e Serviço (Posicionado no Rodapé) -->
