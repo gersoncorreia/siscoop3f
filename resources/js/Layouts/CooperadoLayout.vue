@@ -40,6 +40,7 @@ const isDependente = computed(() => userRoles.value.includes('Dependente'));
 const isFundacao = computed(() => page.props.tenant?.tipo === 'fundacao');
 const portalTitle = computed(() => isFundacao.value ? 'Portal do Cliente' : 'Portal Cooperado');
 const portalPanelTitle = computed(() => isFundacao.value ? 'Painel do Cliente' : 'Painel Cooperado');
+const routePrefix = computed(() => isFundacao.value ? '/cliente' : '/cooperado');
 
 const hasServico = (key) => {
     const servicos = tenant.value?.servicos;
@@ -53,24 +54,27 @@ const hasServico = (key) => {
     return Array.isArray(servicos) && servicos.includes(key);
 };
 
-const allNavItems = [
-    { name: 'Meu Painel', href: '/cooperado', icon: Squares2X2Icon, routeMatch: 'cooperado.dashboard', hideForDependente: false },
-    { name: 'Minha Carteirinha', href: '/cooperado/carteirinha', icon: IdentificationIcon, routeMatch: 'cooperado.carteirinha', hideForDependente: false, onlyFundacao: true, servicoKey: 'carteirinha_digital' },
-    { name: 'Agendamentos', href: '/cooperado/agendamentos', icon: CalendarDaysIcon, routeMatch: 'cooperado.agendamentos', hideForDependente: false, onlyFundacao: true, servicoKey: 'gestao_consultas' },
-    { name: 'Internações', href: '/cooperado/internacoes', icon: BuildingOffice2Icon, routeMatch: 'cooperado.internacoes', hideForDependente: false, onlyFundacao: true, servicoKey: 'gestao_internacoes' },
-    { name: 'Prontuário', href: '/cooperado/prontuario', icon: ClipboardDocumentListIcon, routeMatch: 'cooperado.prontuario', hideForDependente: false, onlyFundacao: true, servicoKey: 'prontuario_eletronico' },
-    { name: 'Tabela de Serviços', href: '/cooperado/servicos', icon: CurrencyDollarIcon, routeMatch: 'cooperado.servicos', hideForDependente: false, onlyFundacao: true, servicoKey: 'tabela_servicos' },
-    { name: 'Financeiro', href: '/cooperado/financeiro', icon: BanknotesIcon, routeMatch: 'cooperado.financeiro', hideForDependente: true, onlyCooperativa: true },
-    { name: 'Cotas Capital', href: '/cooperado/cotas', icon: CurrencyDollarIcon, routeMatch: 'cooperado.cotas', hideForDependente: true, onlyCooperativa: true },
-    { name: 'Meus Pedidos', href: '/cooperado/minhas-solicitacoes', icon: ClipboardDocumentListIcon, routeMatch: 'cooperado.minhas-solicitacoes', hideForDependente: false },
-    { name: 'Reembolsos', href: '/cooperado/reembolsos', icon: ClipboardDocumentCheckIcon, routeMatch: 'cooperado.reembolsos', hideForDependente: false, onlyCooperativa: true },
-    { name: 'Rede de Prestadores', href: '/cooperado/prestadores', icon: BuildingOffice2Icon, routeMatch: 'cooperado.prestadores', hideForDependente: false },
-    { name: 'Dependentes', href: '/cooperado/dependentes', icon: UserGroupIcon, routeMatch: 'cooperado.dependentes', hideForDependente: true },
-    { name: 'Documentos', href: '/cooperado/documentos', icon: DocumentTextIcon, routeMatch: 'cooperado.documentos', hideForDependente: false },
-];
+const allNavItems = computed(() => {
+    const p = routePrefix.value;
+    return [
+        { name: 'Meu Painel', href: `${p}`, icon: Squares2X2Icon, routeMatch: isFundacao.value ? 'cliente.dashboard' : 'cooperado.dashboard', hideForDependente: false },
+        { name: 'Minha Carteirinha', href: `${p}/carteirinha`, icon: IdentificationIcon, routeMatch: isFundacao.value ? 'cliente.carteirinha' : 'cooperado.carteirinha', hideForDependente: false, onlyFundacao: true, servicoKey: 'carteirinha_digital' },
+        { name: 'Meu Financeiro', href: `${p}/financeiro`, icon: BanknotesIcon, routeMatch: isFundacao.value ? 'cliente.financeiro' : 'cooperado.financeiro', hideForDependente: true },
+        { name: 'Agendamentos', href: `${p}/agendamentos`, icon: CalendarDaysIcon, routeMatch: isFundacao.value ? 'cliente.agendamentos' : 'cooperado.agendamentos', hideForDependente: false, onlyFundacao: true, servicoKey: 'gestao_consultas' },
+        { name: 'Internações', href: `${p}/internacoes`, icon: BuildingOffice2Icon, routeMatch: isFundacao.value ? 'cliente.internacoes' : 'cooperado.internacoes', hideForDependente: false, onlyFundacao: true, servicoKey: 'gestao_internacoes' },
+        { name: 'Prontuário', href: `${p}/prontuario`, icon: ClipboardDocumentListIcon, routeMatch: isFundacao.value ? 'cliente.prontuario' : 'cooperado.prontuario', hideForDependente: false, onlyFundacao: true, servicoKey: 'prontuario_eletronico' },
+        { name: 'Tabela de Serviços', href: `${p}/servicos`, icon: CurrencyDollarIcon, routeMatch: isFundacao.value ? 'cliente.servicos' : 'cooperado.servicos', hideForDependente: false, onlyFundacao: true, servicoKey: 'tabela_servicos' },
+        { name: 'Cotas Capital', href: `${p}/cotas`, icon: CurrencyDollarIcon, routeMatch: isFundacao.value ? 'cliente.cotas' : 'cooperado.cotas', hideForDependente: true, onlyCooperativa: true },
+        { name: 'Meus Pedidos', href: `${p}/minhas-solicitacoes`, icon: ClipboardDocumentListIcon, routeMatch: isFundacao.value ? 'cliente.minhas-solicitacoes' : 'cooperado.minhas-solicitacoes', hideForDependente: false },
+        { name: 'Reembolsos', href: `${p}/reembolsos`, icon: ClipboardDocumentCheckIcon, routeMatch: isFundacao.value ? 'cliente.reembolsos' : 'cooperado.reembolsos', hideForDependente: false, onlyCooperativa: true },
+        { name: 'Rede de Prestadores', href: `${p}/prestadores`, icon: BuildingOffice2Icon, routeMatch: isFundacao.value ? 'cliente.prestadores' : 'cooperado.prestadores', hideForDependente: false },
+        { name: 'Dependentes', href: `${p}/dependentes`, icon: UserGroupIcon, routeMatch: isFundacao.value ? 'cliente.dependentes' : 'cooperado.dependentes', hideForDependente: true },
+        { name: 'Documentos', href: `${p}/documentos`, icon: DocumentTextIcon, routeMatch: isFundacao.value ? 'cliente.documentos' : 'cooperado.documentos', hideForDependente: false },
+    ];
+});
 
 const navItems = computed(() => {
-    return allNavItems.filter(item => {
+    return allNavItems.value.filter(item => {
         if (isDependente.value && item.hideForDependente) return false;
         if (item.onlyFundacao && !isFundacao.value) return false;
         if (item.onlyCooperativa && isFundacao.value) return false;
@@ -199,7 +203,7 @@ function isActive(routeMatch) {
                                 <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">{{ isFundacao ? 'Cliente' : 'Cooperado' }}</p>
                             </div>
                         </div>
-                        <Link href="/cooperado/perfil" class="block px-4 py-2 text-sm font-bold text-[var(--text-muted)] hover:text-primary-dynamic transition-colors mt-2">Meu Perfil</Link>
+                        <Link :href="`${routePrefix}/perfil`" class="block px-4 py-2 text-sm font-bold text-[var(--text-muted)] hover:text-primary-dynamic transition-colors mt-2">Meu Perfil</Link>
                         <Link href="/logout" method="post" as="button" class="block w-full text-left px-4 py-2 text-sm font-bold text-rose-500 hover:text-rose-600 transition-colors">Sair</Link>
                     </div>
                 </div>
@@ -211,7 +215,7 @@ function isActive(routeMatch) {
             <aside class="hidden lg:flex flex-col w-64 min-h-screen bg-[var(--bg-card)] border-r border-[var(--border-color)] sticky top-0 h-screen transition-all duration-300">
                 <!-- Sidebar Header -->
                 <div class="p-6 border-b border-[var(--border-color)]">
-                    <Link href="/cooperado" class="flex items-center gap-3 group">
+                    <Link :href="routePrefix" class="flex items-center gap-3 group">
                         <div :style="{ backgroundColor: primaryColor }" class="text-white p-2 rounded-lg shadow-sm transition-all group-hover:scale-105">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                                 <path d="M4.5 3.75a3 3 0 0 0-3 3v.75h21v-.75a3 3 0 0 0-3-3h-15Z" />
@@ -328,7 +332,7 @@ function isActive(routeMatch) {
                                         <p class="text-[11px] font-black text-[var(--text-heading)] truncate tracking-tight">{{ $page.props.auth.user.email }}</p>
                                     </div>
                                     <div class="p-1 space-y-0.5">
-                                        <DropdownLink href="/cooperado/perfil" class="flex items-center gap-2 px-3 py-2 rounded text-[11px] !font-bold">
+                                        <DropdownLink :href="`${routePrefix}/perfil`" class="flex items-center gap-2 px-3 py-2 rounded text-[11px] !font-bold">
                                             <UserIcon class="w-5 h-5 opacity-70" />
                                             <span>Perfil</span>
                                         </DropdownLink>

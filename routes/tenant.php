@@ -43,62 +43,64 @@ Route::middleware([
 
 
             // =====================================================
-            // PORTAL DO COOPERADO (Role: Associado)
+            // PORTAL DO CLIENTE (Fundação) / COOPERADO (Cooperativa)
             // =====================================================
-            Route::middleware([\App\Http\Middleware\EnsureCooperadoRole::class . ':cooperado'])
-                ->prefix('cooperado')
-                ->name('cooperado.')
-                ->group(function () {
-                    Route::get('/', [\App\Http\Controllers\Cooperado\CooperadoDashboardController::class, 'index'])->name('dashboard');
-                    Route::get('/cotas', [\App\Http\Controllers\Cooperado\CooperadoFinanceiroController::class, 'cotaCapital'])->name('cotas');
-                    
-                    // Rotas que exigem cadastro completo
-                    Route::middleware('cadastro.completo')->group(function () {
-                        Route::get('/financeiro', [\App\Http\Controllers\Cooperado\CooperadoFinanceiroController::class, 'index'])->name('financeiro');
-                        Route::get('/reembolsos', [\App\Http\Controllers\Cooperado\CooperadoReembolsoController::class, 'index'])->name('reembolsos');
-                        Route::post('/reembolsos', [\App\Http\Controllers\Cooperado\CooperadoReembolsoController::class, 'store'])->name('reembolsos.store');
-                        Route::get('/reembolsos/{id}/download', [\App\Http\Controllers\Cooperado\CooperadoReembolsoController::class, 'download'])->name('reembolsos.download');
-                        Route::delete('/reembolsos/{id}', [\App\Http\Controllers\Cooperado\CooperadoReembolsoController::class, 'destroy'])->name('reembolsos.destroy');
+            foreach (['cliente', 'cooperado'] as $prefix) {
+                Route::middleware([\App\Http\Middleware\EnsureCooperadoRole::class . ':cooperado'])
+                    ->prefix($prefix)
+                    ->name($prefix . '.')
+                    ->group(function () {
+                        Route::get('/', [\App\Http\Controllers\Cooperado\CooperadoDashboardController::class, 'index'])->name('dashboard');
+                        Route::get('/cotas', [\App\Http\Controllers\Cooperado\CooperadoFinanceiroController::class, 'cotaCapital'])->name('cotas');
+                        
+                        // Rotas que exigem cadastro completo
+                        Route::middleware('cadastro.completo')->group(function () {
+                            Route::get('/financeiro', [\App\Http\Controllers\Cooperado\CooperadoFinanceiroController::class, 'index'])->name('financeiro');
+                            Route::get('/reembolsos', [\App\Http\Controllers\Cooperado\CooperadoReembolsoController::class, 'index'])->name('reembolsos');
+                            Route::post('/reembolsos', [\App\Http\Controllers\Cooperado\CooperadoReembolsoController::class, 'store'])->name('reembolsos.store');
+                            Route::get('/reembolsos/{id}/download', [\App\Http\Controllers\Cooperado\CooperadoReembolsoController::class, 'download'])->name('reembolsos.download');
+                            Route::delete('/reembolsos/{id}', [\App\Http\Controllers\Cooperado\CooperadoReembolsoController::class, 'destroy'])->name('reembolsos.destroy');
+                        });
+                        Route::get('/dependentes', [\App\Http\Controllers\Cooperado\CooperadoDependenteController::class, 'index'])->name('dependentes');
+                        Route::post('/dependentes', [\App\Http\Controllers\Cooperado\CooperadoDependenteController::class, 'store'])->name('dependentes.store');
+                        Route::put('/dependentes/{id}', [\App\Http\Controllers\Cooperado\CooperadoDependenteController::class, 'update'])->name('dependentes.update');
+                        Route::delete('/dependentes/{id}', [\App\Http\Controllers\Cooperado\CooperadoDependenteController::class, 'destroy'])->name('dependentes.destroy');
+                        Route::get('/documentos', [\App\Http\Controllers\Cooperado\CooperadoDocumentoController::class, 'index'])->name('documentos');
+                        Route::post('/documentos', [\App\Http\Controllers\Cooperado\CooperadoDocumentoController::class, 'store'])->name('documentos.store');
+                        Route::delete('/documentos/{id}', [\App\Http\Controllers\Cooperado\CooperadoDocumentoController::class, 'destroy'])->name('documentos.destroy');
+                        Route::get('/documentos/{id}/download', [\App\Http\Controllers\Cooperado\CooperadoDocumentoController::class, 'download'])->name('documentos.download');
+
+                        // Rede de Prestadores
+                        Route::get('/prestadores', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'prestadores'])->name('prestadores');
+                        Route::get('/prestadores/{id}', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'prestadorDetalhe'])->name('prestadores.show');
+                        Route::get('/minhas-solicitacoes', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'minhasSolicitacoes'])->name('minhas-solicitacoes');
+
+                        // Perfil do Cliente / Cooperado
+                        Route::get('/perfil', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'perfil'])->name('perfil');
+                        Route::patch('/perfil', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'updatePerfil'])->name('perfil.update');
+
+                        // ---- Clube de Saúde / Fundação ----
+                        // Agendamentos (Consultas e Exames)
+                        Route::get('/agendamentos', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'index'])->name('agendamentos.index');
+                        Route::get('/agendamentos/novo', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'create'])->name('agendamentos.create');
+                        Route::post('/agendamentos', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'store'])->name('agendamentos.store');
+                        Route::delete('/agendamentos/{agendamento}', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'destroy'])->name('agendamentos.destroy');
+
+                        // Internações Eletivas
+                        Route::get('/internacoes', [\App\Http\Controllers\Cooperado\InternacaoController::class, 'index'])->name('internacoes.index');
+                        Route::post('/internacoes', [\App\Http\Controllers\Cooperado\InternacaoController::class, 'store'])->name('internacoes.store');
+
+                        // Prontuário Eletrônico
+                        Route::get('/prontuario', [\App\Http\Controllers\Cooperado\ProntuarioController::class, 'index'])->name('prontuario.index');
+
+                        // Carteirinha Digital (Fundação)
+                        Route::get('/carteirinha', [\App\Http\Controllers\Cooperado\CarteirinhaController::class, 'index'])->name('carteirinha');
+                        Route::post('/carteirinha/solicitar', [\App\Http\Controllers\Cooperado\CarteirinhaController::class, 'solicitar'])->name('carteirinha.solicitar');
+
+                        // Tabela de Serviços (Fundação - leitura)
+                        Route::get('/servicos', [\App\Http\Controllers\Cooperado\TabelaServicoController::class, 'index'])->name('servicos');
                     });
-                    Route::get('/dependentes', [\App\Http\Controllers\Cooperado\CooperadoDependenteController::class, 'index'])->name('dependentes');
-                    Route::post('/dependentes', [\App\Http\Controllers\Cooperado\CooperadoDependenteController::class, 'store'])->name('dependentes.store');
-                    Route::put('/dependentes/{id}', [\App\Http\Controllers\Cooperado\CooperadoDependenteController::class, 'update'])->name('dependentes.update');
-                    Route::delete('/dependentes/{id}', [\App\Http\Controllers\Cooperado\CooperadoDependenteController::class, 'destroy'])->name('dependentes.destroy');
-                    Route::get('/documentos', [\App\Http\Controllers\Cooperado\CooperadoDocumentoController::class, 'index'])->name('documentos');
-                    Route::post('/documentos', [\App\Http\Controllers\Cooperado\CooperadoDocumentoController::class, 'store'])->name('documentos.store');
-                    Route::delete('/documentos/{id}', [\App\Http\Controllers\Cooperado\CooperadoDocumentoController::class, 'destroy'])->name('documentos.destroy');
-                    Route::get('/documentos/{id}/download', [\App\Http\Controllers\Cooperado\CooperadoDocumentoController::class, 'download'])->name('documentos.download');
-
-                    // Rede de Prestadores
-                    Route::get('/prestadores', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'prestadores'])->name('prestadores');
-                    Route::get('/prestadores/{id}', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'prestadorDetalhe'])->name('prestadores.show');
-                    Route::get('/minhas-solicitacoes', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'minhasSolicitacoes'])->name('minhas-solicitacoes');
-
-                    // Perfil do Cooperado
-                    Route::get('/perfil', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'perfil'])->name('perfil');
-                    Route::patch('/perfil', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'updatePerfil'])->name('perfil.update');
-
-                    // ---- Clube de Saúde / Fundação ----
-                    // Agendamentos (Consultas e Exames)
-                    Route::get('/agendamentos', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'index'])->name('agendamentos.index');
-                    Route::get('/agendamentos/novo', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'create'])->name('agendamentos.create');
-                    Route::post('/agendamentos', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'store'])->name('agendamentos.store');
-                    Route::delete('/agendamentos/{agendamento}', [\App\Http\Controllers\Cooperado\AgendamentoController::class, 'destroy'])->name('agendamentos.destroy');
-
-                    // Internações Eletivas
-                    Route::get('/internacoes', [\App\Http\Controllers\Cooperado\InternacaoController::class, 'index'])->name('internacoes.index');
-                    Route::post('/internacoes', [\App\Http\Controllers\Cooperado\InternacaoController::class, 'store'])->name('internacoes.store');
-
-                    // Prontuário Eletrônico
-                    Route::get('/prontuario', [\App\Http\Controllers\Cooperado\ProntuarioController::class, 'index'])->name('prontuario.index');
-
-                    // Carteirinha Digital (Fundação)
-                    Route::get('/carteirinha', [\App\Http\Controllers\Cooperado\CarteirinhaController::class, 'index'])->name('carteirinha');
-                    Route::post('/carteirinha/solicitar', [\App\Http\Controllers\Cooperado\CarteirinhaController::class, 'solicitar'])->name('carteirinha.solicitar');
-
-                    // Tabela de Serviços (Fundação - leitura)
-                    Route::get('/servicos', [\App\Http\Controllers\Cooperado\TabelaServicoController::class, 'index'])->name('servicos');
-                });
+            }
 
             // =====================================================
             // PORTAL DO PRESTADOR / PARCEIRO (Role: Prestador)

@@ -23,7 +23,8 @@ class DashboardController extends Controller
             auth()->user()->hasAnyRole(['Associado', 'Cliente', 'Dependente']) &&
             !auth()->user()->hasAnyRole(['Administrador Cooperativa', 'Administrador Fundação', 'Presidente', 'Gerente', 'Diretor Administrativo Financeiro', 'Consultor', 'Presidente do Conselho Fiscal', 'Auditoria', 'Contábil', 'Atendente', 'Conselho'])
         ) {
-            return redirect('/cooperado');
+            $targetPortal = (function_exists('tenant') && tenant()?->tipo === 'fundacao') ? '/cliente' : '/cooperado';
+            return redirect($targetPortal);
         }
 
         // Redirect Prestador to their dedicated portal

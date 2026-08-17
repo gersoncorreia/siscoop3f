@@ -27,12 +27,12 @@ class EnsureCooperadoRole
                 return redirect('/dashboard');
             }
 
-            // Bloquear rotas exclusivas de cooperativa em tenants do tipo fundação
+            // Bloquear rotas exclusivas de cooperativa (cotas capital) em tenants do tipo fundação
             if (function_exists('tenant') && tenant()?->tipo === 'fundacao') {
-                $cooperativaOnlyPaths = ['cooperado/cotas', 'cooperado/financeiro'];
+                $cooperativaOnlyPaths = ['cooperado/cotas', 'cliente/cotas'];
                 foreach ($cooperativaOnlyPaths as $path) {
                     if ($request->is($path) || $request->is($path . '/*')) {
-                        return redirect('/cooperado')->with('error', 'Esta funcionalidade é exclusiva para Cooperativas.');
+                        return redirect('/cliente')->with('error', 'Esta funcionalidade é exclusiva para Cooperativas.');
                     }
                 }
             }
@@ -41,7 +41,8 @@ class EnsureCooperadoRole
         if ($guard === 'admin') {
             // This route requires admin and should NOT be accessed by Associado, Dependente, or Cliente
             if ($user->hasAnyRole(['Associado', 'Cliente', 'Dependente']) && !$user->hasAnyRole(['Administrador Cooperativa', 'Administrador Fundação', 'Presidente', 'Gerente', 'Diretor Administrativo Financeiro', 'Consultor', 'Presidente do Conselho Fiscal', 'Auditoria', 'Contábil', 'Atendente', 'Conselho'])) {
-                return redirect('/cooperado');
+                $homePortal = (function_exists('tenant') && tenant()?->tipo === 'fundacao') ? '/cliente' : '/cooperado';
+                return redirect($homePortal);
             }
         }
 
