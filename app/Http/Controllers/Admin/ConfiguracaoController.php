@@ -149,9 +149,13 @@ class ConfiguracaoController extends Controller
             }
         }
 
-        $tenant->update([
-            'payment_config' => $data,
-        ]);
+        // Remover o objeto File do pix_manual se presente no array para não corromper o JSON
+        if (isset($data['pix_manual']['qrcode_image'])) {
+            unset($data['pix_manual']['qrcode_image']);
+        }
+
+        $tenant->payment_config = $data;
+        $tenant->save();
 
         return redirect()->back()->with('success', 'Configurações de pagamento atualizadas com sucesso!');
     }

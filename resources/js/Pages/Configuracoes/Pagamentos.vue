@@ -105,8 +105,12 @@ const closeModal = () => {
 const submitForm = () => {
     form.post(route('configuracoes.pagamentos.update'), {
         preserveScroll: true,
+        forceFormData: true,
         onSuccess: () => {
             activeModal.value = null;
+            if (props.paymentConfig.pix_manual?.qrcode_image_url) {
+                qrcodePreview.value = props.paymentConfig.pix_manual.qrcode_image_url;
+            }
         }
     });
 };
