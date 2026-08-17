@@ -20,15 +20,6 @@ const props = defineProps({
 
 const primaryColor = computed(() => props.tenant?.primary_color || '#2563eb');
 
-const formasPagamento = [
-    { value: 'pix', label: 'PIX' },
-    { value: 'boleto', label: 'Boleto Bancário' },
-    { value: 'cartao_credito', label: 'Cartão de Crédito' },
-    { value: 'cartao_debito', label: 'Cartão de Débito' },
-    { value: 'dinheiro', label: 'Dinheiro' },
-    { value: 'transferencia', label: 'Transferência Bancária' },
-];
-
 const form = useForm({
     nome: '',
     cpf: '',
@@ -321,24 +312,6 @@ function submitForm() {
                             </div>
                         </div>
 
-                        <!-- Forma de Pagamento -->
-                        <div class="pt-6 border-t border-[var(--border-color)]/30">
-                            <h3 class="text-xl font-black text-[var(--text-heading)] tracking-tighter mb-4">Forma de Pagamento</h3>
-                            <div class="space-y-2">
-                                <InputLabel for="forma_pagamento" value="Como deseja efetuar o pagamento?" class="!font-black text-[10px] uppercase tracking-widest text-[var(--text-heading)]" />
-                                <select 
-                                    id="forma_pagamento" 
-                                    v-model="form.forma_pagamento_adesao" 
-                                    required
-                                    class="block w-full !py-4 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 dark:text-slate-200 focus:border-primary-dynamic focus:ring focus:ring-primary-dynamic/20 text-sm"
-                                >
-                                    <option value="" disabled>Selecione a forma de pagamento</option>
-                                    <option v-for="fp in formasPagamento" :key="fp.value" :value="fp.value">{{ fp.label }}</option>
-                                </select>
-                                <InputError class="mt-2" :message="form.errors.forma_pagamento_adesao" />
-                            </div>
-                        </div>
-
                         <!-- Resumo Financeiro -->
                         <div class="pt-6 border-t border-[var(--border-color)]/30">
                             <h3 class="text-xl font-black text-[var(--text-heading)] tracking-tighter mb-4">Resumo Financeiro</h3>
@@ -373,8 +346,8 @@ function submitForm() {
                             </div>
                         </div>
 
-                        <!-- Autorização de Desconto em Folha -->
-                        <div class="pt-6 border-t border-[var(--border-color)]/30">
+                        <!-- Autorização de Desconto em Folha (Apenas para Cooperativas, omitido para Fundação) -->
+                        <div v-if="props.tenant?.tipo !== 'fundacao'" class="pt-6 border-t border-[var(--border-color)]/30">
                             <div class="bg-amber-500/5 dark:bg-amber-500/10 p-6 rounded-2xl border border-amber-500/20">
                                 <div class="flex items-start gap-4">
                                     <input 
@@ -388,7 +361,7 @@ function submitForm() {
                                             Autorizo o desconto em folha de pagamento
                                         </span>
                                         <span class="block text-xs text-[var(--text-muted)] mt-1 leading-relaxed">
-                                            Declaro que autorizo a cooperativa a efetuar os descontos referentes às taxas administrativas, cotas de capital e demais encargos diretamente em minha folha de pagamento. Esta autorização é obrigatória para a conclusão da adesão.
+                                            Declaro que autorizo a entidade a efetuar os descontos referentes às taxas administrativas e encargos diretamente em minha folha de pagamento. Esta autorização é obrigatória para a conclusão da adesão.
                                         </span>
                                     </label>
                                 </div>

@@ -31,8 +31,8 @@ class SolicitarAdesaoRequest extends FormRequest
             'qtd_quotas' => ['nullable', 'integer', 'min:1'],
 
             // Novos campos de controle financeiro
-            'forma_pagamento_adesao' => ['required', 'string', 'in:pix,boleto,cartao_credito,cartao_debito,dinheiro,transferencia'],
-            'autoriza_desconto_folha' => ['required', 'accepted'],
+            'forma_pagamento_adesao' => ['nullable', 'string'],
+            'autoriza_desconto_folha' => (tenant() && tenant()->tipo === 'fundacao') ? ['nullable', 'boolean'] : ['required', 'accepted'],
 
             // Dependentes
             'dependentes' => ['nullable', 'array'],
