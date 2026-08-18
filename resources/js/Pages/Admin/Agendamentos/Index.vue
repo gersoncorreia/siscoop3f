@@ -198,15 +198,18 @@ const realizar = (id) => router.post(route('saude.agendamentos.realizar', id), {
                                     <div class="flex justify-end gap-2">
                                         <button 
                                             @click="openModal(ag)"
-                                            class="px-3 py-1.5 rounded-lg bg-primary-dynamic/10 hover:bg-primary-dynamic/20 text-primary-dynamic text-xs font-bold flex items-center gap-1.5 transition-all" 
-                                            title="Analisar e Validar Agendamento"
+                                            :class="[
+                                                'px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all',
+                                                ag.status === 'pendente' ? 'bg-primary-dynamic/10 hover:bg-primary-dynamic/20 text-primary-dynamic' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                                            ]" 
+                                            :title="ag.status === 'pendente' ? 'Analisar e Validar' : 'Ver Detalhes'"
                                         >
                                             <EyeIcon class="w-4 h-4" />
-                                            Analisar / Validar
+                                            {{ ag.status === 'pendente' ? 'Analisar / Validar' : (ag.status === 'confirmado' ? 'Detalhes / Concluir' : 'Ver Histórico') }}
                                         </button>
                                         <button v-if="ag.status === 'confirmado'" @click="realizar(ag.id)"
-                                            class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-500/10 transition-all" title="Marcar como Realizado">
-                                            ✅
+                                            class="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-500/10 text-xs font-bold transition-all flex items-center gap-1" title="Marcar como Realizado">
+                                            ✅ Concluir
                                         </button>
                                     </div>
                                 </td>
@@ -217,14 +220,16 @@ const realizar = (id) => router.post(route('saude.agendamentos.realizar', id), {
             </div>
         </div>
 
-        <!-- Modal de Análise & Aprovação / Reagendamento -->
+        <!-- Modal de Análise & Aprovação / Reagendamento / Leitura -->
         <Modal :show="showModal" @close="closeModal" maxWidth="2xl">
             <div v-if="selectedAgendamento" class="p-6 space-y-6">
                 <!-- Cabeçalho do Modal -->
                 <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-4">
                     <div>
                         <div class="flex items-center gap-2">
-                            <span class="text-xs font-black uppercase text-primary-dynamic tracking-widest">Análise de Solicitação</span>
+                            <span class="text-xs font-black uppercase text-primary-dynamic tracking-widest">
+                                {{ ['realizado', 'cancelado'].includes(selectedAgendamento.status) ? 'Histórico do Agendamento' : 'Análise de Solicitação' }}
+                            </span>
                             <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest border" :class="statusColor(selectedAgendamento.status)">
                                 {{ selectedAgendamento.status }}
                             </span>
@@ -234,6 +239,17 @@ const realizar = (id) => router.post(route('saude.agendamentos.realizar', id), {
                         </h3>
                     </div>
                     <button @click="closeModal" class="text-slate-400 hover:text-slate-600 font-black text-lg">✕</button>
+                </div>
+
+                <!-- Banner Informativo para Agendamentos Concluídos ou Cancelados -->
+                <div v-if="selectedAgendamento.status === 'realizado'" class="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center gap-3 text-xs text-emerald-700 dark:text-emerald-300 font-bold">
+                    <CheckCircleIcon class="w-5 h-5 text-emerald-600 shrink-0" />
+                    <span>✅ Este atendimento já foi REALIZADO e finalizado. As informações estão salvas em modo de leitura para auditoria.</span>
+                </div>
+
+                <div v-if="selectedAgendamento.status === 'cancelado'" class="p-3.5 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-bold">
+                    <XCircleIcon class="w-5 h-5 text-rose-600 shrink-0" />
+                    <span>❌ Este agendamento foi CANCELADO. Exibindo histórico e justificativa em modo de leitura.</span>
                 </div>
 
                 <!-- Seção 1: Dados do Cliente & Contato -->
@@ -292,8 +308,8 @@ const realizar = (id) => router.post(route('saude.agendamentos.realizar', id), {
                     </div>
                 </div>
 
-                <!-- Formulário de Aprovação e Ajuste de Agenda -->
-                <div v-if="!isRecusando" class="space-y-4">
+                <!-- Formulário de Aprovação e Ajuste de Agenda (Disponível apenas se PENDENTE ou CONFIRMADO) -->
+                <div v-if="!isRecusando && ['pendente', 'confirmado'].includes(selectedAgendamento.status)" class="space-y-4">
                     <div class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-[var(--border-color)] space-y-4">
                         <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
                             <span class="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
@@ -325,21 +341,32 @@ const realizar = (id) => router.post(route('saude.agendamentos.realizar', id), {
                     </div>
 
                     <div class="flex items-center justify-between pt-3 border-t border-[var(--border-color)]">
-                        <button type="button" @click="isRecusando = true" class="text-xs font-black text-rose-500 hover:underline">
+                        <button v-if="selectedAgendamento.status === 'pendente'" type="button" @click="isRecusando = true" class="text-xs font-black text-rose-500 hover:underline">
                             Recusar / Cancelar Agendamento
                         </button>
+                        <div v-else></div>
 
                         <div class="flex gap-2">
                             <SecondaryButton @click="closeModal">Fechar</SecondaryButton>
-                            <PrimaryButton @click="submitAprovacao" :disabled="approveForm.processing" class="!bg-emerald-600 hover:!bg-emerald-700">
-                                Approve & Confirmar Agendamento
+                            
+                            <button 
+                                v-if="selectedAgendamento.status === 'confirmado'" 
+                                type="button" 
+                                @click="realizar(selectedAgendamento.id); closeModal();"
+                                class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 flex items-center gap-1.5 transition-all"
+                            >
+                                ✅ Marcar como Realizado
+                            </button>
+
+                            <PrimaryButton @click="submitAprovacao" :disabled="approveForm.processing" class="!bg-blue-600 hover:!bg-blue-700">
+                                {{ selectedAgendamento.status === 'confirmado' ? 'Salvar Alterações' : 'Aprovar & Confirmar Agendamento' }}
                             </PrimaryButton>
                         </div>
                     </div>
                 </div>
 
                 <!-- Formulário de Recusa -->
-                <div v-else class="p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/40 rounded-2xl space-y-4">
+                <div v-else-if="isRecusando && selectedAgendamento.status === 'pendente'" class="p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/40 rounded-2xl space-y-4">
                     <div class="flex items-center gap-2 text-xs font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest">
                         <ExclamationTriangleIcon class="w-4 h-4" /> Informar Motivo da Recusa / Cancelamento
                     </div>
@@ -361,6 +388,11 @@ const realizar = (id) => router.post(route('saude.agendamentos.realizar', id), {
                             Confirmar Recusa
                         </PrimaryButton>
                     </div>
+                </div>
+
+                <!-- Rodapé para Modo Leitura (Realizado / Cancelado) -->
+                <div v-else-if="['realizado', 'cancelado'].includes(selectedAgendamento.status)" class="flex justify-end pt-3 border-t border-[var(--border-color)]">
+                    <SecondaryButton @click="closeModal">Fechar Histórico</SecondaryButton>
                 </div>
             </div>
         </Modal>

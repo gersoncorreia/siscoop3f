@@ -59,7 +59,11 @@ class AgendamentoController extends Controller
                 ];
 
                 $statusPagamentoLabel = $mapPagamento[$ag->forma_pagamento] ?? 'Pagamento Presencial na Recepção';
-                if ($valor == 0) {
+                if ($ag->status === 'confirmado' || $ag->status === 'realizado') {
+                    $statusPagamentoLabel = '✅ Pago e Confirmado';
+                } elseif ($ag->status === 'cancelado') {
+                    $statusPagamentoLabel = 'Solicitação Cancelada';
+                } elseif ($valor == 0) {
                     $statusPagamentoLabel = 'Incluso no Plano / Isento';
                 }
 
@@ -197,6 +201,10 @@ class AgendamentoController extends Controller
     {
         if ($agendamento->user_id !== auth()->id()) {
             abort(403);
+        }
+
+        if ($agendamento->status !== 'pendente') {
+            return back()->with('error', 'Não é possível anexar comprovante a um agendamento já confirmado ou finalizado.');
         }
 
         $request->validate([

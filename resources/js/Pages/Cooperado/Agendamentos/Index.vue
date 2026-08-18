@@ -135,7 +135,7 @@ function submitComprovante() {
                                 </span>
 
                                 <button 
-                                    v-if="ag.forma_pagamento === 'pix_manual' || !ag.comprovante_pix_url"
+                                    v-if="ag.status === 'pendente' && (ag.forma_pagamento === 'pix_manual' || !ag.comprovante_pix_url)"
                                     @click="openPixModal(ag)" 
                                     class="px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1 transition-all"
                                 >

@@ -76,6 +76,10 @@ class AgendamentoAdminController extends Controller
 
     public function aprovarEAgendar(Request $request, Agendamento $agendamento)
     {
+        if ($agendamento->status === 'realizado') {
+            return back()->with('error', 'Agendamentos já realizados não podem ter seu status alterado.');
+        }
+
         $validated = $request->validate([
             'data_hora'   => 'nullable|date',
             'observacoes' => 'nullable|string|max:1000',
@@ -105,6 +109,10 @@ class AgendamentoAdminController extends Controller
 
     public function recusar(Request $request, Agendamento $agendamento)
     {
+        if ($agendamento->status === 'realizado') {
+            return back()->with('error', 'Agendamentos já realizados não podem ser recusados.');
+        }
+
         $validated = $request->validate([
             'motivo' => 'required|string|max:1000',
         ]);
@@ -129,7 +137,22 @@ class AgendamentoAdminController extends Controller
 
     public function realizar(Agendamento $agendamento)
     {
+        if ($agendamento->status === 'realizado') {
+            return back()->with('info', 'Este agendamento já foi marcado como realizado.');
+        }
+
         $agendamento->update(['status' => 'realizado']);
-        return back()->with('success', 'Agendamento marcado como realizado.');
+
+        // Baixar lançamento financeiro se houver pendente vinculado ao agendamento
+        $associado = Associado::where('user_id', $agendamento->user_id)->first();
+        if ($associado) {
+            \App\Models\LancamentoFinanceiro::where('associado_id', $associado->id)
+                ->where('status', 'pendente')
+                ->where('valor', $agendamento->valor_cobrado)
+                ->where('created_at', '>=', $agendamento->created_at->subMinutes(5))
+                ->update(['status' => 'pago', 'data_pagamento' => now()]);
+        }
+
+        return back()->with('success', 'Agendamento marcado como realizado com sucesso.');
     }
 }
