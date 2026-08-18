@@ -76,29 +76,29 @@ const isRestrictedUser = computed(() => {
     <Head :title="user_edit ? 'Editar Usuário' : 'Novo Usuário'" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="mb-10 flex items-center justify-between">
-                    <div>
-                        <Breadcrumbs :items="[
-                            { label: 'Configurações', href: route('configuracoes.index') }, 
-                            { label: 'Usuários', href: route('configuracoes.usuarios.index') },
-                            { label: user_edit ? 'Editar' : 'Novo' }
-                        ]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            {{ user_edit ? 'Ajustar Acessos' : 'Credenciar Funcionário' }}
-                        </h1>
-                    </div>
-                    <Link :href="route('configuracoes.usuarios.index')">
-                        <SecondaryButton class="!rounded-full !px-5 !py-2.5 !text-[10px] !font-black !uppercase !tracking-widest">
-                            <ChevronLeftIcon class="w-4 h-4 mr-1.5" />
-                            Lista de Usuários
-                        </SecondaryButton>
-                    </Link>
+        <template #header>
+            <div class="flex items-center justify-between">
+                <div>
+                    <Breadcrumbs :items="[
+                        { label: 'Configurações', href: route('configuracoes.index') }, 
+                        { label: 'Usuários', href: route('configuracoes.usuarios.index') },
+                        { label: user_edit ? 'Editar' : 'Novo' }
+                    ]" />
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">
+                        {{ user_edit ? 'Ajustar Acessos' : 'Credenciar Funcionário' }}
+                    </h2>
                 </div>
+                <Link :href="route('configuracoes.usuarios.index')">
+                    <SecondaryButton class="!rounded-full !px-5 !py-2.5 !text-[10px] !font-black !uppercase !tracking-widest">
+                        <ChevronLeftIcon class="w-4 h-4 mr-1.5" />
+                        Lista de Usuários
+                    </SecondaryButton>
+                </Link>
+            </div>
+        </template>
 
-                <form @submit.prevent="submit" class="space-y-8">
+        <div class="space-y-6 pb-12">
+            <form @submit.prevent="submit" class="space-y-8">
                     <!-- Informações Básicas -->
                     <div class="zynix-card overflow-hidden !p-0">
                         <div class="p-8 border-b border-[var(--border-color)] bg-slate-50/50 dark:bg-slate-800/20">
@@ -262,7 +262,6 @@ const isRestrictedUser = computed(() => {
                         </PrimaryButton>
                     </div>
                 </form>
-            </div>
         </div>
     </AuthenticatedLayout>
 </template>

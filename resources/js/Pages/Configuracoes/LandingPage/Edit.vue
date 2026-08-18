@@ -131,20 +131,16 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Configurações da Landing Page" />
+    <Head title="Configuração do Site" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
-                    <div>
-                        <Breadcrumbs :items="[{ label: 'Ajustes', href: route('configuracoes.index') }, { label: 'Landing Page' }]" />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            Configuração do Site (OnePage)
-                        </h1>
-                    </div>
-                </div>
+        <template #header>
+            <Breadcrumbs :items="[{ label: 'Ajustes', href: route('configuracoes.index') }, { label: 'Landing Page' }]" />
+            <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Configuração do Site (OnePage)</h2>
+            <p class="text-sm text-[var(--text-muted)] mt-0.5">Gerenciamento visual e de conteúdos do site institucional.</p>
+        </template>
+
+        <div class="space-y-6 pb-12">
 
                 <div v-if="$page.props.flash?.success" class="mb-8 p-4 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
                     <CheckBadgeIcon class="w-5 h-5" />
@@ -431,7 +427,6 @@ const submit = () => {
                         </PrimaryButton>
                     </div>
                 </form>
-            </div>
         </div>
     </AuthenticatedLayout>
 </template>

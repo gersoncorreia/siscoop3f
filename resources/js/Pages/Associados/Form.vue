@@ -118,34 +118,35 @@ const rejeitarDocumento = () => {
     <Head :title="associado ? 'Editar Associado' : 'Novo Associado'" />
 
     <AuthenticatedLayout>
-        <div class="py-6 sm:py-8 lg:py-12">
-            <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="mb-8 flex items-center justify-between">
-                    <div>
-                        <Breadcrumbs />
-                        <h1 class="text-2xl lg:text-3xl font-black text-[var(--text-heading)] tracking-tighter mt-2">
-                            {{ associado ? 'Ficha do Associado' : 'Novo Cooperado' }}
-                        </h1>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <button 
-                            v-if="associado && associado.status === 'analise_documental'"
-                            @click="aprovarAdesaoGeral"
-                            class="!rounded-full !px-6 !py-2.5 !text-[10px] !font-black !uppercase !tracking-widest bg-emerald-500 text-white hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2"
-                        >
-                            <CheckCircleIcon class="w-4 h-4" />
-                            Aprovar Adesão
-                        </button>
-                        <Link :href="backRoute">
-                            <SecondaryButton class="!rounded-full !px-5 !py-2.5 !text-[10px] !font-black !uppercase !tracking-widest">
-                                <ChevronLeftIcon class="w-4 h-4 mr-1.5" />
-                                Voltar
-                            </SecondaryButton>
-                        </Link>
-                    </div>
+        <template #header>
+            <div class="flex items-center justify-between">
+                <div>
+                    <Breadcrumbs />
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">
+                        {{ associado ? 'Ficha do Associado' : 'Novo Cooperado' }}
+                    </h2>
                 </div>
-                <form @submit.prevent="submit" class="zynix-card overflow-hidden !p-0">
+                <div class="flex items-center gap-3">
+                    <button 
+                        v-if="associado && associado.status === 'analise_documental'"
+                        @click="aprovarAdesaoGeral"
+                        class="!rounded-full !px-6 !py-2.5 !text-[10px] !font-black !uppercase !tracking-widest bg-emerald-500 text-white hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2"
+                    >
+                        <CheckCircleIcon class="w-4 h-4" />
+                        Aprovar Adesão
+                    </button>
+                    <Link :href="backRoute">
+                        <SecondaryButton class="!rounded-full !px-5 !py-2.5 !text-[10px] !font-black !uppercase !tracking-widest">
+                            <ChevronLeftIcon class="w-4 h-4 mr-1.5" />
+                            Voltar
+                        </SecondaryButton>
+                    </Link>
+                </div>
+            </div>
+        </template>
+
+        <div class="space-y-6 pb-12">
+            <form @submit.prevent="submit" class="zynix-card overflow-hidden !p-0">
                     <!-- Form Header Section -->
                     <div class="p-8 border-b border-[var(--border-color)]">
                         <div class="flex items-start justify-between">
@@ -388,30 +389,30 @@ const rejeitarDocumento = () => {
                         </form>
                     </div>
                 </div>
-            </div>
+
+                <!-- Modal Rejeitar Documento -->
+                <Modal :show="isRejectModalOpen" @close="isRejectModalOpen = false">
+                    <div class="p-6">
+                        <h2 class="text-xl font-black text-rose-500 mb-4 flex items-center">
+                            <Bars3CenterLeftIcon class="w-6 h-6 mr-2"/> Recusar Documento
+                        </h2>
+                        <p class="text-xs text-slate-500 mb-6 font-medium">Você está reprovando a via deste documento. O cooperado será notificado via e-mail e deverá submeter um novo arquivo substituindo a versão atual. Especifique brevemente qual foi o erro no envio:</p>
+                        <form @submit.prevent="rejeitarDocumento" class="space-y-4">
+                            <div>
+                                <InputLabel value="Motivo da Rejeição para o Cooperado:" class="!text-rose-500 uppercase tracking-widest !font-black !text-[10px]" />
+                                <textarea v-model="rejectForm.motivo_rejeicao" rows="3" class="mt-2 block w-full text-sm rounded-xl border-slate-200 focus:border-rose-500 focus:ring focus:ring-rose-200 focus:ring-opacity-50" placeholder="A foto está ilegível, nome difere etc..." required></textarea>
+                                <InputError :message="rejectForm.errors.motivo_rejeicao" />
+                            </div>
+                            <div class="flex justify-end pt-4 gap-3">
+                                <SecondaryButton @click="isRejectModalOpen = false">Cancelar</SecondaryButton>
+                                <PrimaryButton type="submit" class="!bg-rose-600 hover:!bg-rose-700" :disabled="rejectForm.processing">
+                                    Confirmar Rejeição
+                                </PrimaryButton>
+                            </div>
+                        </form>
+                    </div>
+                </Modal>
         </div>
-        <!-- Modal Rejeitar Documento -->
-        <Modal :show="isRejectModalOpen" @close="isRejectModalOpen = false">
-            <div class="p-6">
-                <h2 class="text-xl font-black text-rose-500 mb-4 flex items-center">
-                    <Bars3CenterLeftIcon class="w-6 h-6 mr-2"/> Recusar Documento
-                </h2>
-                <p class="text-xs text-slate-500 mb-6 font-medium">Você está reprovando a via deste documento. O cooperado será notificado via e-mail e deverá submeter um novo arquivo substituindo a versão atual. Especifique brevemente qual foi o erro no envio:</p>
-                <form @submit.prevent="rejeitarDocumento" class="space-y-4">
-                    <div>
-                        <InputLabel value="Motivo da Rejeição para o Cooperado:" class="!text-rose-500 uppercase tracking-widest !font-black !text-[10px]" />
-                        <textarea v-model="rejectForm.motivo_rejeicao" rows="3" class="mt-2 block w-full text-sm rounded-xl border-slate-200 focus:border-rose-500 focus:ring focus:ring-rose-200 focus:ring-opacity-50" placeholder="A foto está ilegível, nome difere etc..." required></textarea>
-                        <InputError :message="rejectForm.errors.motivo_rejeicao" />
-                    </div>
-                    <div class="flex justify-end pt-4 gap-3">
-                        <SecondaryButton @click="isRejectModalOpen = false">Cancelar</SecondaryButton>
-                        <PrimaryButton type="submit" class="!bg-rose-600 hover:!bg-rose-700" :disabled="rejectForm.processing">
-                            Confirmar Rejeição
-                        </PrimaryButton>
-                    </div>
-                </form>
-            </div>
-        </Modal>
     </AuthenticatedLayout>
 </template>
 
