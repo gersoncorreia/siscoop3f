@@ -15,7 +15,8 @@ import {
     CheckCircleIcon,
     CheckIcon,
     ArrowUpTrayIcon,
-    ShareIcon
+    ShareIcon,
+    XMarkIcon
 } from '@heroicons/vue/24/outline';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';

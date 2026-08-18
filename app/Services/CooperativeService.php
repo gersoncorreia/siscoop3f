@@ -48,6 +48,11 @@ class CooperativeService
     public function criarDependente(array $dados): Dependente
     {
         return DB::transaction(function () use ($dados) {
+            foreach (['data_nascimento', 'cpf', 'rg', 'cartao_sus', 'email'] as $field) {
+                if (isset($dados[$field]) && $dados[$field] === '') {
+                    $dados[$field] = null;
+                }
+            }
             return Dependente::create($dados);
         });
     }
@@ -56,6 +61,11 @@ class CooperativeService
     {
         return DB::transaction(function () use ($id, $dados) {
             $dependente = Dependente::findOrFail($id);
+            foreach (['data_nascimento', 'cpf', 'rg', 'cartao_sus', 'email'] as $field) {
+                if (isset($dados[$field]) && $dados[$field] === '') {
+                    $dados[$field] = null;
+                }
+            }
             return $dependente->update($dados);
         });
     }
