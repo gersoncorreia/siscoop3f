@@ -9,6 +9,7 @@ import {
     UserIcon, 
     PencilSquareIcon, 
     ChevronLeftIcon,
+    ChevronRightIcon,
     IdentificationIcon,
     CalendarDaysIcon,
     BanknotesIcon,
@@ -41,6 +42,42 @@ const getInitials = (name) => {
     if (!name) return '??';
     return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
 };
+
+// Paginação Reativa (8 itens por página)
+const ITEMS_PER_PAGE = 8;
+
+const agendamentosPage = ref(1);
+const lancamentosPage = ref(1);
+const dependentesPage = ref(1);
+const documentosPage = ref(1);
+
+const paginatedAgendamentos = computed(() => {
+    if (!props.agendamentos) return [];
+    const start = (agendamentosPage.value - 1) * ITEMS_PER_PAGE;
+    return props.agendamentos.slice(start, start + ITEMS_PER_PAGE);
+});
+const totalAgendamentosPages = computed(() => Math.ceil((props.agendamentos?.length || 0) / ITEMS_PER_PAGE) || 1);
+
+const paginatedLancamentos = computed(() => {
+    if (!props.lancamentos) return [];
+    const start = (lancamentosPage.value - 1) * ITEMS_PER_PAGE;
+    return props.lancamentos.slice(start, start + ITEMS_PER_PAGE);
+});
+const totalLancamentosPages = computed(() => Math.ceil((props.lancamentos?.length || 0) / ITEMS_PER_PAGE) || 1);
+
+const paginatedDependentes = computed(() => {
+    const list = props.associado?.dependentes || [];
+    const start = (dependentesPage.value - 1) * ITEMS_PER_PAGE;
+    return list.slice(start, start + ITEMS_PER_PAGE);
+});
+const totalDependentesPages = computed(() => Math.ceil((props.associado?.dependentes?.length || 0) / ITEMS_PER_PAGE) || 1);
+
+const paginatedDocumentos = computed(() => {
+    const list = props.associado?.documentos || [];
+    const start = (documentosPage.value - 1) * ITEMS_PER_PAGE;
+    return list.slice(start, start + ITEMS_PER_PAGE);
+});
+const totalDocumentosPages = computed(() => Math.ceil((props.associado?.documentos?.length || 0) / ITEMS_PER_PAGE) || 1);
 </script>
 
 <template>
@@ -375,7 +412,7 @@ const getInitials = (name) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="ag in agendamentos" :key="ag.id">
+                            <tr v-for="ag in paginatedAgendamentos" :key="ag.id">
                                 <td class="pl-8 font-mono text-xs font-bold text-[var(--text-heading)]">
                                     {{ ag.data_hora }}
                                 </td>
@@ -410,6 +447,29 @@ const getInitials = (name) => {
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Paginação Atendimentos -->
+                <div class="p-4 border-t border-[var(--border-color)] flex items-center justify-between" v-if="totalAgendamentosPages > 1">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        Página {{ agendamentosPage }} de {{ totalAgendamentosPages }} ({{ agendamentos.length }} atendimentos)
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button 
+                            @click="agendamentosPage--" 
+                            :disabled="agendamentosPage === 1"
+                            class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-100 dark:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center"
+                        >
+                            <ChevronLeftIcon class="w-3.5 h-3.5 mr-1" /> Anterior
+                        </button>
+                        <button 
+                            @click="agendamentosPage++" 
+                            :disabled="agendamentosPage === totalAgendamentosPages"
+                            class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-100 dark:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center"
+                        >
+                            Próximo <ChevronRightIcon class="w-3.5 h-3.5 ml-1" />
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -454,7 +514,7 @@ const getInitials = (name) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="l in lancamentos" :key="l.id">
+                                <tr v-for="l in paginatedLancamentos" :key="l.id">
                                     <td class="pl-8">
                                         <p class="font-bold text-[var(--text-heading)] text-xs">{{ l.descricao }}</p>
                                         <p class="text-[10px] text-slate-400 uppercase tracking-wider">{{ l.categoria || 'Geral' }}</p>
@@ -482,6 +542,29 @@ const getInitials = (name) => {
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Paginação Financeiro -->
+                    <div class="p-4 border-t border-[var(--border-color)] flex items-center justify-between" v-if="totalLancamentosPages > 1">
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Página {{ lancamentosPage }} de {{ totalLancamentosPages }} ({{ lancamentos.length }} lançamentos)
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button 
+                                @click="lancamentosPage--" 
+                                :disabled="lancamentosPage === 1"
+                                class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-100 dark:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center"
+                            >
+                                <ChevronLeftIcon class="w-3.5 h-3.5 mr-1" /> Anterior
+                            </button>
+                            <button 
+                                @click="lancamentosPage++" 
+                                :disabled="lancamentosPage === totalLancamentosPages"
+                                class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-100 dark:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center"
+                            >
+                                Próximo <ChevronRightIcon class="w-3.5 h-3.5 ml-1" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -504,7 +587,7 @@ const getInitials = (name) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="dep in associado.dependentes" :key="dep.id">
+                            <tr v-for="dep in paginatedDependentes" :key="dep.id">
                                 <td class="pl-8">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 font-black text-xs flex items-center justify-center">
@@ -531,6 +614,29 @@ const getInitials = (name) => {
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Paginação Dependentes -->
+                <div class="p-4 border-t border-[var(--border-color)] flex items-center justify-between" v-if="totalDependentesPages > 1">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        Página {{ dependentesPage }} de {{ totalDependentesPages }} ({{ associado.dependentes.length }} dependentes)
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button 
+                            @click="dependentesPage--" 
+                            :disabled="dependentesPage === 1"
+                            class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-100 dark:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center"
+                        >
+                            <ChevronLeftIcon class="w-3.5 h-3.5 mr-1" /> Anterior
+                        </button>
+                        <button 
+                            @click="dependentesPage++" 
+                            :disabled="dependentesPage === totalDependentesPages"
+                            class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-100 dark:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center"
+                        >
+                            Próximo <ChevronRightIcon class="w-3.5 h-3.5 ml-1" />
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- TAB CONTENT 5: Documentos Digitais -->
@@ -551,7 +657,7 @@ const getInitials = (name) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="doc in associado.documentos" :key="doc.id">
+                            <tr v-for="doc in paginatedDocumentos" :key="doc.id">
                                 <td class="pl-8">
                                     <p class="font-bold text-[var(--text-heading)] text-xs">{{ doc.titulo }}</p>
                                     <p v-if="doc.motivo_rejeicao" class="text-[10px] text-rose-500 mt-0.5">Motivo: {{ doc.motivo_rejeicao }}</p>
@@ -580,6 +686,29 @@ const getInitials = (name) => {
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Paginação Documentos -->
+                <div class="p-4 border-t border-[var(--border-color)] flex items-center justify-between" v-if="totalDocumentosPages > 1">
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        Página {{ documentosPage }} de {{ totalDocumentosPages }} ({{ associado.documentos.length }} documentos)
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button 
+                            @click="documentosPage--" 
+                            :disabled="documentosPage === 1"
+                            class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-100 dark:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center"
+                        >
+                            <ChevronLeftIcon class="w-3.5 h-3.5 mr-1" /> Anterior
+                        </button>
+                        <button 
+                            @click="documentosPage++" 
+                            :disabled="documentosPage === totalDocumentosPages"
+                            class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-100 dark:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center"
+                        >
+                            Próximo <ChevronRightIcon class="w-3.5 h-3.5 ml-1" />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
