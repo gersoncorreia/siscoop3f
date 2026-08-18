@@ -129,7 +129,23 @@ class AssociadoController extends Controller
                 'forma_pagamento_aprovacao' => $associado->forma_pagamento_aprovacao,
                 'comprovante_pix_url' => $associado->comprovante_pix_path ? tenant_asset($associado->comprovante_pix_path) : null,
                 'detalhes_financeiro_aprovacao' => $associado->detalhes_financeiro_aprovacao,
-                'dependentes' => $associado->dependentes,
+                'dependentes' => $associado->dependentes->map(function ($dep) {
+                    return [
+                        'id' => $dep->id,
+                        'nome' => $dep->nome,
+                        'cpf' => $dep->cpf,
+                        'rg' => $dep->rg,
+                        'cartao_sus' => $dep->cartao_sus,
+                        'data_nascimento' => $dep->data_nascimento ? $dep->data_nascimento->format('Y-m-d') : null,
+                        'data_nascimento_formatada' => $dep->data_nascimento ? $dep->data_nascimento->format('d/m/Y') : null,
+                        'parentesco' => $dep->parentesco,
+                        'tipo_dependencia' => $dep->tipo_dependencia,
+                        'autoriza_acesso' => $dep->autoriza_acesso,
+                        'email' => $dep->email,
+                        'status' => $dep->status,
+                        'access_token' => $dep->getMagicLinkToken(),
+                    ];
+                }),
                 'enderecos' => $associado->enderecos,
                 'telefones' => $associado->telefones,
                 'documentos' => $associado->documentos->map(fn($doc) => [

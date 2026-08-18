@@ -1,9 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage, useForm } from '@inertiajs/vue3';
 import Breadcrumbs from '@/Components/Breadcrumbs.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Modal from '@/Components/Modal.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import InputError from '@/Components/InputError.vue';
 import { ref, computed } from 'vue';
 import { 
     UserIcon, 
@@ -26,7 +30,8 @@ import {
     CreditCardIcon,
     ShareIcon,
     ClipboardIcon,
-    CheckIcon
+    CheckIcon,
+    PlusIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -53,6 +58,64 @@ const copyDepMagicLink = (dep) => {
     navigator.clipboard.writeText(url);
     copiedDepId.value = dep.id;
     setTimeout(() => copiedDepId.value = null, 2000);
+};
+
+// Modal de Dependente (Admin)
+const isDepModalOpen = ref(false);
+const editingDep = ref(null);
+
+const depForm = useForm({
+    associado_id: props.associado.id,
+    nome: '',
+    cpf: '',
+    rg: '',
+    cartao_sus: '',
+    data_nascimento: '',
+    parentesco: '',
+    tipo_dependencia: 'legal',
+    autoriza_acesso: false,
+    email: '',
+    status: 'ativo',
+});
+
+const openDepModal = (dep = null) => {
+    editingDep.value = dep;
+    if (dep) {
+        depForm.nome = dep.nome || '';
+        depForm.cpf = dep.cpf || '';
+        depForm.rg = dep.rg || '';
+        depForm.cartao_sus = dep.cartao_sus || '';
+        depForm.data_nascimento = dep.data_nascimento || '';
+        depForm.parentesco = dep.parentesco || '';
+        depForm.tipo_dependencia = dep.tipo_dependencia || 'legal';
+        depForm.autoriza_acesso = !!dep.autoriza_acesso;
+        depForm.email = dep.email || '';
+        depForm.status = dep.status || 'ativo';
+    } else {
+        depForm.reset();
+        depForm.associado_id = props.associado.id;
+        depForm.tipo_dependencia = 'legal';
+        depForm.status = 'ativo';
+    }
+    isDepModalOpen.value = true;
+};
+
+const saveDep = () => {
+    if (editingDep.value) {
+        depForm.put(route('associados.dependentes.update', editingDep.value.id), {
+            onSuccess: () => {
+                isDepModalOpen.value = false;
+                depForm.reset();
+            }
+        });
+    } else {
+        depForm.post(route('associados.dependentes.store'), {
+            onSuccess: () => {
+                isDepModalOpen.value = false;
+                depForm.reset();
+            }
+        });
+    }
 };
 
 // Paginação Reativa (8 itens por página)
@@ -581,59 +644,88 @@ const totalDocumentosPages = computed(() => Math.ceil((props.associado?.document
             </div>
 
             <!-- TAB CONTENT 4: Dependentes / Familiares -->
-            <div v-if="activeTab === 'dependentes'" class="zynix-card !p-0 overflow-hidden">
-                <div v-if="!associado.dependentes || associado.dependentes.length === 0" class="p-12 text-center">
-                    <UserGroupIcon class="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Nenhum dependente cadastrado para este cliente.</p>
+            <div v-if="activeTab === 'dependentes'" class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-black text-[var(--text-heading)]">Dependentes & Familiares Cadastrados</h3>
+                        <p class="text-xs text-slate-400">Gestão completa dos dependentes vinculados ao plano.</p>
+                    </div>
+                    <button @click="openDepModal()" class="px-4 py-2 bg-primary-dynamic text-white rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-md hover:opacity-90 transition-all">
+                        <PlusIcon class="w-4 h-4 stroke-[3px]" /> Adicionar Dependente
+                    </button>
                 </div>
 
-                <div v-else class="overflow-x-auto">
-                    <table class="zynix-table w-full">
-                        <thead>
-                            <tr>
-                                <th class="pl-8">Nome do Dependente</th>
-                                <th class="text-center">Parentesco</th>
-                                <th class="text-center">CPF</th>
-                                <th class="text-center">Tipo Dependência</th>
-                                <th class="text-right pr-8">Acesso & Link Mágico</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="dep in paginatedDependentes" :key="dep.id">
-                                <td class="pl-8">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 font-black text-xs flex items-center justify-center">
-                                            {{ getInitials(dep.nome) }}
+                <div class="zynix-card !p-0 overflow-hidden">
+                    <div v-if="!associado.dependentes || associado.dependentes.length === 0" class="p-12 text-center">
+                        <UserGroupIcon class="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Nenhum dependente cadastrado para este cliente.</p>
+                    </div>
+
+                    <div v-else class="overflow-x-auto">
+                        <table class="zynix-table w-full">
+                            <thead>
+                                <tr>
+                                    <th class="pl-8">Nome do Dependente</th>
+                                    <th class="text-center">Parentesco</th>
+                                    <th class="text-center">Documentos (CPF / RG / SUS)</th>
+                                    <th class="text-center">Nascimento</th>
+                                    <th class="text-center">Tipo Dependência</th>
+                                    <th class="text-right pr-8">Ações & Link Mágico</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="dep in paginatedDependentes" :key="dep.id">
+                                    <td class="pl-8">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 font-black text-xs flex items-center justify-center">
+                                                {{ getInitials(dep.nome) }}
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-[var(--text-heading)] text-xs">{{ dep.nome }}</div>
+                                                <div v-if="dep.email" class="text-[10px] text-slate-400">{{ dep.email }}</div>
+                                            </div>
                                         </div>
-                                        <div class="font-bold text-[var(--text-heading)] text-xs">{{ dep.nome }}</div>
-                                    </div>
-                                </td>
-                                <td class="text-center text-xs font-medium capitalize">
-                                    {{ dep.parentesco || 'Dependente' }}
-                                </td>
-                                <td class="text-center font-mono text-xs text-slate-600">
-                                    {{ dep.cpf || '—' }}
-                                </td>
-                                <td class="text-center">
-                                    <span class="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-full" :class="dep.tipo_dependencia === 'nao_legal' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'">
-                                        {{ dep.tipo_dependencia === 'nao_legal' ? 'Não Legal (R$ 100)' : 'Legal (R$ 80)' }}
-                                    </span>
-                                </td>
-                                <td class="text-right pr-8">
-                                    <button 
-                                        @click="copyDepMagicLink(dep)"
-                                        :class="copiedDepId === dep.id ? 'bg-emerald-500 text-white' : 'bg-primary-dynamic/10 text-primary-dynamic hover:bg-primary-dynamic hover:text-white'"
-                                        class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5 transition-all shadow-sm"
-                                        title="Copiar Link Mágico de Acesso do Dependente (Validação 5 dígitos CPF)"
-                                    >
-                                        <component :is="copiedDepId === dep.id ? CheckIcon : ShareIcon" class="w-3.5 h-3.5" />
-                                        {{ copiedDepId === dep.id ? 'Copiado!' : 'Link Mágico' }}
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                    </td>
+                                    <td class="text-center text-xs font-medium capitalize">
+                                        {{ dep.parentesco || 'Dependente' }}
+                                    </td>
+                                    <td class="text-center font-mono text-xs text-slate-600">
+                                        <div><span class="text-[9px] text-slate-400 font-bold uppercase">CPF:</span> {{ dep.cpf || '—' }}</div>
+                                        <div v-if="dep.rg" class="text-[10px] text-slate-400"><span class="text-[9px] text-slate-400 font-bold uppercase">RG:</span> {{ dep.rg }}</div>
+                                        <div v-if="dep.cartao_sus" class="text-[10px] text-slate-400"><span class="text-[9px] text-slate-400 font-bold uppercase">SUS:</span> {{ dep.cartao_sus }}</div>
+                                    </td>
+                                    <td class="text-center font-mono text-xs">
+                                        {{ dep.data_nascimento_formatada || dep.data_nascimento || '—' }}
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-full" :class="dep.tipo_dependencia === 'nao_legal' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'">
+                                            {{ dep.tipo_dependencia === 'nao_legal' ? 'Não Legal (R$ 100)' : 'Legal (R$ 80)' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-right pr-8">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button 
+                                                @click="openDepModal(dep)"
+                                                class="p-1.5 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all"
+                                                title="Editar Informações do Dependente"
+                                            >
+                                                <PencilSquareIcon class="w-4 h-4" />
+                                            </button>
+                                            <button 
+                                                @click="copyDepMagicLink(dep)"
+                                                :class="copiedDepId === dep.id ? 'bg-emerald-500 text-white' : 'bg-primary-dynamic/10 text-primary-dynamic hover:bg-primary-dynamic hover:text-white'"
+                                                class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5 transition-all shadow-sm"
+                                                title="Copiar Link Mágico de Acesso do Dependente (Validação 5 dígitos CPF)"
+                                            >
+                                                <component :is="copiedDepId === dep.id ? CheckIcon : ShareIcon" class="w-3.5 h-3.5" />
+                                                {{ copiedDepId === dep.id ? 'Copiado!' : 'Link Mágico' }}
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                 <!-- Paginação Dependentes -->
                 <div class="p-4 border-t border-[var(--border-color)] flex items-center justify-between" v-if="totalDependentesPages > 1">
@@ -732,6 +824,91 @@ const totalDocumentosPages = computed(() => Math.ceil((props.associado?.document
                 </div>
             </div>
         </div>
+        </div>
+
+        <!-- MODAL DEPENDENTE (ADMIN) -->
+        <Modal :show="isDepModalOpen" @close="isDepModalOpen = false" max-width="2xl">
+            <div class="p-6 md:p-8 space-y-6">
+                <div class="flex items-center justify-between pb-4 border-b border-[var(--border-color)]">
+                    <div>
+                        <h3 class="text-lg font-black text-[var(--text-heading)]">
+                            {{ editingDep ? 'Editar Dados do Dependente' : 'Cadastrar Novo Dependente' }}
+                        </h3>
+                        <p class="text-xs text-slate-400">Preencha as informações completas do dependente/familiar.</p>
+                    </div>
+                </div>
+
+                <form @submit.prevent="saveDep" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <InputLabel for="dep_nome" value="Nome Completo do Dependente *" class="!text-[11px] !font-black uppercase tracking-wider" />
+                            <TextInput id="dep_nome" v-model="depForm.nome" type="text" class="w-full mt-1" required />
+                            <InputError :message="depForm.errors.nome" class="mt-1" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="dep_cpf" value="CPF" class="!text-[11px] !font-black uppercase tracking-wider" />
+                            <TextInput id="dep_cpf" v-model="depForm.cpf" type="text" placeholder="000.000.000-00" class="w-full mt-1" />
+                            <InputError :message="depForm.errors.cpf" class="mt-1" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="dep_rg" value="RG / Órgão Emissor" class="!text-[11px] !font-black uppercase tracking-wider" />
+                            <TextInput id="dep_rg" v-model="depForm.rg" type="text" placeholder="Ex: 1234567 SSP/PA" class="w-full mt-1" />
+                            <InputError :message="depForm.errors.rg" class="mt-1" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="dep_cartao_sus" value="Cartão SUS" class="!text-[11px] !font-black uppercase tracking-wider" />
+                            <TextInput id="dep_cartao_sus" v-model="depForm.cartao_sus" type="text" placeholder="Nº Cartão SUS" class="w-full mt-1" />
+                            <InputError :message="depForm.errors.cartao_sus" class="mt-1" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="dep_nascimento" value="Data de Nascimento" class="!text-[11px] !font-black uppercase tracking-wider" />
+                            <TextInput id="dep_nascimento" v-model="depForm.data_nascimento" type="date" class="w-full mt-1" />
+                            <InputError :message="depForm.errors.data_nascimento" class="mt-1" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="dep_parentesco" value="Grau de Parentesco *" class="!text-[11px] !font-black uppercase tracking-wider" />
+                            <select id="dep_parentesco" v-model="depForm.parentesco" class="w-full mt-1 zynix-input" required>
+                                <option value="">Selecione...</option>
+                                <option value="Cônjuge">Cônjuge / Companheiro(a)</option>
+                                <option value="Filho(a)">Filho(a)</option>
+                                <option value="Pai/Mãe">Pai / Mãe</option>
+                                <option value="Enteado(a)">Enteado(a)</option>
+                                <option value="Irmão(ã)">Irmão(ã)</option>
+                                <option value="Outro">Outro / Agregado</option>
+                            </select>
+                            <InputError :message="depForm.errors.parentesco" class="mt-1" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="dep_tipo" value="Tipo de Dependência *" class="!text-[11px] !font-black uppercase tracking-wider" />
+                            <select id="dep_tipo" v-model="depForm.tipo_dependencia" class="w-full mt-1 zynix-input" required>
+                                <option value="legal">Dependente Legal (R$ 80,00)</option>
+                                <option value="nao_legal">Não-Legal / Agregado (R$ 100,00)</option>
+                            </select>
+                            <InputError :message="depForm.errors.tipo_dependencia" class="mt-1" />
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <InputLabel for="dep_email" value="E-mail do Dependente (Opcional)" class="!text-[11px] !font-black uppercase tracking-wider" />
+                            <TextInput id="dep_email" v-model="depForm.email" type="email" placeholder="email@dependente.com" class="w-full mt-1" />
+                            <InputError :message="depForm.errors.email" class="mt-1" />
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex items-center justify-end gap-3 border-t border-[var(--border-color)]">
+                        <SecondaryButton @click="isDepModalOpen = false">Cancelar</SecondaryButton>
+                        <PrimaryButton type="submit" :disabled="depForm.processing">
+                            {{ depForm.processing ? 'Salvando...' : 'Salvar Dependente' }}
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
+        </Modal>
     </AuthenticatedLayout>
 </template>
 

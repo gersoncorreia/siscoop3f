@@ -48,19 +48,30 @@ const editingDep = ref(null);
 const depForm = useForm({
     nome: '',
     cpf: '',
+    rg: '',
+    cartao_sus: '',
     data_nascimento: '',
     parentesco: '',
+    tipo_dependencia: 'legal',
+    autoriza_acesso: false,
+    email: '',
 });
 
 function openDepModal(dep = null) {
     editingDep.value = dep;
     if (dep) {
-        depForm.nome = dep.nome;
-        depForm.cpf = dep.cpf || '';
+        depForm.nome = dep.nome || '';
+        depForm.cpf = dep.raw_cpf || dep.cpf || '';
+        depForm.rg = dep.rg || '';
+        depForm.cartao_sus = dep.cartao_sus || '';
         depForm.data_nascimento = dep.data_nascimento || '';
-        depForm.parentesco = dep.parentesco;
+        depForm.parentesco = dep.parentesco || '';
+        depForm.tipo_dependencia = dep.tipo_dependencia || 'legal';
+        depForm.autoriza_acesso = !!dep.autoriza_acesso;
+        depForm.email = dep.email || '';
     } else {
         depForm.reset();
+        depForm.tipo_dependencia = 'legal';
     }
     depForm.clearErrors();
     isDepModalOpen.value = true;
@@ -239,31 +250,55 @@ function statusColor(status) {
                 <form @submit.prevent="submitDep" class="space-y-6">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="sm:col-span-2">
-                            <InputLabel for="nome" value="Nome Completo" class="!font-black text-[10px] uppercase tracking-widest" />
+                            <InputLabel for="nome" value="Nome Completo do Dependente *" class="!font-black text-[10px] uppercase tracking-widest" />
                             <TextInput id="nome" v-model="depForm.nome" type="text" class="w-full mt-1" placeholder="Ex: Maria Eduarda Silva" required />
                             <InputError :message="depForm.errors.nome" />
                         </div>
                         <div>
                             <InputLabel for="cpf" value="CPF" class="!font-black text-[10px] uppercase tracking-widest" />
-                            <TextInput id="cpf" v-model="depForm.cpf" v-mask="'000.000.000-00'" type="text" class="w-full mt-1" placeholder="000.000.000-00" />
+                            <TextInput id="cpf" v-model="depForm.cpf" type="text" class="w-full mt-1" placeholder="000.000.000-00" />
                             <InputError :message="depForm.errors.cpf" />
+                        </div>
+                        <div>
+                            <InputLabel for="rg" value="RG / Órgão Emissor" class="!font-black text-[10px] uppercase tracking-widest" />
+                            <TextInput id="rg" v-model="depForm.rg" type="text" class="w-full mt-1" placeholder="Ex: 1234567 SSP/PA" />
+                            <InputError :message="depForm.errors.rg" />
+                        </div>
+                        <div>
+                            <InputLabel for="cartao_sus" value="Cartão SUS" class="!font-black text-[10px] uppercase tracking-widest" />
+                            <TextInput id="cartao_sus" v-model="depForm.cartao_sus" type="text" class="w-full mt-1" placeholder="Nº do Cartão SUS" />
+                            <InputError :message="depForm.errors.cartao_sus" />
                         </div>
                         <div>
                             <InputLabel for="nascimento" value="Data de Nascimento" class="!font-black text-[10px] uppercase tracking-widest" />
                             <TextInput id="nascimento" v-model="depForm.data_nascimento" type="date" class="w-full mt-1" />
                             <InputError :message="depForm.errors.data_nascimento" />
                         </div>
-                        <div class="sm:col-span-2">
-                            <InputLabel for="parentesco" value="Grau de Parentesco" class="!font-black text-[10px] uppercase tracking-widest" />
+                        <div>
+                            <InputLabel for="parentesco" value="Grau de Parentesco *" class="!font-black text-[10px] uppercase tracking-widest" />
                             <select id="parentesco" v-model="depForm.parentesco" class="w-full mt-1 rounded-full border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-main)] focus:ring-primary-dynamic focus:border-primary-dynamic py-2.5 px-4 text-sm font-medium" required>
                                 <option value="" disabled class="bg-[var(--bg-card)]">Selecione...</option>
-                                <option value="Cônjuge" class="bg-[var(--bg-card)] text-[var(--text-main)]">Cônjuge</option>
+                                <option value="Cônjuge" class="bg-[var(--bg-card)] text-[var(--text-main)]">Cônjuge / Companheiro(a)</option>
                                 <option value="Filho(a)" class="bg-[var(--bg-card)] text-[var(--text-main)]">Filho(a)</option>
-                                <option value="Pai/Mãe" class="bg-[var(--bg-card)] text-[var(--text-main)]">Pai/Mãe</option>
+                                <option value="Pai/Mãe" class="bg-[var(--bg-card)] text-[var(--text-main)]">Pai / Mãe</option>
                                 <option value="Enteado(a)" class="bg-[var(--bg-card)] text-[var(--text-main)]">Enteado(a)</option>
-                                <option value="Outro" class="bg-[var(--bg-card)] text-[var(--text-main)]">Outro</option>
+                                <option value="Irmão(ã)" class="bg-[var(--bg-card)] text-[var(--text-main)]">Irmão(ã)</option>
+                                <option value="Outro" class="bg-[var(--bg-card)] text-[var(--text-main)]">Outro / Agregado</option>
                             </select>
                             <InputError :message="depForm.errors.parentesco" />
+                        </div>
+                        <div>
+                            <InputLabel for="tipo_dependencia" value="Tipo de Dependência *" class="!font-black text-[10px] uppercase tracking-widest" />
+                            <select id="tipo_dependencia" v-model="depForm.tipo_dependencia" class="w-full mt-1 rounded-full border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-main)] focus:ring-primary-dynamic focus:border-primary-dynamic py-2.5 px-4 text-sm font-medium" required>
+                                <option value="legal" class="bg-[var(--bg-card)] text-[var(--text-main)]">Dependente Legal (R$ 80,00)</option>
+                                <option value="nao_legal" class="bg-[var(--bg-card)] text-[var(--text-main)]">Não-Legal / Agregado (R$ 100,00)</option>
+                            </select>
+                            <InputError :message="depForm.errors.tipo_dependencia" />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <InputLabel for="email" value="E-mail do Dependente (Opcional)" class="!font-black text-[10px] uppercase tracking-widest" />
+                            <TextInput id="email" v-model="depForm.email" type="email" class="w-full mt-1" placeholder="email@dependente.com" />
+                            <InputError :message="depForm.errors.email" />
                         </div>
                     </div>
 

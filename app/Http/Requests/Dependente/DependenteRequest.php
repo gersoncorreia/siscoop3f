@@ -29,7 +29,14 @@ class DependenteRequest extends FormRequest
         return [
             'associado_id' => ['required', 'exists:associados,id'],
             'nome' => ['required', 'string', 'max:255'],
+            'cpf' => ['nullable', 'string', 'max:14'],
+            'rg' => ['nullable', 'string', 'max:30'],
+            'cartao_sus' => ['nullable', 'string', 'max:30'],
+            'data_nascimento' => ['nullable', 'date'],
             'parentesco' => ['required', 'string', 'max:100'],
+            'tipo_dependencia' => ['nullable', 'string', 'in:legal,nao_legal'],
+            'autoriza_acesso' => ['nullable', 'boolean'],
+            'email' => ['nullable', 'email', 'max:255'],
             'status' => ['required', 'string', 'in:ativo,inativo'],
         ];
     }

@@ -19,6 +19,8 @@ class Dependente extends Model
         'associado_id',
         'nome',
         'cpf',
+        'rg',
+        'cartao_sus',
         'data_nascimento',
         'parentesco',
         'tipo_dependencia',
