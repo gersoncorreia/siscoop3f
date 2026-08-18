@@ -13,7 +13,8 @@ import {
     CheckIcon,
     ChevronLeftIcon,
     ChevronRightIcon,
-    XMarkIcon
+    XMarkIcon,
+    EyeIcon
 } from '@heroicons/vue/24/outline';
 import { ref, onMounted } from 'vue';
 import Modal from '@/Components/Modal.vue';
@@ -170,7 +171,15 @@ function deleteAssociado(id) {
                                         {{ associado.data_adesao ? new Date(associado.data_adesao).toLocaleDateString('pt-BR') : 'N/A' }}
                                     </td>
                                     <td class="text-right pr-8 whitespace-nowrap">
-                                        <div class="flex items-center justify-end space-x-1">
+                                        <div class="flex items-center justify-end space-x-1.5">
+                                            <Link 
+                                                :href="route('associados.show', associado.id)"
+                                                class="px-3 py-1.5 bg-primary-dynamic/10 hover:bg-primary-dynamic/20 text-primary-dynamic rounded-xl text-[11px] font-black uppercase tracking-wider inline-flex items-center gap-1.5 transition-all shadow-sm"
+                                                title="Ver Perfil Completo"
+                                            >
+                                                <EyeIcon class="w-3.5 h-3.5" />
+                                                Perfil
+                                            </Link>
                                             <Link 
                                                 :href="route('associados.edit', associado.id)"
                                                 class="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all"
