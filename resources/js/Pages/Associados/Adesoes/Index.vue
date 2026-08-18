@@ -164,13 +164,17 @@ const resumoAprovar = computed(() => {
 </script>
 
 <template>
-    <Head title="Solicitações de Adesão" />
+    <Head :title="`Solicitações de Adesão (${entityLabel}s)`" />
 
     <AuthenticatedLayout>
         <template #header>
-            <Breadcrumbs :items="[{ label: 'Associados', href: '/associados' }, { label: 'Adesões' }]" />
-            <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">Solicitações de Adesão</h2>
-            <p class="text-sm text-[var(--text-muted)] mt-0.5">Analise, aprove e consulte o histórico de auditoria das adesões.</p>
+            <Breadcrumbs :items="[{ label: isFundacao ? 'Clientes' : 'Cooperados', href: isFundacao ? '/cliente' : '/cooperado' }, { label: 'Adesões' }]" />
+            <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">
+                {{ isFundacao ? 'Solicitações de Adesão de Clientes' : 'Solicitações de Adesão de Cooperados' }}
+            </h2>
+            <p class="text-sm text-[var(--text-muted)] mt-0.5">
+                {{ isFundacao ? 'Analise, aprove e consulte o histórico de adesões dos clientes da Santa Casa.' : 'Analise, aprove e consulte o histórico de adesões dos cooperados.' }}
+            </p>
         </template>
 
         <div class="space-y-6 pb-12">

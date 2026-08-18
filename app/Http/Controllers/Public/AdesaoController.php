@@ -160,10 +160,15 @@ class AdesaoController extends Controller
             $paymentConfig['taxas_adesao'] = $rawConfig['taxas_adesao'];
         }
 
-        $pendentes = Associado::with(['dependentes'])->where('status', 'analise_documental')->latest()->paginate(10, ['*'], 'page_pendentes');
+        $pendentes = Associado::with(['dependentes'])
+            ->whereIn('status', ['analise_documental', 'pendente'])
+            ->whereNull('aprovado_em')
+            ->latest()
+            ->paginate(10, ['*'], 'page_pendentes');
 
         $aprovadas = Associado::with(['dependentes', 'aprovador'])
             ->whereNotNull('aprovado_em')
+            ->where('status', 'ativo')
             ->latest('aprovado_em')
             ->paginate(10, ['*'], 'page_aprovadas')
             ->through(function ($item) {

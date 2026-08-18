@@ -81,12 +81,16 @@ const aprovarDocumento = (docId) => {
     });
 };
 
+const isFundacao = computed(() => usePage().props.tenant?.tipo === 'fundacao');
+const entityLabel = computed(() => isFundacao.value ? 'Cliente' : 'Cooperado');
+const isPendente = computed(() => props.associado && ['analise_documental', 'pendente'].includes(props.associado.status) && !props.associado.aprovado_em);
+
 const aprovarAdesaoGeral = () => {
     router.post(route('associados.adesoes.aprovar', props.associado.id));
 };
 
 const backRoute = computed(() => {
-    if (props.associado && props.associado.status === 'analise_documental') {
+    if (isPendente.value) {
         return route('associados.adesoes.index');
     }
     return route('associados.index');
@@ -115,7 +119,7 @@ const rejeitarDocumento = () => {
 </script>
 
 <template>
-    <Head :title="associado ? 'Editar Associado' : 'Novo Associado'" />
+    <Head :title="associado ? `Editar ${entityLabel}` : `Novo ${entityLabel}`" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -123,12 +127,12 @@ const rejeitarDocumento = () => {
                 <div>
                     <Breadcrumbs />
                     <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight mt-1">
-                        {{ associado ? 'Ficha do Associado' : 'Novo Cooperado' }}
+                        {{ associado ? `Ficha do ${entityLabel}` : `Novo ${entityLabel}` }}
                     </h2>
                 </div>
                 <div class="flex items-center gap-3">
                     <button 
-                        v-if="associado && associado.status === 'analise_documental'"
+                        v-if="isPendente"
                         @click="aprovarAdesaoGeral"
                         class="!rounded-full !px-6 !py-2.5 !text-[10px] !font-black !uppercase !tracking-widest bg-emerald-500 text-white hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2"
                     >
