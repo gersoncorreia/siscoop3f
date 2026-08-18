@@ -25,6 +25,7 @@ class Dependente extends Model
         'autoriza_acesso',
         'email',
         'user_id',
+        'access_token',
         'status',
     ];
     
@@ -58,5 +59,26 @@ class Dependente extends Model
     public function getTaxaAdesao(): float
     {
         return $this->tipo_dependencia === 'nao_legal' ? 100.00 : 80.00;
+    }
+
+    /**
+     * Gera ou obtém o token do Link Mágico do dependente.
+     */
+    public function getMagicLinkToken(): string
+    {
+        if (empty($this->access_token)) {
+            $token = \Illuminate\Support\Str::random(32);
+            $this->update(['access_token' => $token]);
+            return $token;
+        }
+        return $this->access_token;
+    }
+
+    /**
+     * Retorna a URL completa do Link Mágico do dependente.
+     */
+    public function getMagicLinkUrl(): string
+    {
+        return route('dependente.magic-link.form', ['token' => $this->getMagicLinkToken()]);
     }
 }

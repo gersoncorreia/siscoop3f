@@ -21,6 +21,12 @@ Route::middleware([
         Route::post('/adesao', [\App\Http\Controllers\Public\AdesaoController::class , 'store'])->middleware('throttle:5,1')->name('adesao.store');
         Route::get('/adesao/sucesso', [\App\Http\Controllers\Public\AdesaoController::class , 'success'])->name('adesao.success');
 
+        // Link Mágico para Acesso de Dependentes (Validação 5 dígitos CPF)
+        Route::get('/acesso-dependente/{token}', [\App\Http\Controllers\Public\DependenteMagicLinkController::class , 'showForm'])->name('dependente.magic-link.form');
+        Route::post('/acesso-dependente/{token}', [\App\Http\Controllers\Public\DependenteMagicLinkController::class , 'validarCpf'])->name('dependente.magic-link.validate');
+        Route::post('/acesso-dependente/logout', [\App\Http\Controllers\Public\DependenteMagicLinkController::class , 'logout'])->name('dependente.magic-link.logout');
+        Route::get('/portal-dependente', [\App\Http\Controllers\Public\DependentePortalController::class , 'index'])->name('dependente.portal.index');
+
         Route::middleware('auth')->group(function () {
             Route::get('/lgpd', [\App\Http\Controllers\Public\LgpdController::class , 'show'])->name('lgpd.show');
             Route::post('/lgpd', [\App\Http\Controllers\Public\LgpdController::class , 'accept'])->name('lgpd.accept');

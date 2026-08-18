@@ -23,7 +23,10 @@ import {
     XCircleIcon,
     ArrowDownTrayIcon,
     ShieldCheckIcon,
-    CreditCardIcon
+    CreditCardIcon,
+    ShareIcon,
+    ClipboardIcon,
+    CheckIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -34,6 +37,7 @@ const props = defineProps({
 });
 
 const activeTab = ref('visao_geral');
+const copiedDepId = ref(null);
 
 const isFundacao = computed(() => usePage().props.tenant?.tipo === 'fundacao');
 const entityLabel = computed(() => isFundacao.value ? 'Cliente' : 'Cooperado');
@@ -41,6 +45,14 @@ const entityLabel = computed(() => isFundacao.value ? 'Cliente' : 'Cooperado');
 const getInitials = (name) => {
     if (!name) return '??';
     return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+};
+
+const copyDepMagicLink = (dep) => {
+    const token = dep.access_token || 'temp_' + dep.id;
+    const url = `${window.location.protocol}//${window.location.host}/acesso-dependente/${token}`;
+    navigator.clipboard.writeText(url);
+    copiedDepId.value = dep.id;
+    setTimeout(() => copiedDepId.value = null, 2000);
 };
 
 // Paginação Reativa (8 itens por página)
@@ -583,7 +595,7 @@ const totalDocumentosPages = computed(() => Math.ceil((props.associado?.document
                                 <th class="text-center">Parentesco</th>
                                 <th class="text-center">CPF</th>
                                 <th class="text-center">Tipo Dependência</th>
-                                <th class="text-right pr-8">Acesso / Autorização</th>
+                                <th class="text-right pr-8">Acesso & Link Mágico</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -607,8 +619,16 @@ const totalDocumentosPages = computed(() => Math.ceil((props.associado?.document
                                         {{ dep.tipo_dependencia === 'nao_legal' ? 'Não Legal (R$ 100)' : 'Legal (R$ 80)' }}
                                     </span>
                                 </td>
-                                <td class="text-right pr-8 font-medium text-xs">
-                                    {{ dep.autoriza_acesso ? '✓ Acesso Autorizado' : '— Sem Acesso Portal' }}
+                                <td class="text-right pr-8">
+                                    <button 
+                                        @click="copyDepMagicLink(dep)"
+                                        :class="copiedDepId === dep.id ? 'bg-emerald-500 text-white' : 'bg-primary-dynamic/10 text-primary-dynamic hover:bg-primary-dynamic hover:text-white'"
+                                        class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5 transition-all shadow-sm"
+                                        title="Copiar Link Mágico de Acesso do Dependente (Validação 5 dígitos CPF)"
+                                    >
+                                        <component :is="copiedDepId === dep.id ? CheckIcon : ShareIcon" class="w-3.5 h-3.5" />
+                                        {{ copiedDepId === dep.id ? 'Copiado!' : 'Link Mágico' }}
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>

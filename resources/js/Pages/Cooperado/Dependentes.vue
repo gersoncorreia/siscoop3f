@@ -14,7 +14,8 @@ import {
     ExclamationTriangleIcon,
     CheckCircleIcon,
     CheckIcon,
-    ArrowUpTrayIcon
+    ArrowUpTrayIcon,
+    ShareIcon
 } from '@heroicons/vue/24/outline';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -30,6 +31,15 @@ import {
 
 const page = usePage();
 const dependentes = computed(() => page.props.dependentes || []);
+
+const copiedDepId = ref(null);
+const copyDepMagicLink = (dep) => {
+    const token = dep.access_token || 'temp_' + dep.id;
+    const url = `${window.location.protocol}//${window.location.host}/acesso-dependente/${token}`;
+    navigator.clipboard.writeText(url);
+    copiedDepId.value = dep.id;
+    setTimeout(() => copiedDepId.value = null, 2000);
+};
 
 // --- Gestão de Dependentes (Modal) ---
 const isDepModalOpen = ref(false);
@@ -152,7 +162,16 @@ function statusColor(status) {
                                 </p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-1">
+                        <div class="flex items-center gap-1.5">
+                            <button 
+                                @click="copyDepMagicLink(dep)" 
+                                :class="copiedDepId === dep.id ? 'bg-emerald-500 text-white' : 'bg-primary-dynamic/10 text-primary-dynamic hover:bg-primary-dynamic hover:text-white'"
+                                class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5 transition-all shadow-sm"
+                                title="Copiar Link Mágico de Acesso do Dependente (Validação 5 dígitos CPF)"
+                            >
+                                <component :is="copiedDepId === dep.id ? CheckIcon : ShareIcon" class="w-3.5 h-3.5" />
+                                {{ copiedDepId === dep.id ? 'Copiado!' : 'Link Mágico' }}
+                            </button>
                             <button @click="openDepModal(dep)" class="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all" title="Editar">
                                 <PencilSquareIcon class="w-4 h-4" />
                             </button>
