@@ -40,12 +40,12 @@ class DashboardController extends Controller
         $totalAssociados = Associado::count();
         $associadosAtivos = Associado::where('status', 'ativo')->count();
 
-        $receitasMes = LancamentoFinanceiro::where('tipo', 'entrada')
+        $receitasMes = LancamentoFinanceiro::whereIn('tipo', ['receita', 'entrada'])
             ->whereMonth('data_vencimento', $mesAtual)
             ->whereYear('data_vencimento', $anoAtual)
             ->sum('valor');
 
-        $despesasMes = LancamentoFinanceiro::where('tipo', 'saida')
+        $despesasMes = LancamentoFinanceiro::whereIn('tipo', ['despesa', 'saida'])
             ->whereMonth('data_vencimento', $mesAtual)
             ->whereYear('data_vencimento', $anoAtual)
             ->sum('valor');
@@ -66,12 +66,12 @@ class DashboardController extends Controller
             $mes = $date->month;
             $ano = $date->year;
 
-            $receitas = LancamentoFinanceiro::where('tipo', 'entrada')
+            $receitas = LancamentoFinanceiro::whereIn('tipo', ['receita', 'entrada'])
                 ->whereMonth('data_vencimento', $mes)
                 ->whereYear('data_vencimento', $ano)
                 ->sum('valor');
 
-            $despesas = LancamentoFinanceiro::where('tipo', 'saida')
+            $despesas = LancamentoFinanceiro::whereIn('tipo', ['despesa', 'saida'])
                 ->whereMonth('data_vencimento', $mes)
                 ->whereYear('data_vencimento', $ano)
                 ->sum('valor');

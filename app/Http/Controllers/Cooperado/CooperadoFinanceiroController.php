@@ -29,7 +29,10 @@ class CooperadoFinanceiroController extends Controller
         $tenant = tenant();
         $defaultConfig = [
             'pix_manual' => [
-                ['enabled' => true, 'tipo_chave' => 'cnpj', 'chave_pix' => '', 'favorecido' => $tenant->nome ?? 'Santa Casa da Amazônia']
+                'enabled' => true,
+                'tipo_chave' => 'cnpj',
+                'chave_pix' => '',
+                'favorecido' => $tenant->nome ?? 'Santa Casa da Amazônia',
             ]
         ];
 

@@ -34,7 +34,12 @@ const associado = computed(() => page.props.associado);
 const primaryColor = computed(() => tenant.value?.primary_color || '#2563eb');
 const showMobileMenu = ref(false);
 
-const userRoles = computed(() => page.props.auth?.user?.roles?.map(r => r.name) || []);
+const userRoles = computed(() => {
+    if (Array.isArray(page.props.auth?.roles)) {
+        return page.props.auth.roles;
+    }
+    return page.props.auth?.user?.roles?.map(r => r.name || r) || [];
+});
 const isDependente = computed(() => userRoles.value.includes('Dependente'));
 
 const isFundacao = computed(() => page.props.tenant?.tipo === 'fundacao');
@@ -131,12 +136,12 @@ function isActive(routeMatch) {
         if (route().current(routeMatch + '.*') || route().current(routeMatch)) {
             return true;
         }
-        const item = allNavItems.find(i => i.routeMatch === routeMatch);
-        if (item && item.href !== '/cooperado') {
+        const item = allNavItems.value.find(i => i.routeMatch === routeMatch);
+        if (item && item.href !== routePrefix.value) {
             return page.url.startsWith(item.href);
         }
-        if (item && item.href === '/cooperado') {
-            return page.url === '/cooperado' || page.url === '/cooperado/';
+        if (item && item.href === routePrefix.value) {
+            return page.url === routePrefix.value || page.url === `${routePrefix.value}/`;
         }
         return false;
     } catch (e) {
@@ -150,7 +155,7 @@ function isActive(routeMatch) {
         <!-- Mobile Header -->
         <div class="lg:hidden sticky top-0 z-50 bg-[var(--bg-card)] border-b border-[var(--border-color)] shadow-sm">
             <div class="flex items-center justify-between px-4 h-16">
-                <Link href="/cooperado" class="flex items-center gap-3">
+                <Link :href="routePrefix" class="flex items-center gap-3">
                     <div :style="{ backgroundColor: primaryColor }" class="text-white p-2 rounded-xl shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                             <path d="M4.5 3.75a3 3 0 0 0-3 3v.75h21v-.75a3 3 0 0 0-3-3h-15Z" />

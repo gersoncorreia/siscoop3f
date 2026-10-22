@@ -296,11 +296,23 @@ watch(() => page.props.flash?.error, (error) => {
                         <span v-if="!isSidebarCollapsed" class="truncate">Dashboard</span>
                     </Link>
 
+                    <!-- SUPER ADMIN CENTRAL LINKS -->
+                    <Link 
+                        v-if="isCentral"
+                        :href="route('master-admin.contratos.index')" 
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all"
+                        :class="route().current('master-admin.contratos.*') ? 'bg-primary-light text-primary-dynamic shadow-sm font-black' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-[var(--text-heading)]'"
+                        :title="isSidebarCollapsed ? 'Contratos entre Entidades' : ''"
+                    >
+                        <DocumentTextIcon class="w-5 h-5 shrink-0" />
+                        <span v-if="!isSidebarCollapsed" class="truncate">Contratos entre Entidades</span>
+                    </Link>
+
                     <!-- TENANT NAVIGATION GROUPS -->
                     <template v-if="isTenant">
                         
                         <!-- 2. CLIENTES / ASSOCIADOS -->
-                        <div class="space-y-1 pt-2 border-t border-[var(--border-color)]/50">
+                        <div v-if="$page.props.auth.permissions.includes('associados.view')" class="space-y-1 pt-2 border-t border-[var(--border-color)]/50">
                             <button 
                                 @click="toggleGroup('associados')" 
                                 class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all"
@@ -348,7 +360,7 @@ watch(() => page.props.flash?.error, (error) => {
                         </div>
 
                         <!-- 3. FINANCEIRO -->
-                        <div class="space-y-1 pt-2 border-t border-[var(--border-color)]/50">
+                        <div v-if="$page.props.auth.permissions.includes('financeiro.view')" class="space-y-1 pt-2 border-t border-[var(--border-color)]/50">
                             <button 
                                 @click="toggleGroup('financeiro')" 
                                 class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all"
@@ -404,7 +416,7 @@ watch(() => page.props.flash?.error, (error) => {
                         </div>
 
                         <!-- 4. SAÚDE / CLUBE DE SAÚDE -->
-                        <div class="space-y-1 pt-2 border-t border-[var(--border-color)]/50">
+                        <div v-if="$page.props.auth.permissions.includes('saude.view')" class="space-y-1 pt-2 border-t border-[var(--border-color)]/50">
                             <button 
                                 @click="toggleGroup('saude')" 
                                 class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all"
@@ -456,7 +468,7 @@ watch(() => page.props.flash?.error, (error) => {
                         </div>
 
                         <!-- 6. AJUSTES / CONFIGURAÇÕES -->
-                        <div v-if="$page.props.auth.permissions.includes('configuracoes.users')" class="space-y-1 pt-2 border-t border-[var(--border-color)]/50">
+                        <div v-if="$page.props.auth.permissions.includes('configuracoes.manage') || $page.props.auth.permissions.includes('configuracoes.users')" class="space-y-1 pt-2 border-t border-[var(--border-color)]/50">
                             <button 
                                 @click="toggleGroup('ajustes')" 
                                 class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all"
@@ -475,7 +487,7 @@ watch(() => page.props.flash?.error, (error) => {
                                 <Link href="/configuracoes" class="block py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors" :class="route().current('configuracoes.index') ? 'text-primary-dynamic font-bold bg-primary-light/50' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'">Customização Visual</Link>
                                 <Link :href="route('configuracoes.pagamentos')" class="block py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors" :class="route().current('configuracoes.pagamentos') ? 'text-primary-dynamic font-bold bg-primary-light/50' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'">Ajustes de Pagamentos</Link>
                                 <Link :href="route('configuracoes.contratos')" class="block py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors" :class="route().current('configuracoes.contratos*') ? 'text-primary-dynamic font-bold bg-primary-light/50' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'">Contratos Operacionais</Link>
-                                <Link :href="route('configuracoes.usuarios.index')" class="block py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors" :class="route().current('configuracoes.usuarios.*') ? 'text-primary-dynamic font-bold bg-primary-light/50' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'">Gestão de Equipe</Link>
+                                <Link v-if="$page.props.auth.permissions.includes('configuracoes.users')" :href="route('configuracoes.usuarios.index')" class="block py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors" :class="route().current('configuracoes.usuarios.*') ? 'text-primary-dynamic font-bold bg-primary-light/50' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'">Gestão de Equipe</Link>
                             </div>
                         </div>
 
@@ -535,9 +547,20 @@ watch(() => page.props.flash?.error, (error) => {
                             <span>Dashboard</span>
                         </Link>
 
+                        <Link 
+                            v-if="isCentral"
+                            :href="route('master-admin.contratos.index')" 
+                            @click="isMobileSidebarOpen = false"
+                            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all"
+                            :class="route().current('master-admin.contratos.*') ? 'bg-primary-light text-primary-dynamic font-black' : 'text-slate-600 dark:text-slate-400'"
+                        >
+                            <DocumentTextIcon class="w-5 h-5" />
+                            <span>Contratos entre Entidades</span>
+                        </Link>
+
                         <template v-if="isTenant">
                             <!-- Clientes/Associados -->
-                            <div class="space-y-1">
+                            <div v-if="$page.props.auth.permissions.includes('associados.view')" class="space-y-1">
                                 <button @click="toggleGroup('associados')" class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold text-slate-600 dark:text-slate-400">
                                     <div class="flex items-center gap-3">
                                         <UserGroupIcon class="w-5 h-5" />
@@ -554,7 +577,7 @@ watch(() => page.props.flash?.error, (error) => {
                             </div>
 
                             <!-- Financeiro -->
-                            <div class="space-y-1">
+                            <div v-if="$page.props.auth.permissions.includes('financeiro.view')" class="space-y-1">
                                 <button @click="toggleGroup('financeiro')" class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold text-slate-600 dark:text-slate-400">
                                     <div class="flex items-center gap-3">
                                         <BanknotesIcon class="w-5 h-5" />
@@ -572,7 +595,7 @@ watch(() => page.props.flash?.error, (error) => {
                             </div>
 
                             <!-- Saúde / Clube de Saúde -->
-                            <div class="space-y-1">
+                            <div v-if="$page.props.auth.permissions.includes('saude.view')" class="space-y-1">
                                 <button @click="toggleGroup('saude')" class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold text-slate-600 dark:text-slate-400">
                                     <div class="flex items-center gap-3">
                                         <HeartIcon class="w-5 h-5" />
@@ -591,10 +614,13 @@ watch(() => page.props.flash?.error, (error) => {
                                     <template v-else>
                                         <Link v-if="hasServico('gestao_consultas')" href="/saude/agendamentos" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Agendamentos</Link>
                                         <Link v-if="hasServico('gestao_internacoes')" href="/saude/internacoes" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Internações Eletivas</Link>
+                                        <Link :href="route('saude.tabela-servicos.index')" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Tabela de Serviços</Link>
+                                        <Link :href="route('saude.planos-adesao.index')" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Planos de Adesão</Link>
+                                        <Link :href="route('saude.campanhas.index')" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Campanhas de Saúde</Link>
+                                        <Link :href="route('saude.indicadores')" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Indicadores & KPIs</Link>
                                         <Link href="/saude/prestadores" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Rede Credenciada</Link>
                                         <Link href="/saude/autorizacoes" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Autorizações</Link>
                                         <Link href="/saude/faturas" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Faturamento</Link>
-                                        <Link v-if="hasServico('relatorios_gerenciais')" href="/saude/reembolsos" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Solicitações</Link>
                                     </template>
                                 </div>
                             </div>
@@ -606,7 +632,7 @@ watch(() => page.props.flash?.error, (error) => {
                             </Link>
 
                             <!-- Ajustes -->
-                            <div v-if="$page.props.auth.permissions.includes('configuracoes.users')" class="space-y-1">
+                            <div v-if="$page.props.auth.permissions.includes('configuracoes.manage') || $page.props.auth.permissions.includes('configuracoes.users')" class="space-y-1">
                                 <button @click="toggleGroup('ajustes')" class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold text-slate-600 dark:text-slate-400">
                                     <div class="flex items-center gap-3">
                                         <Cog6ToothIcon class="w-5 h-5" />
@@ -618,7 +644,7 @@ watch(() => page.props.flash?.error, (error) => {
                                     <Link href="/configuracoes" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Customização Visual</Link>
                                     <Link :href="route('configuracoes.pagamentos')" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Ajustes de Pagamentos</Link>
                                     <Link :href="route('configuracoes.contratos')" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Contratos Operacionais</Link>
-                                    <Link :href="route('configuracoes.usuarios.index')" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Gestão de Equipe</Link>
+                                    <Link v-if="$page.props.auth.permissions.includes('configuracoes.users')" :href="route('configuracoes.usuarios.index')" @click="isMobileSidebarOpen = false" class="block py-1.5 text-xs font-semibold text-slate-500">Gestão de Equipe</Link>
                                 </div>
                             </div>
                         </template>

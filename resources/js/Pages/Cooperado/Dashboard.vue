@@ -32,6 +32,7 @@ function formatCurrency(v) {
 }
 
 const isFundacao = computed(() => page.props.tenant?.tipo === 'fundacao');
+const routePrefix = computed(() => isFundacao.value ? '/cliente' : '/cooperado');
 
 const kpis = computed(() => {
     if (isFundacao.value) {
@@ -42,7 +43,7 @@ const kpis = computed(() => {
                 sub: associado.value?.carteirinha_numero ? `#${associado.value.carteirinha_numero}` : 'Solicitar digital',
                 icon: IdentificationIcon,
                 color: associado.value?.carteirinha_status === 'ativa' ? 'emerald' : 'amber',
-                href: '/cooperado/carteirinha',
+                href: `${routePrefix.value}/carteirinha`,
             },
             {
                 label: 'Meus Pagamentos',
@@ -50,7 +51,7 @@ const kpis = computed(() => {
                 sub: (stats.value?.totalPendente || 0) > 0 ? `${formatCurrency(stats.value?.totalPendente)} pendente` : 'Pagamentos em dia',
                 icon: CurrencyDollarIcon,
                 color: (stats.value?.totalPendente || 0) > 0 ? 'amber' : 'emerald',
-                href: '/cooperado/financeiro',
+                href: `${routePrefix.value}/financeiro`,
             },
             {
                 label: 'Agendamentos',
@@ -58,7 +59,7 @@ const kpis = computed(() => {
                 sub: 'Consultas & Exames',
                 icon: CalendarDaysIcon,
                 color: 'blue',
-                href: '/cooperado/agendamentos',
+                href: `${routePrefix.value}/agendamentos`,
             },
             {
                 label: 'Dependentes',
@@ -66,7 +67,7 @@ const kpis = computed(() => {
                 sub: 'Registrados',
                 icon: UserGroupIcon,
                 color: 'purple',
-                href: '/cooperado/dependentes',
+                href: `${routePrefix.value}/dependentes`,
             },
         ];
     }
@@ -78,7 +79,7 @@ const kpis = computed(() => {
             sub: 'Na Cooperativa (Cota)',
             icon: CurrencyDollarIcon,
             color: 'emerald',
-            href: '/cooperado/cotas',
+            href: `${routePrefix.value}/cotas`,
         },
         {
             label: 'Mensalidades',
@@ -86,7 +87,7 @@ const kpis = computed(() => {
             sub: 'Pendentes de pagamento',
             icon: ClockIcon,
             color: (stats.value?.mensalidadesPendentes || 0) > 0 ? 'amber' : 'emerald',
-            href: '/cooperado/financeiro',
+            href: `${routePrefix.value}/financeiro`,
         },
         {
             label: 'Dependentes',
@@ -94,7 +95,7 @@ const kpis = computed(() => {
             sub: 'Registrados',
             icon: UserGroupIcon,
             color: 'blue',
-            href: '/cooperado/dependentes',
+            href: `${routePrefix.value}/dependentes`,
         },
         {
             label: 'Reembolsos',
@@ -102,7 +103,7 @@ const kpis = computed(() => {
             sub: 'Em análise',
             icon: ClipboardDocumentCheckIcon,
             color: (stats.value?.reembolsosEmAnalise || 0) > 0 ? 'amber' : 'emerald',
-            href: '/cooperado/reembolsos',
+            href: `${routePrefix.value}/reembolsos`,
         },
     ];
 });
@@ -265,7 +266,7 @@ const kpis = computed(() => {
                             <h4 class="text-[10px] font-black text-[var(--text-heading)] uppercase tracking-widest">Ações Operacionais</h4>
                         </div>
                         <div v-if="isFundacao" class="divide-y divide-[var(--border-color)]">
-                            <Link href="/cooperado/servicos" class="flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
+                            <Link :href="`${routePrefix}/servicos`" class="flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
                                 <div class="w-8 h-8 rounded bg-emerald-50 text-emerald-600 flex items-center justify-center">
                                     <CurrencyDollarIcon class="w-4 h-4" />
                                 </div>
@@ -275,7 +276,7 @@ const kpis = computed(() => {
                                 </div>
                                 <ArrowRightIcon class="w-4 h-4 text-[var(--text-muted)] group-hover:text-primary-dynamic transition-all" />
                             </Link>
-                            <Link href="/cooperado/agendamentos/novo" class="flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
+                            <Link :href="`${routePrefix}/agendamentos/novo`" class="flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
                                 <div class="w-8 h-8 rounded bg-primary-light flex items-center justify-center text-primary-dynamic">
                                     <CalendarDaysIcon class="w-4 h-4" />
                                 </div>
@@ -287,7 +288,7 @@ const kpis = computed(() => {
                             </Link>
                         </div>
                         <div v-else class="divide-y divide-[var(--border-color)]">
-                            <Link href="/cooperado/reembolsos" class="flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
+                            <Link :href="`${routePrefix}/reembolsos`" class="flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
                                 <div class="w-8 h-8 rounded bg-primary-light flex items-center justify-center text-primary-dynamic">
                                     <ClipboardDocumentCheckIcon class="w-4 h-4" />
                                 </div>
@@ -297,7 +298,7 @@ const kpis = computed(() => {
                                 </div>
                                 <ArrowRightIcon class="w-4 h-4 text-[var(--text-muted)] group-hover:text-primary-dynamic transition-all" />
                             </Link>
-                            <Link href="/cooperado/financeiro" class="flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
+                            <Link :href="`${routePrefix}/financeiro`" class="flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-all group">
                                 <div class="w-8 h-8 rounded bg-emerald-50 text-emerald-600 flex items-center justify-center">
                                     <CurrencyDollarIcon class="w-4 h-4" />
                                 </div>

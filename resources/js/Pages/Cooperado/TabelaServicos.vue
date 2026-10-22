@@ -17,6 +17,8 @@ const props = defineProps({
 
 const page = usePage();
 const tenant = computed(() => page.props.tenant);
+const isFundacao = computed(() => tenant.value?.tipo === 'fundacao');
+const routePrefix = computed(() => isFundacao.value ? '/cliente' : '/cooperado');
 
 const activeFilter = ref(props.filtroCategoria || 'all');
 const searchQuery = ref('');
@@ -125,7 +127,7 @@ function formatCurrency(v) {
                                 <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-0.5">Valor Base</p>
                                 <p class="text-xl font-black text-emerald-600 dark:text-emerald-500 tracking-tight">{{ formatCurrency(servico.valor_base) }}</p>
                             </div>
-                            <Link :href="'/cooperado/agendamentos/novo?servico_id=' + servico.id" class="inline-flex">
+                            <Link :href="`${routePrefix}/agendamentos/novo?servico_id=${servico.id}`" class="inline-flex">
                                 <PrimaryButton>Agendar</PrimaryButton>
                             </Link>
                         </div>

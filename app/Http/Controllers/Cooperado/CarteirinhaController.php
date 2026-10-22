@@ -15,7 +15,8 @@ class CarteirinhaController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $associado = Associado::where('user_id', $user->id)->first();
+        $associado = Associado::where('user_id', $user->id)->first()
+            ?? $user->dependente?->associado;
 
         if (!$associado) {
             abort(404, 'Nenhum cadastro de associado vinculado a este usuário.');

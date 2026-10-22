@@ -145,8 +145,9 @@ class AdesaoService
                 'has_temporary_password' => true,
             ]);
 
-            // Assign Associate Role
-            $user->assignRole('Associado');
+            // Assign Associate / Client Role according to tenant type
+            $roleName = (function_exists('tenant') && tenant('tipo') === 'fundacao') ? 'Cliente' : 'Associado';
+            $user->assignRole($roleName);
 
             // Link User to Associate
             $associado->update(['user_id' => $user->id]);

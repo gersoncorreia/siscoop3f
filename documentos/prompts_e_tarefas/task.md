@@ -1,0 +1,30 @@
+- [x] Fase 1: Tipo de Entidade (Cooperativa/Fundação)
+    - [x] Criar migration `add_tipo_to_tenants_table` e rodar
+    - [x] Atualizar model `Tenant.php` (getCustomColumns)
+    - [x] Atualizar `StoreTenantRequest.php` para validar o tipo
+    - [x] Atualizar `TenantService.php` para salvar o tipo e seedar roles
+    - [x] Atualizar `TenantController.php` com mensagens dinâmicas
+    - [x] Atualizar `Dashboard.vue` central com seletor de tipo e labels dinâmicos
+    - [x] Atualizar `web.php` e `RolesAndPermissionsSeeder.php`
+- [x] Fase 3: LGPD Personalizada por Entidade
+    - [x] Criar migration de tenant `create_lgpd_settings_table` e rodar
+    - [x] Criar model `LgpdSetting.php`
+    - [x] Atualizar `LgpdController.php` (carregar do banco ou default)
+    - [x] Atualizar `Lgpd.vue` para renderizar dinamicamente
+    - [x] Criar rotas de admin de edição de LGPD
+    - [x] Atualizar `ConfiguracaoController.php`
+    - [x] Criar Vue page `Configuracoes/Lgpd.vue`
+- [x] Fase 2: Contratos entre Entidades (Central + Tenant)
+    - [x] Criar migration central `create_contratos_entidade_table` e rodar
+    - [x] Criar model `ContratoEntidade.php`
+    - [x] Atualizar model `Tenant.php` com relacionamentos de contratos
+    - [x] Criar rotas, controllers e modais no Painel Central (Master Admin)
+    - [x] Criar rotas, controller e Vue page no Painel do Tenant (Configuracoes/Contratos.vue)
+
+- [x] Plano de Correções (Testes & Segurança)
+    - [x] Ajustar `tests/TestCase.php` para não dropar banco local `tenantstfsaude`
+    - [x] Configurar conexão template nos arquivos de teste/config
+    - [x] Proteger rotas master-admin no `routes/web.php` contra acessos indevidos
+    - [x] Recriar e seedar o banco local do tenant `stfsaude`
+    - [x] Rodar testes novamente e validar status Green
+

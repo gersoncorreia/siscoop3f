@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Siscoop3F - Apresentação Executiva: Vantagens, Economia e Governança</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .slide-transition {
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .slide-hidden-left {
+      opacity: 0;
+      transform: translateX(-35px) scale(0.98);
+      pointer-events: none;
+      position: absolute;
+    }
+    .slide-hidden-right {
+      opacity: 0;
+      transform: translateX(35px) scale(0.98);
+      pointer-events: none;
+      position: absolute;
+    }
+    .slide-active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      position: relative;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden select-none">
+
+  <!-- TOP BAR: Status, Título e Controles -->
+  <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-6 py-3 flex items-center justify-between z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center font-black text-white text-sm shadow-md shadow-emerald-500/20">
+        3F
+      </div>
+      <div>
+        <h1 class="text-xs font-black uppercase tracking-wider text-emerald-400">Siscoop3F • Apresentação Executiva</h1>
+        <p class="text-[11px] text-slate-400 font-medium">Corpo Diretivo & Conselho de Administração</p>
+      </div>
+    </div>
+
+    <!-- Navegação Central de Slides -->
+    <div class="flex items-center gap-2">
+      <button id="prevBtn" onclick="prevSlide()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+
+      <span class="text-xs font-bold px-3 py-1 bg-slate-800/80 rounded-lg text-slate-300 min-w-[75px] text-center">
+        <span id="currentSlideNum" class="text-emerald-400 font-black">1</span> / <span id="totalSlideNum">12</span>
+      </span>
+
+      <button id="nextBtn" onclick="nextSlide()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <!-- Ações Extras: Tela Cheia -->
+    <div class="flex items-center gap-3">
+      <button onclick="toggleFullscreen()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+        <span>Tela Cheia (F)</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTAINER PRINCIPAL DO SLIDER -->
+  <main class="flex-1 flex items-center justify-center p-4 md:p-6 max-w-7xl mx-auto w-full relative">
+
+    <!-- SLIDE 1: CAPA INSTITUCIONAL -->
+    <section id="slide-1" class="slide-active slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-gradient-to-br from-[#0a1f16] via-[#0d2a1e] to-[#081811] border border-emerald-500/20 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden relative">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/60 border border-emerald-500/40 text-emerald-300 text-xs font-black uppercase tracking-widest mb-4">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Gestão & Governança Cooperativa
+        </div>
+        <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-2">
+          SISCOOP3F
+        </h2>
+        <p class="text-xl font-bold text-emerald-300/90 mb-3">
+          Modernização, Transparência e Controle para a Cooperativa
+        </p>
+        <p class="text-sm text-slate-300 max-w-3xl leading-relaxed font-normal">
+          Uma plataforma unificada projetada para conectar Diretoria, Cooperados, Dependentes e a Rede Credenciada em um ecossistema 100% digital, seguro e financeiramente sustentável.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-emerald-900/50">
+        <div class="p-4 rounded-2xl bg-emerald-950/50 border border-emerald-800/40">
+          <div class="text-emerald-400 font-black text-xs uppercase tracking-wider mb-1">Pilar 01</div>
+          <h3 class="text-white font-bold text-sm mb-1">Cota Capital & Patrimônio</h3>
+          <p class="text-xs text-slate-400">Gestão transparente das quotas de cada associado com extrato em tempo real.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-emerald-950/50 border border-emerald-800/40">
+          <div class="text-emerald-400 font-black text-xs uppercase tracking-wider mb-1">Pilar 02</div>
+          <h3 class="text-white font-bold text-sm mb-1">Blindagem & Retorno Financeiro</h3>
+          <p class="text-xs text-slate-400">Redução de até 70% em retrabalho operacional e zeramento de sinistros indevidos.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-emerald-950/50 border border-emerald-800/40">
+          <div class="text-emerald-400 font-black text-xs uppercase tracking-wider mb-1">Pilar 03</div>
+          <h3 class="text-white font-bold text-sm mb-1">Link Mágico por CPF</h3>
+          <p class="text-xs text-slate-400">Acesso simplificado para dependentes via 5 dígitos do CPF sem atrito de senhas.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: O CENÁRIO ATUAL X A TRANSFORMAÇÃO DIGITAL -->
+    <section id="slide-2" class="slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden">
+      <div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400">Contexto & Diagnóstico</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Por Que Modernizar a Gestão da Nossa Cooperativa?</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">Eliminar o atrito operacional, mitigar riscos de inadimplência e valorizar o patrimônio do associado.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto">
+        <div class="p-6 rounded-2xl bg-rose-950/30 border border-rose-500/30">
+          <div class="flex items-center gap-2 text-rose-400 font-black text-sm uppercase tracking-wider mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            Desafios do Modelo Tradicional
+          </div>
+          <ul class="space-y-3 text-xs md:text-sm text-slate-300">
+            <li>• Controle disperso em papéis, pastas físicas e planilhas paralelas;</li>
+            <li>• Inadimplência silenciosa: cooperados atrasados continuavam usando a rede médica;</li>
+            <li>• Dificuldade do associado em acompanhar seu saldo de Cota Capital integralizada;</li>
+            <li>• Processo moroso de aprovação e conferência manual de guias e faturas médicas;</li>
+            <li>• Sobrecarga no atendimento para envio de 2ª via de boletos e autorizações.</li>
+          </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-emerald-950/40 border border-emerald-500/40">
+          <div class="flex items-center gap-2 text-emerald-400 font-black text-sm uppercase tracking-wider mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            A Transformação com o Siscoop3F
+          </div>
+          <ul class="space-y-3 text-xs md:text-sm text-slate-200">
+            <li>✓ Ecossistema 100% digital, automatizado e integrado em tempo real;</li>
+            <li>✓ Trava de segurança: prestador só emite guia se o cooperado estiver estritamente adimplente;</li>
+            <li>✓ Portal exclusivo do associado com visão de Cota Capital e extrato financeiro transparente;</li>
+            <li>✓ Regra do Dia 05: Faturamento automatizado com upload de NF-e e auditoria médica;</li>
+            <li>✓ Autonomia para dependentes com acesso seguro via 5 primeiros dígitos do CPF.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siscoop3F • Modernização da Governança e Eficiência Operacional</div>
+    </section>
+
+    <!-- SLIDE 3: OS 4 PORTAIS INTEGRADOS -->
+    <section id="slide-3" class="slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden">
+      <div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400">Arquitetura Integrada</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Um Sistema Único, Quatro Experiências Dedicadas</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">Cada público da cooperativa tem um portal exclusivo adaptado à sua rotina.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 my-auto">
+        <div class="p-5 rounded-2xl bg-slate-800/80 border-2 border-emerald-600">
+          <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700">01. Diretoria</span>
+          <h3 class="text-sm font-bold text-white mt-2 mb-2">Painel Administrativo 360°</h3>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>• Fluxo de caixa e saldo bancário;</li>
+            <li>• Gestão de Cota Capital e Associados;</li>
+            <li>• Auditoria de guias e faturas;</li>
+            <li>• Relatórios em Excel com 1 clique.</li>
+          </ul>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-slate-800/80 border-2 border-blue-600">
+          <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-700">02. Cooperado</span>
+          <h3 class="text-sm font-bold text-white mt-2 mb-2">Portal do Associado</h3>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>• Card Meu Patrimônio (Cotas);</li>
+            <li>• Extrato com PIX e QR Code;</li>
+            <li>• Rede credenciada e convênios;</li>
+            <li>• Solicitação de reembolsos médicos.</li>
+          </ul>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-slate-800/80 border-2 border-purple-600">
+          <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-700">03. Dependentes</span>
+          <h3 class="text-sm font-bold text-white mt-2 mb-2">Portal do Dependente</h3>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>• Acesso via Link Mágico por CPF;</li>
+            <li>• Zero atrito: sem lembrar senha;</li>
+            <li>• Carteirinha virtual própria;</li>
+            <li>• Blindagem total das finanças.</li>
+          </ul>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-slate-800/80 border-2 border-amber-600">
+          <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-700">04. Prestadores</span>
+          <h3 class="text-sm font-bold text-white mt-2 mb-2">Portal do Prestador</h3>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>• Busca por CPF/Matrícula;</li>
+            <li>• Checagem de adimplência;</li>
+            <li>• Abertura digital de autorizações;</li>
+            <li>• Envio de faturas até o dia 05.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siscoop3F • Conectividade Total em Tempo Real</div>
+    </section>
+
+    <!-- SLIDE 4: DASHBOARD DA DIRETORIA -->
+    <section id="slide-4" class="slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden">
+      <div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400">Painel Executivo</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Visão Estratégica em Tempo Real para a Tomada de Decisão</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">Todos os números vitais da cooperativa consolidados em uma única tela gerencial.</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700">
+          <div class="text-[10px] font-black uppercase tracking-wider text-slate-400">Cooperados Ativos</div>
+          <div class="text-2xl font-black text-emerald-400 mt-1">1.248</div>
+          <div class="text-[10px] text-slate-400 mt-0.5">+38 novas adesões no mês</div>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700">
+          <div class="text-[10px] font-black uppercase tracking-wider text-slate-400">Capital Social Integralizado</div>
+          <div class="text-2xl font-black text-teal-400 mt-1">R$ 485.200</div>
+          <div class="text-[10px] text-slate-400 mt-0.5">Patrimônio cooperativo líquido</div>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700">
+          <div class="text-[10px] font-black uppercase tracking-wider text-slate-400">Receitas do Mês</div>
+          <div class="text-2xl font-black text-blue-400 mt-1">R$ 184.650</div>
+          <div class="text-[10px] text-slate-400 mt-0.5">Mensalidades, taxas e aportes</div>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700">
+          <div class="text-[10px] font-black uppercase tracking-wider text-slate-400">Rede Credenciada Ativa</div>
+          <div class="text-2xl font-black text-amber-400 mt-1">42</div>
+          <div class="text-[10px] text-slate-400 mt-0.5">Clínicas, médicos e laboratórios</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto items-center">
+        <div class="lg:col-span-5 space-y-4">
+          <div class="p-4 rounded-2xl bg-slate-800/70 border border-slate-700">
+            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400">Capital Social Cooperativo</span>
+            <div class="text-2xl font-black text-white mt-1">R$ 1.500,00</div>
+            <p class="text-xs text-slate-300 mt-1">Patrimônio integralizado auditável em tempo real no banco de dados.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-800/70 border border-slate-700">
+            <span class="text-[10px] font-black uppercase tracking-wider text-blue-400">Base de Cooperados & Saúde</span>
+            <div class="text-lg font-bold text-white mt-1">100% Digital & Integrado</div>
+            <p class="text-xs text-slate-300 mt-1">Ativos, dependentes, rede de prestadores e fluxo de autorizações centralizados.</p>
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-300 font-semibold">
+            ✓ Transparência contábil instantânea para os Conselhos Fiscal e de Administração.
+          </div>
+        </div>
+
+        <div class="lg:col-span-7">
+          <div class="rounded-2xl overflow-hidden border-2 border-slate-700 shadow-2xl bg-slate-950 group">
+            <img src="../prints_cooperativa/01_admin_dashboard.png" alt="Dashboard Administrativo Cooperativa" class="w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-300">
+          </div>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siscoop3F • Painel Executivo de Indicadores (Tela Real do Sistema)</div>
+    </section>
+
+    <!-- SLIDE 5: ONBOARDING DIGITAL & PERFIL 360° -->
+    <section id="slide-5" class="slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden">
+      <div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400">Gestão do Cooperado</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Admissão Digital com Validação Matemática & Perfil 360°</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">Como novos membros entram na cooperativa de forma segura, sem fraudes e sem papelada.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto items-center">
+        <div class="lg:col-span-4 space-y-3">
+          <div class="rounded-xl overflow-hidden border border-slate-700 shadow-lg">
+            <img src="../prints_cooperativa/13_adesao_publica.png" alt="Adesão Online" class="w-full h-auto object-cover">
+          </div>
+          <div class="p-3 rounded-xl bg-slate-800/70 border border-slate-700 text-xs text-slate-300">
+            <strong class="text-white block mb-1">Onboarding Digital (/adesao)</strong>
+            Validação matemática de CPF, bloqueio de duplicidade e subscrição de quotas em fluxo contínuo.
+          </div>
+        </div>
+
+        <div class="lg:col-span-8 space-y-3">
+          <div class="rounded-xl overflow-hidden border-2 border-slate-700 shadow-xl bg-slate-950">
+            <img src="../prints_cooperativa/06_admin_visao_360_cooperado.png" alt="Perfil 360 Cooperado" class="w-full h-auto object-cover">
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-300">
+            ✓ <strong>Perfil 360° do Cooperado:</strong> Abas dinâmicas de Atendimentos, Mensalidades, Dependentes e Auditoria Documental com aprovação/recusa formal.
+          </div>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siscoop3F • Eficiência no Atendimento e Compliance LGPD</div>
+    </section>
+
+    <!-- SLIDE 6: GOVERNANÇA & COTA CAPITAL -->
+    <section id="slide-6" class="slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden">
+      <div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400">Governança Cooperativa</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Gestão do Capital Social & Transparência para o Associado</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">A Cota Capital é o alicerce financeiro da cooperativa: gestão corporativa e extrato na palma da mão.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto items-center">
+        <div class="space-y-3">
+          <div class="rounded-2xl overflow-hidden border-2 border-slate-700 shadow-xl bg-slate-950">
+            <img src="../prints_cooperativa/02_admin_cota_capital.png" alt="Gestão de Cota Capital Admin" class="w-full h-auto object-cover">
+          </div>
+          <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-300">
+            <strong class="text-white">Gestão Central (Diretoria / Conselho):</strong> Subscrições, aportes em lote e controle do patrimônio líquido integralizado da cooperativa.
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="rounded-2xl overflow-hidden border-2 border-emerald-600 shadow-xl bg-slate-950">
+            <img src="../prints_cooperativa/08_portal_cooperado_cotas.png" alt="Cotas Capital Portal Cooperado" class="w-full h-auto object-cover">
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-xs text-emerald-300">
+            ✓ <strong>Visão do Cooperado (Mobile):</strong> O associado acompanha seu patrimônio acumulado, fortalecendo a confiança e o sentimento de dono.
+          </div>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siscoop3F • Fortalecimento do Patrimônio Cooperativo</div>
+      <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siscoop3F • Fortalecimento do Patrimônio Cooperativo</div>
+    </section>
+
+    <!-- SLIDE 7: REDE CREDENCIADA & FLUXO INVERTIDO -->
+    <section id="slide-7" class="slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden">
+      <div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400">Operação de Saúde</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Fluxo Invertido: Blindagem Contra Inadimplência</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">Como o sistema impede o uso indevido da rede por cooperados atrasados e agiliza a autorização de guias.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto items-center">
+        <div class="lg:col-span-7">
+          <div class="rounded-2xl overflow-hidden border-2 border-slate-700 shadow-xl bg-slate-950">
+            <img src="../prints_cooperativa/11_prestador_elegibilidade.png" alt="Portal do Parceiro - Elegibilidade" class="w-full h-auto object-cover">
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 space-y-2.5">
+          <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs">
+            <strong class="text-white block mb-0.5">01. Busca do Paciente:</strong>
+            O atendente digita Nome, CPF ou Matrícula diretamente no balcão da clínica.
+          </div>
+          <div class="p-3 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs text-rose-300">
+            <strong class="text-white block mb-0.5">02. Trava Automática:</strong>
+            O sistema barra autorizações se houver cotas ou mensalidades em atraso.
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-xs text-emerald-300">
+            <strong class="text-white block mb-0.5">03. Auditoria Digital:</strong>
+            Guias de exames e consultas são enviadas para aprovação médica sem papéis.
+          </div>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siscoop3F • Rigor Operacional e Redução de Perdas</div>
+    </section>
+
+    <!-- SLIDE 8: FATURAMENTO DIA 05 & REEMBOLSOS COM COPARTICIPAÇÃO -->
+    <section id="slide-8" class="slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden">
+      <div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400">Ciclo Financeiro</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Faturamento dos Prestadores (Dia 05) & Reembolsos com Coparticipação</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">Pontualidade no repasse à rede e precisão no cálculo de coparticipações.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto items-center">
+        <div class="space-y-3">
+          <div class="rounded-2xl overflow-hidden border-2 border-slate-700 shadow-xl bg-slate-950">
+            <img src="../prints_cooperativa/03_admin_faturamento_rede.png" alt="Faturamento Rede Prestadores" class="w-full h-auto object-cover">
+          </div>
+          <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-300">
+            <strong class="text-white">Faturamento dos Prestadores:</strong> Envio de lotes e notas fiscais pelo portal até dia 05 e repasse programado pela administração.
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="rounded-2xl overflow-hidden border-2 border-slate-700 shadow-xl bg-slate-950">
+            <img src="../prints_cooperativa/05_admin_reembolsos.png" alt="Reembolsos Médicos Admin" class="w-full h-auto object-cover">
+          </div>
+          <div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-300">
+            ✓ <strong>Reembolsos & Coparticipação:</strong> O associado envia o recibo e o sistema calcula automaticamente títulos a pagar e coparticipação a receber.
+          </div>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siscoop3F • Automação Contábil sem Cálculos Manuais</div>
+    </section>
+
+    <!-- SLIDE 9: LINK MÁGICO PARA DEPENDENTES -->
+    <section id="slide-9" class="slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden">
+      <div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400">Inovação & Facilidade</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Extrato com PIX Imediato & Gestão de Dependentes via Link Mágico</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">Facilidade para quitar mensalidades e acesso familiar descomplicado sem senhas decoradas.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto items-center">
+        <div class="space-y-3">
+          <div class="rounded-2xl overflow-hidden border-2 border-slate-700 shadow-xl bg-slate-950">
+            <img src="../prints_cooperativa/09_portal_cooperado_financeiro.png" alt="Extrato Financeiro Cooperado" class="w-full h-auto object-cover">
+          </div>
+          <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-300">
+            <strong class="text-white">Financeiro do Cooperado:</strong> Regularização imediata via chave PIX e QR Code com conciliação automática.
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="rounded-2xl overflow-hidden border-2 border-purple-600 shadow-xl bg-slate-950">
+            <img src="../prints_cooperativa/10_portal_cooperado_dependentes.png" alt="Dependentes e Link Mágico" class="w-full h-auto object-cover">
+          </div>
+          <div class="p-3 rounded-xl bg-purple-950/40 border border-purple-500/30 text-xs text-purple-300">
+            ✓ <strong>Link Mágico (WhatsApp):</strong> Envio instantâneo pelo titular com validação por CPF e blindagem total de dados financeiros.
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-slate-800/40 border border-slate-700 flex items-center gap-3">
+        <div class="p-2 rounded-xl bg-purple-900 text-purple-300">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        </div>
+        <div>
+          <h4 class="text-xs font-black uppercase tracking-wider text-purple-300">Privacidade Total Garantida (LGPD):</h4>
+          <p class="text-xs text-slate-300">O dependente não visualiza informações financeiras, extratos de pagamentos ou saldo de Cota Capital do titular.</p>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siscoop3F • Facilidade de Uso com Segurança Jurídica</div>
+    </section>
+
+    <!-- NOVO SLIDE 10: MATRIZ DE ECONOMIA DE CUSTOS & ROI -->
+    <section id="slide-10" class="slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden">
+      <div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400">Retorno do Investimento (ROI)</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Onde o Siscoop3F Reduz Custos e Gera Economia Real</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">Uma análise quantitativa do impacto financeiro direto gerado pela automação da cooperativa.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 my-auto">
+        <div class="p-5 rounded-2xl bg-slate-800/60 border border-rose-500/50">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-black uppercase text-rose-400 tracking-wider">Zero Sinistro por Inadimplência</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800">100% de Proteção</span>
+          </div>
+          <h4 class="text-sm font-bold text-white mb-1.5">Fim da Utilização da Rede por Inadimplentes</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Em cooperativas convencionais, 5% a 12% dos procedimentos autorizados ocorrem para membros em atraso. A trava automática elimina esse custo no primeiro dia de operação.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-slate-800/60 border border-emerald-500/50">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-black uppercase text-emerald-400 tracking-wider">Eficiência Operacional da Equipe</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">-70% de Retrabalho</span>
+          </div>
+          <h4 class="text-sm font-bold text-white mb-1.5">Redução Drástica em Suporte e Secretaria</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Elimina o tempo gasto com emissão manual de 2ª via de boletos, conferência física de guias de papel e atendimento repetitivo para dependentes com senhas esquecidas.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-slate-800/60 border border-blue-500/50">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-black uppercase text-blue-400 tracking-wider">Economia com Materiais & Envio</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800">Zero PVC / Zero Frete</span>
+          </div>
+          <h4 class="text-sm font-bold text-white mb-1.5">Carteirinha 100% Digital & Link Mágico</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Zera custos de confecção de cartões plásticos de PVC (R$ 8 a R$ 15 cada), reemissão por perda e despesas postais. Cada membro acessa no próprio celular com QR Code.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-slate-800/60 border border-amber-500/50">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-black uppercase text-amber-400 tracking-wider">Receita & Controle Contábil</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800">100% Recuperado</span>
+          </div>
+          <h4 class="text-sm font-bold text-white mb-1.5">Automação da Coparticipação em Reembolsos</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Garante que a cooperativa nunca deixe de cobrar a coparticipação (ex: 30%) em reembolsos. O sistema gera a conta a pagar e a conta a receber no mesmo clique.
+          </p>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siscoop3F • Retorno Financeiro e Sustentabilidade</div>
+    </section>
+
+    <!-- NOVO SLIDE 11: DIFERENCIAIS COMPETITIVOS (COMPARATIVO) -->
+    <section id="slide-11" class="slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden">
+      <div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400">Diferenciais Competitivos</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Gestão Tradicional / Planilhas vs. Ecossistema Siscoop3F</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">Comparativo executivo demonstrando o salto de governança, segurança e qualidade de serviço.</p>
+      </div>
+
+      <div class="overflow-x-auto my-auto rounded-2xl border border-slate-700 bg-slate-800/40">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-slate-800/90 text-slate-300 font-bold uppercase text-[10px] border-b border-slate-700">
+            <tr>
+              <th class="p-3">Critério / Recurso</th>
+              <th class="p-3 text-rose-400">Modelo Tradicional / Planilhas</th>
+              <th class="p-3 text-emerald-400">Com o Siscoop3F (Ecossistema)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800">
+            <tr class="hover:bg-slate-800/30">
+              <td class="p-3 font-bold text-white">Controle de Elegibilidade</td>
+              <td class="p-3 text-rose-300/90">✕ Manual ou inexistente. Cooperado atrasado usa e gera custos.</td>
+              <td class="p-3 text-emerald-300 font-semibold">✓ Trava em milissegundos: bloqueia emissão de guia no ato.</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30">
+              <td class="p-3 font-bold text-white">Cota Capital & Patrimônio</td>
+              <td class="p-3 text-rose-300/90">✕ Valores esquecidos em balancetes; associado se sente pagando taxa.</td>
+              <td class="p-3 text-emerald-300 font-semibold">✓ Card 'Meu Patrimônio' transparente no celular; gera consciência de dono.</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30">
+              <td class="p-3 font-bold text-white">Acesso de Familiares</td>
+              <td class="p-3 text-rose-300/90">✕ Senhas esquecidas geram chamados diários de suporte à cooperativa.</td>
+              <td class="p-3 text-emerald-300 font-semibold">✓ Link Mágico validado por 5 dígitos do CPF (zero atrito e sem senhas).</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30">
+              <td class="p-3 font-bold text-white">Faturamento de Clínicas</td>
+              <td class="p-3 text-rose-300/90">✕ Papéis enviados sem data fixa, guias soltas e conferência demorada.</td>
+              <td class="p-3 text-emerald-300 font-semibold">✓ Regra do Dia 05 com upload de NF-e e auditoria médica integrada.</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30">
+              <td class="p-3 font-bold text-white">Reembolso & Coparticipação</td>
+              <td class="p-3 text-rose-300/90">✕ Cálculo manual de 30% em planilhas com risco de esquecimento.</td>
+              <td class="p-3 text-emerald-300 font-semibold">✓ Geração automática dos dois títulos financeiros (pagar e receber).</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30">
+              <td class="p-3 font-bold text-white">Auditoria & Conselho Fiscal</td>
+              <td class="p-3 text-rose-300/90">✕ Dias montando relatórios manuais para prestar contas em assembleias.</td>
+              <td class="p-3 text-emerald-300 font-semibold">✓ Exportações oficiais em Excel (.xlsx) completas com 1 clique.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siscoop3F • Matriz de Vantagens Competitivas</div>
+    </section>
+
+    <!-- SLIDE 12: SEGURANÇA, LGPD & CONCLUSÃO -->
+    <section id="slide-12" class="slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl bg-gradient-to-br from-[#0a1f16] via-[#0d2a1e] to-[#081811] border border-emerald-500/30 shadow-2xl p-8 md:p-12 flex flex-col justify-between overflow-hidden">
+      <div>
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400">Confiabilidade & Decisão</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-1">Segurança, Compliance e o Futuro da Nossa Cooperativa</h2>
+        <p class="text-xs md:text-sm text-emerald-300/80 mt-1">Tecnologia moderna para posicionar a cooperativa em um novo patamar de excelência.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+        <div class="p-5 rounded-2xl bg-emerald-950/60 border border-emerald-800/50">
+          <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-emerald-900 text-emerald-300">Multi-Tenant</span>
+          <h4 class="text-sm font-bold text-white mt-2 mb-1">Isolamento Completo</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            O banco de dados da cooperativa é 100% isolado das demais entidades. Seus dados patrimoniais e de cooperados pertencem exclusivamente à cooperativa.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-emerald-950/60 border border-emerald-800/50">
+          <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-emerald-900 text-emerald-300">LGPD & Criptografia</span>
+          <h4 class="text-sm font-bold text-white mt-2 mb-1">Segurança Jurídica</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Criptografia de campos sensíveis (CPF e e-mail). Termos de consentimento com registro formal de data/hora para respaldo legal.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-emerald-950/60 border border-emerald-800/50">
+          <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-emerald-900 text-emerald-300">Governança</span>
+          <h4 class="text-sm font-bold text-white mt-2 mb-1">Relatórios em Excel</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Exportação instantânea de relatórios de associados, financeiro, prestadores e adesões para conferência do Conselho Fiscal e auditorias.
+          </p>
+        </div>
+      </div>
+
+      <div class="p-5 rounded-2xl bg-emerald-900/60 border border-emerald-500/50 text-center">
+        <h3 class="text-sm md:text-base font-black text-emerald-300 uppercase tracking-wider mb-1">
+          Proposta de Valor para a Diretoria Executiva
+        </h3>
+        <p class="text-xs md:text-sm text-slate-200 max-w-3xl mx-auto leading-relaxed">
+          Mais controle sobre o fluxo financeiro, zero risco de uso indevido da rede médica por inadimplentes e a satisfação do associado ao ver seu patrimônio em Cota Capital valorizado.
+        </p>
+      </div>
+
+      <div class="flex items-center justify-between text-[11px] text-slate-400 border-t border-emerald-900/60 pt-3">
+        <span>Siscoop3F • Sistema Integrado de Gestão Cooperativa</span>
+        <span class="text-emerald-400 font-bold">Estamos à disposição para deliberação da Diretoria</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM BAR: Atalhos de Teclado -->
+  <footer class="w-full bg-slate-900/90 border-t border-slate-800 px-6 py-2.5 flex items-center justify-between text-xs text-slate-400 z-50">
+    <div class="flex items-center gap-4">
+      <span class="inline-flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-[10px] text-slate-300 font-mono">←</kbd> Anterior</span>
+      <span class="inline-flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-[10px] text-slate-300 font-mono">→</kbd> Próximo</span>
+      <span class="inline-flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-[10px] text-slate-300 font-mono">F</kbd> Tela Cheia</span>
+    </div>
+    <div>
+      <span class="text-slate-400">Cooperativa Modelo: <strong class="text-emerald-400">AgroCoop</strong></span>
+    </div>
+  </footer>
+
+  <!-- SCRIPT DE NAVEGAÇÃO INTERATIVA -->
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 12;
+
+    function updateSlide(nextIndex) {
+      if (nextIndex < 1 || nextIndex > totalSlides) return;
+
+      const currentEl = document.getElementById(`slide-${currentSlide}`);
+      const nextEl = document.getElementById(`slide-${nextIndex}`);
+
+      if (!currentEl || !nextEl) return;
+
+      if (nextIndex > currentSlide) {
+        currentEl.className = "slide-hidden-left slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl p-8 md:p-12 flex flex-col justify-between overflow-hidden";
+        nextEl.className = "slide-active slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl p-8 md:p-12 flex flex-col justify-between overflow-hidden";
+      } else {
+        currentEl.className = "slide-hidden-right slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl p-8 md:p-12 flex flex-col justify-between overflow-hidden";
+        nextEl.className = "slide-active slide-transition w-full max-w-6xl aspect-[16/9] rounded-3xl p-8 md:p-12 flex flex-col justify-between overflow-hidden";
+      }
+
+      currentSlide = nextIndex;
+      document.getElementById('currentSlideNum').textContent = currentSlide;
+
+      document.getElementById('prevBtn').disabled = (currentSlide === 1);
+      document.getElementById('nextBtn').disabled = (currentSlide === totalSlides);
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        updateSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        updateSlide(currentSlide - 1);
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.warn("Fullscreen não permitido:", err);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+    });
+
+    document.getElementById('prevBtn').disabled = true;
+  </script>
+</body>
+</html>

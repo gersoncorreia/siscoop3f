@@ -60,11 +60,11 @@ class ReembolsoController extends Controller
         return redirect()->back()->with('success', 'Solicitação removida!');
     }
 
-    public function aprovar(Reembolso $reembolso)
+    public function aprovar(Reembolso $reembolso, \App\Services\FinanceiroService $financeiroService)
     {
         $this->authorize('update', $reembolso);
 
-        $this->cooperativeService->aprovarReembolsoAdmin($reembolso->id);
+        $financeiroService->aprovarReembolso($reembolso);
 
         if ($reembolso->associado && $reembolso->associado->user) {
             $reembolso->associado->user->notify(new \App\Notifications\AppDatabaseNotification(
@@ -75,7 +75,7 @@ class ReembolsoController extends Controller
             ));
         }
 
-        return redirect()->back()->with('success', 'Solicitação de reembolso aprovada!');
+        return redirect()->back()->with('success', 'Solicitação de reembolso aprovada e lançamentos financeiros gerados!');
     }
 
     public function rejeitar(RejeitarReembolsoRequest $request, Reembolso $reembolso)

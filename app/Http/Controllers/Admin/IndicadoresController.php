@@ -48,8 +48,8 @@ class IndicadoresController extends Controller
             'internacoesEmAnalise' => SolicitacaoInternacao::where('status', 'analise')->count(),
             
             // Financeiro
-            'receitaMes' => LancamentoFinanceiro::where('tipo', 'entrada')->whereMonth('data_vencimento', $mes)->whereYear('data_vencimento', $ano)->sum('valor'),
-            'despesaMes' => LancamentoFinanceiro::where('tipo', 'saida')->whereMonth('data_vencimento', $mes)->whereYear('data_vencimento', $ano)->sum('valor'),
+            'receitaMes' => (float) LancamentoFinanceiro::whereIn('tipo', ['receita', 'entrada'])->whereMonth('data_vencimento', $mes)->whereYear('data_vencimento', $ano)->sum('valor'),
+            'despesaMes' => (float) LancamentoFinanceiro::whereIn('tipo', ['despesa', 'saida'])->whereMonth('data_vencimento', $mes)->whereYear('data_vencimento', $ano)->sum('valor'),
             
             // Campanhas
             'campanhasAtivas' => CampanhaSaude::ativas()->vigentes()->count(),

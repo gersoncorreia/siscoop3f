@@ -39,7 +39,11 @@ class ProfileController extends Controller
     {
         $this->cooperativeService->atualizarPerfilUsuario($request->user(), $request->validated());
 
-        return Redirect::route('profile.edit');
+        if (in_array($request->getHost(), config('tenancy.central_domains', []))) {
+            return Redirect::route('master-admin.profile.edit')->with('status', 'profile-updated');
+        }
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**

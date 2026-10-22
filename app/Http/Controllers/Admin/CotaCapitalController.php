@@ -43,11 +43,11 @@ class CotaCapitalController extends Controller
         return Redirect::back()->with('success', 'Cota de capital registrada!');
     }
 
-    public function destroy(CotaCapital $cotaCapital)
+    public function destroy(CotaCapital $capital)
     {
         Gate::authorize('financeiro.delete');
 
-        $this->cooperativeService->excluirCotaCapital($cotaCapital->id);
+        $this->cooperativeService->excluirCotaCapital($capital->id);
         return Redirect::back()->with('success', 'Registro de capital excluído!');
     }
 }

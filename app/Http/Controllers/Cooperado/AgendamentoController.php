@@ -176,7 +176,7 @@ class AgendamentoController extends Controller
                 'data_vencimento' => $validated['data_hora'],
                 'status' => 'pendente',
                 'forma_pagamento' => $validated['forma_pagamento'],
-                'observacoes' => $obs,
+                'observacoes_pagamento' => $obs,
                 'gateway' => 'presencial',
             ]);
         }

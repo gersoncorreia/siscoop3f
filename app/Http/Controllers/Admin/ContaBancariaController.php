@@ -40,18 +40,18 @@ class ContaBancariaController extends Controller
         return Redirect::back()->with('success', 'Conta bancária criada com sucesso!');
     }
 
-    public function update(ContaBancariaRequest $request, ContaBancaria $contaBancaria)
+    public function update(ContaBancariaRequest $request, ContaBancaria $conta)
     {
-        $this->cooperativeService->atualizarConta($contaBancaria->id, $request->validated());
+        $this->cooperativeService->atualizarConta($conta->id, $request->validated());
 
         return Redirect::back()->with('success', 'Conta bancária atualizada!');
     }
 
-    public function destroy(ContaBancaria $contaBancaria)
+    public function destroy(ContaBancaria $conta)
     {
         Gate::authorize('financeiro.delete');
 
-        $this->cooperativeService->excluirConta($contaBancaria->id);
+        $this->cooperativeService->excluirConta($conta->id);
         return Redirect::back()->with('success', 'Conta excluída!');
     }
 }

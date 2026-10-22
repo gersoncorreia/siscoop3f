@@ -97,7 +97,7 @@ const formatCurrency = (value) => {
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex items-center justify-end gap-2">
-                                            <a v-if="fat.arquivo_guia" href="#" class="text-xs font-bold text-slate-500 hover:text-slate-700 mr-2">
+                                            <a v-if="fat.arquivo_guia" :href="'/storage/' + fat.arquivo_guia" target="_blank" class="text-xs font-bold text-slate-500 hover:text-primary-dynamic mr-2 underline">
                                                 Ver Anexo
                                             </a>
                                             <button v-if="fat.status === 'enviada'" @click="auditar(fat.id)" class="text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-black">

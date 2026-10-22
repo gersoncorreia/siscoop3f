@@ -76,7 +76,8 @@ class HandleInertiaRequests extends Middleware
                     if (!$request->user() || !$request->user()->hasAnyRole(['Associado', 'Cliente', 'Dependente'])) {
                         return null;
                     }
-                    $associado = \App\Models\Associado::where('user_id', $request->user()->id)->first();
+                    $associado = \App\Models\Associado::where('user_id', $request->user()->id)->first()
+                        ?? $request->user()->dependente?->associado;
                     if (!$associado) return null;
                     return [
                         'id' => $associado->id,

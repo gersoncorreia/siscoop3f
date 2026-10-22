@@ -30,7 +30,8 @@ class CheckCadastroCompleto
                 }
 
                 if (!$user->associado->isCadastroCompleto()) {
-                    return redirect()->route('profile.edit')->with('error', 'Por favor, antes de solicitar serviços, complete seu cadastro com seu endereço e data de nascimento.');
+                    $targetRoute = (function_exists('tenant') && tenant('tipo') === 'fundacao') ? 'cliente.perfil' : 'cooperado.perfil';
+                    return redirect()->route($targetRoute)->with('error', 'Por favor, antes de solicitar serviços, complete seu cadastro com seu endereço e data de nascimento.');
                 }
             }
         }

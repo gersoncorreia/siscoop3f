@@ -36,16 +36,16 @@ class PlanoSaudeController extends Controller
         return redirect()->back()->with('success', 'Plano de saúde criado com sucesso!');
     }
 
-    public function update(PlanoSaudeRequest $request, PlanoSaude $planoSaude)
+    public function update(PlanoSaudeRequest $request, PlanoSaude $plano)
     {
-        $this->cooperativeService->atualizarPlano($planoSaude->id, $request->validated());
+        $this->cooperativeService->atualizarPlano($plano->id, $request->validated());
 
         return redirect()->back()->with('success', 'Plano de saúde atualizado com sucesso!');
     }
 
-    public function destroy(PlanoSaude $planoSaude)
+    public function destroy(PlanoSaude $plano)
     {
-        $this->cooperativeService->excluirPlano($planoSaude->id);
+        $this->cooperativeService->excluirPlano($plano->id);
 
         return redirect()->back()->with('success', 'Plano de saúde excluído com sucesso!');
     }

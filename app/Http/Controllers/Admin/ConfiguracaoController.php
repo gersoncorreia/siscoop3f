@@ -34,6 +34,7 @@ class ConfiguracaoController extends Controller
         $validated = $request->validated();
 
         $data = [
+            'nome' => $validated['name'],
             'name' => $validated['name'],
             'primary_color' => $validated['primary_color'],
         ];
@@ -47,7 +48,7 @@ class ConfiguracaoController extends Controller
             $data['logo_path'] = $path;
         }
 
-        $this->cooperativeService->atualizarUsuario($tenant->id, $data); // Note: or general tenant update
+        $tenant->update($data);
 
         return redirect()->back()->with('success', 'Configurações atualizadas com sucesso!');
     }

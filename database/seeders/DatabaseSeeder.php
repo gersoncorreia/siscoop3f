@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         // Clean up existing tenant databases on fresh migration
         if (\DB::connection('central')->getDriverName() === 'pgsql') {
             $pdo = \DB::connection('central')->getPdo();
-            foreach (['tenantstfsaude', 'tenantagrocoop', 'tenantsanta-casa'] as $dbName) {
+            foreach (['tenantstfsaude', 'tenantagrocoop', 'tenantsanta-casa', 'tenantcbsaude'] as $dbName) {
                 try {
                     $pdo->exec("DROP DATABASE IF EXISTS \"{$dbName}\" WITH (FORCE)");
                 } catch (\Throwable $e) {
@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
                 }
             }
         } elseif (\DB::connection('central')->getDriverName() === 'mysql') {
-            foreach (['tenantstfsaude', 'tenantagrocoop', 'tenantsanta-casa'] as $dbName) {
+            foreach (['tenantstfsaude', 'tenantagrocoop', 'tenantsanta-casa', 'tenantcbsaude'] as $dbName) {
                 try {
                     \DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
                 } catch (\Throwable $e) {
@@ -55,6 +55,7 @@ class DatabaseSeeder extends Seeder
         $baseDomain = str_contains($baseDomain, 'localhost') ? 'localhost' : $baseDomain;
 
         $tenantsToSetup = [
+            ['id' => 'cbsaude', 'data' => ['nome' => 'CB Saúde Cooperativa de Saúde', 'ramo' => 'saude', 'tipo' => 'cooperativa'], 'domain' => 'cbsaude.' . $baseDomain],
             ['id' => 'stfsaude', 'data' => ['nome' => 'STF Saúde Co-op', 'ramo' => 'saude', 'tipo' => 'cooperativa'], 'domain' => 'stfsaude.' . $baseDomain],
             ['id' => 'agrocoop', 'data' => ['nome' => 'Agro Valley Co-op', 'ramo' => 'agricola', 'tipo' => 'cooperativa'], 'domain' => 'agrocoop.' . $baseDomain],
             [
@@ -71,6 +72,10 @@ class DatabaseSeeder extends Seeder
                         'prontuario_eletronico',
                         'controle_financeiro',
                         'relatorios_gerenciais',
+                        'tabela_servicos',
+                        'carteirinha_digital',
+                        'indicadores_desempenho',
+                        'campanhas_saude',
                     ],
                 ],
                 'domain' => 'santacasa.' . $baseDomain,
@@ -96,5 +101,48 @@ class DatabaseSeeder extends Seeder
                 $tenant->domains()->create(['domain' => $tInfo['domain']]);
             }
         }
+
+        // 3. Seed Contratos entre Entidades (Inter-Tenant Contracts)
+        \App\Models\ContratoEntidade::updateOrCreate(
+            [
+                'tenant_contratante_id' => 'cbsaude',
+                'tenant_prestador_id' => 'santa-casa',
+            ],
+            [
+                'status' => 'ativo',
+                'data_inicio' => now()->subMonths(3)->toDateString(),
+                'data_fim' => now()->addMonths(9)->toDateString(),
+                'descricao' => 'Convênio Hospitalar e Diagnóstico entre CB Saúde e Fundação Santa Casa da Amazônia.',
+                'arquivos' => [],
+            ]
+        );
+
+        \App\Models\ContratoEntidade::updateOrCreate(
+            [
+                'tenant_contratante_id' => 'stfsaude',
+                'tenant_prestador_id' => 'santa-casa',
+            ],
+            [
+                'status' => 'ativo',
+                'data_inicio' => now()->subMonths(4)->toDateString(),
+                'data_fim' => now()->addMonths(8)->toDateString(),
+                'descricao' => 'Convênio de Intercâmbio Assistencial e Hospitalar entre STF Saúde Co-op e Fundação Santa Casa da Amazônia.',
+                'arquivos' => [],
+            ]
+        );
+
+        \App\Models\ContratoEntidade::updateOrCreate(
+            [
+                'tenant_contratante_id' => 'agrocoop',
+                'tenant_prestador_id' => 'stfsaude',
+            ],
+            [
+                'status' => 'pendente',
+                'data_inicio' => now()->toDateString(),
+                'data_fim' => now()->addYear()->toDateString(),
+                'descricao' => 'Solicitação de Convênio para Cobertura Médica dos Cooperados Rurais da Agro Valley Co-op.',
+                'arquivos' => [],
+            ]
+        );
     }
 }

@@ -1,14 +1,23 @@
 <script setup>
 import PrestadorLayout from '@/Layouts/PrestadorLayout.vue';
-import { Head, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Head, usePage, useForm } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import {
     DocumentTextIcon,
     ArrowUpTrayIcon,
     CurrencyDollarIcon,
     ClockIcon,
-    CheckCircleIcon
+    CheckCircleIcon,
+    XMarkIcon,
+    ArrowDownTrayIcon,
+    CheckIcon
 } from '@heroicons/vue/24/outline';
+import Modal from '@/Components/Modal.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import InputError from '@/Components/InputError.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const props = defineProps({
     prestador: Object,
@@ -24,12 +33,40 @@ const formatCurrency = (value) => {
 
 const statusConfig = {
     'enviada': { color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-500/10', icon: ClockIcon, label: 'Em Análise' },
+    'em_analise': { color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-500/10', icon: ClockIcon, label: 'Em Análise' },
     'em_auditoria': { color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10', icon: DocumentTextIcon, label: 'Em Auditoria' },
     'paga': { color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10', icon: CheckCircleIcon, label: 'Paga' }
 };
 
 const getStatus = (status) => statusConfig[status] || statusConfig['enviada'];
 
+// --- Modal de Envio de Fatura ---
+const isModalOpen = ref(false);
+
+const form = useForm({
+    mes_referencia: '',
+    valor_total: '',
+    arquivo_guia: null,
+});
+
+const openModal = () => {
+    form.reset();
+    form.clearErrors();
+    isModalOpen.value = true;
+};
+
+const handleFileUpload = (e) => {
+    form.arquivo_guia = e.target.files[0];
+};
+
+const submitFatura = () => {
+    form.post(route('prestador.faturas.store'), {
+        onSuccess: () => {
+            isModalOpen.value = false;
+            form.reset();
+        }
+    });
+};
 </script>
 
 <template>
@@ -44,7 +81,7 @@ const getStatus = (status) => statusConfig[status] || statusConfig['enviada'];
                         Envie suas notas fiscais até o dia 05 e acompanhe os pagamentos.
                     </p>
                 </div>
-                <button class="bg-primary-dynamic text-white text-sm font-black px-6 py-3 rounded-xl shadow-lg shadow-primary-dynamic/20 flex items-center hover:opacity-90 transition-opacity">
+                <button @click="openModal" class="bg-primary-dynamic text-white text-sm font-black px-6 py-3 rounded-xl shadow-lg shadow-primary-dynamic/20 flex items-center hover:opacity-90 transition-opacity">
                     <ArrowUpTrayIcon class="w-5 h-5 mr-2" /> Enviar Nova Fatura
                 </button>
             </div>
@@ -81,7 +118,7 @@ const getStatus = (status) => statusConfig[status] || statusConfig['enviada'];
                                 <th scope="col" class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Valor Total</th>
                                 <th scope="col" class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
                                 <th scope="col" class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Data Pagamento</th>
-                                <th scope="col" class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Ações</th>
+                                <th scope="col" class="px-6 py-4 text-right pr-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Anexo da Nota</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-[var(--border-color)] bg-transparent">
@@ -100,11 +137,20 @@ const getStatus = (status) => statusConfig[status] || statusConfig['enviada'];
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-[var(--text-muted)]">
-                                        {{ fatura.data_pagamento ? new Date(fatura.data_pagamento).toLocaleDateString('pt-BR') : 'Aguardando' }}
+                                        {{ fatura.data_pagamento ? new Date(fatura.data_pagamento).toLocaleDateString('pt-BR') : 'Aguardando Auditoria' }}
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <button class="text-sm font-bold text-primary-dynamic hover:underline">Ver Detalhes</button>
+                                <td class="px-6 py-4 whitespace-nowrap text-right pr-6">
+                                    <a 
+                                        v-if="fatura.arquivo_guia" 
+                                        :href="'/storage/' + fatura.arquivo_guia" 
+                                        target="_blank"
+                                        class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary-dynamic hover:text-white text-xs font-bold transition-colors inline-flex items-center gap-1.5"
+                                    >
+                                        <ArrowDownTrayIcon class="w-3.5 h-3.5" />
+                                        Ver Nota Fiscal
+                                    </a>
+                                    <span v-else class="text-xs text-slate-400 font-medium">Sem anexo</span>
                                 </td>
                             </tr>
                             <tr v-if="faturas.length === 0">
@@ -119,6 +165,49 @@ const getStatus = (status) => statusConfig[status] || statusConfig['enviada'];
             </div>
             
         </div>
+
+        <!-- Modal Enviar Nova Fatura -->
+        <Modal :show="isModalOpen" @close="isModalOpen = false" max-width="md">
+            <div class="p-6 md:p-8 space-y-6">
+                <div class="flex items-center justify-between pb-4 border-b border-[var(--border-color)]">
+                    <div>
+                        <h3 class="text-lg font-black text-[var(--text-heading)]">Enviar Nova Fatura Mensal</h3>
+                        <p class="text-xs text-slate-400">Preencha os dados e anexe o documento da Nota Fiscal.</p>
+                    </div>
+                    <button @click="isModalOpen = false" class="text-slate-400 hover:text-slate-600">
+                        <XMarkIcon class="w-5 h-5" />
+                    </button>
+                </div>
+
+                <form @submit.prevent="submitFatura" class="space-y-4">
+                    <div>
+                        <InputLabel for="mes_referencia" value="Mês de Referência / Competência *" class="!text-[11px] !font-black uppercase tracking-wider" />
+                        <TextInput id="mes_referencia" v-model="form.mes_referencia" type="text" placeholder="Ex: 08/2026" class="w-full mt-1" required />
+                        <InputError :message="form.errors.mes_referencia" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="valor_total" value="Valor Total dos Serviços (R$) *" class="!text-[11px] !font-black uppercase tracking-wider" />
+                        <TextInput id="valor_total" v-model="form.valor_total" type="number" step="0.01" min="0.01" placeholder="Ex: 1500.00" class="w-full mt-1" required />
+                        <InputError :message="form.errors.valor_total" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="arquivo_guia" value="Nota Fiscal / Demonstrativo (PDF, XML ou Imagem)" class="!text-[11px] !font-black uppercase tracking-wider" />
+                        <input id="arquivo_guia" type="file" @change="handleFileUpload" class="w-full mt-1 text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-primary-dynamic/10 file:text-primary-dynamic hover:file:bg-primary-dynamic hover:file:text-white transition-all cursor-pointer" accept=".pdf,.xml,.png,.jpg,.jpeg" />
+                        <InputError :message="form.errors.arquivo_guia" class="mt-1" />
+                    </div>
+
+                    <div class="pt-4 flex items-center justify-end gap-3 border-t border-[var(--border-color)]">
+                        <SecondaryButton @click="isModalOpen = false" type="button">Cancelar</SecondaryButton>
+                        <PrimaryButton type="submit" :disabled="form.processing">
+                            <CheckIcon class="w-4 h-4 mr-1.5" />
+                            {{ form.processing ? 'Enviando...' : 'Enviar Fatura' }}
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
+        </Modal>
     </PrestadorLayout>
 </template>
 

@@ -127,6 +127,7 @@ Route::middleware([
                     Route::delete('/servicos/{id}', [\App\Http\Controllers\PrestadorPortalController::class, 'deleteServico'])->name('servicos.destroy');
                     
                     Route::get('/faturas', [\App\Http\Controllers\PrestadorPortalController::class, 'faturas'])->name('faturas');
+                    Route::post('/faturas', [\App\Http\Controllers\PrestadorPortalController::class, 'storeFatura'])->name('faturas.store');
                     
                     Route::get('/perfil', [\App\Http\Controllers\PrestadorPortalController::class, 'perfil'])->name('perfil');
                     Route::put('/perfil', [\App\Http\Controllers\PrestadorPortalController::class, 'updatePerfil'])->name('perfil.update');
@@ -138,7 +139,7 @@ Route::middleware([
             // =====================================================
 
             // Módulo de Associados
-            Route::middleware(['role:Administrador Cooperativa|Presidente|Gerente|Auditoria|Contábil|Administrador Fundação|Atendente|Conselho'])->group(function () {
+            Route::middleware(['role:Administrador Cooperativa|Presidente|Gerente|Diretor Administrativo Financeiro|Presidente do Conselho Fiscal|Consultor|Auditoria|Contábil|Administrador Fundação|Atendente|Conselho'])->group(function () {
                 Route::prefix('associados')->name('associados.')->group(function () {
                     Route::get('adesoes', [\App\Http\Controllers\Public\AdesaoController::class , 'index'])->name('adesoes.index');
                     Route::post('adesoes/{associado}/aprovar', [\App\Http\Controllers\Public\AdesaoController::class , 'aprovar'])->name('adesoes.aprovar');

@@ -155,4 +155,17 @@ class AgendamentoAdminController extends Controller
 
         return back()->with('success', 'Agendamento marcado como realizado com sucesso.');
     }
+
+    public function confirmar(Request $request, Agendamento $agendamento)
+    {
+        return $this->aprovarEAgendar($request, $agendamento);
+    }
+
+    public function cancelar(Request $request, Agendamento $agendamento)
+    {
+        if (!$request->filled('motivo')) {
+            $request->merge(['motivo' => 'Cancelado pela administração']);
+        }
+        return $this->recusar($request, $agendamento);
+    }
 }

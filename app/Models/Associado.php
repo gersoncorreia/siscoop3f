@@ -123,7 +123,7 @@ class Associado extends Model
     {
         $prefix = date('Y');
         $lastNumber = static::where('carteirinha_numero', 'like', $prefix . '-%')
-            ->orderByRaw("CAST(SUBSTRING(carteirinha_numero, 6) AS INTEGER) DESC")
+            ->orderByDesc('carteirinha_numero')
             ->value('carteirinha_numero');
 
         $nextSeq = 1;

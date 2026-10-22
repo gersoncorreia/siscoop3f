@@ -10,6 +10,7 @@ use App\Http\Requests\Prestador\StoreServicoRequest;
 use App\Http\Requests\Prestador\UpdatePerfilRequest;
 use App\Http\Requests\Prestador\UpdateSenhaRequest;
 use App\Services\PrestadorService;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
@@ -177,6 +178,38 @@ class PrestadorPortalController extends Controller
             'prestador' => $prestador,
             'faturas' => $faturas,
         ]);
+    }
+
+    /**
+     * Enviar nova fatura para análise
+     */
+    public function storeFatura(Request $request): RedirectResponse
+    {
+        $prestador = $this->getPrestador();
+
+        $validated = $request->validate([
+            'mes_referencia' => 'required|string|max:20',
+            'valor_total' => 'required|numeric|min:0.01',
+            'arquivo_guia' => 'nullable|file|mimes:pdf,xml,png,jpg,jpeg|max:10240',
+        ], [
+            'mes_referencia.required' => 'O mês de referência / competência é obrigatório.',
+            'valor_total.required' => 'Informe o valor total da fatura.',
+            'arquivo_guia.mimes' => 'O arquivo da nota fiscal deve ser PDF, XML ou Imagem (máx 10MB).',
+        ]);
+
+        $anexoPath = null;
+        if ($request->hasFile('arquivo_guia')) {
+            $anexoPath = $request->file('arquivo_guia')->store('faturas_prestador', 'public');
+        }
+
+        $prestador->faturas()->create([
+            'mes_referencia' => $validated['mes_referencia'],
+            'valor_total' => $validated['valor_total'],
+            'status' => 'enviada',
+            'arquivo_guia' => $anexoPath,
+        ]);
+
+        return back()->with('success', 'Fatura enviada com sucesso para análise da administração!');
     }
 
     /**
