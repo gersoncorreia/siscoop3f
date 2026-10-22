@@ -2,7 +2,8 @@
 
 > **Documento Base para Geração de Slides e Demonstração Executiva**  
 > **Cliente / Entidade-Alvo:** CB Saúde — Cooperativa de Saúde, Governança e Benefícios  
-> **Domínio de Demonstração:** `cbsaude.siscoop3f.com.br` (Local: `cbsaude.localhost:8000`)
+> **Domínio de Demonstração:** `cbsaude.siscoop3f.com.br` (Local: `cbsaude.localhost:8000`)  
+> **Modelo Operacional:** 100% Online — Motor de Elegibilidade Instantânea (Zero Burocracia)
 
 ---
 
@@ -20,14 +21,14 @@ Este documento foi projetado para alimentar ferramentas de IA geradoras de apres
       │
       ├─► [Slide 5: Fluxo 1 - Adesão e Ingresso Societário]
       ├─► [Slide 6: Fluxo 2 - Governança, Contas e Cota Capital]
-      ├─► [Slide 7: Fluxo 3 - Jornada do Cooperado e Família]
-      └─► [Slide 8: Fluxo 4 - Rede Credenciada e Regra do Dia 05]
+      ├─► [Slide 7: Fluxo 3 - Agendamento 100% Online & Elegibilidade Instantânea]
+      └─► [Slide 8: Fluxo 4 - Painel do Prestador & Regra do Dia 05]
                                                     │
                                                     ▼
 [Slide 9: Painel de Indicadores] ◄──────────────────┘
       │
       ▼
-[Slide 10: Roteiro Prático de Demonstração (Caminho Feliz)]
+[Slide 10: Roteiro Prático de Demonstração (Caminho Feliz Digital)]
       │
       ▼
 [Slide 11: Conclusão e Próximos Passos]
@@ -37,27 +38,22 @@ Este documento foi projetado para alimentar ferramentas de IA geradoras de apres
 
 ## Slide 1: Capa Executiva
 
-- **Título:** Modernização Digital, Governança e Eficiência na Saúde Cooperativa
+- **Título:** Modernização Digital, Mobilidade e Eficiência na Saúde Cooperativa
 - **Subtítulo:** Apresentação da Plataforma Integrada de Operações e Benefícios da CB Saúde
 - **Apresentador:** Equipe de Tecnologia & Projetos Estratégicos
 - **Público:** Diretoria Executiva, Conselho de Administração e Conselho Fiscal
-- **Mensagem-Chave:** *Uma única plataforma conectando cooperados, dependentes, gestores e prestadores médicos com rastreabilidade integral, transparência financeira e simplicidade operacional.*
+- **Mensagem-Chave:** *Uma experiência 100% digital que conecta cooperados, dependentes e prestadores médicos sem filas de balcão e sem atrasos manuais de autorização.*
 
 ---
 
 ## Slide 2: Cenário Atual e Desafios Operacionais
 
 ### O Desafio
-As cooperativas de saúde enfrentam desafios críticos de gestão:
-1. **Dispersão de Informações:** Cadastros de cooperados, fichas financeiras e guias médicas em planilhas ou sistemas desconectados.
-2. **Insegurança nas Autorizações:** Dificuldade dos prestadores em verificar se um cooperado está ativo ou adimplente antes de realizar uma consulta.
-3. **Morosidade no Ingresso:** Propostas de adesão físicas, com tramitação lenta de documentos e aprovações desorganizadas.
-4. **Fechamento Mensal Complexo:** Faturas de médicos e clínicas chegando sem padronização, gerando glosas, atritos e atrasos no pagamento.
-
-### O Custo da Ineficiência
-- Risco financeiro por atendimentos indevidos.
-- Sobrecarga operacional da equipe interna.
-- Perda de visibilidade sobre a formação e evolução do patrimônio de Cota Capital.
+As cooperativas de saúde tradicionais sofrem com processos físicos lentos:
+1. **Atendimento de Balcão Ineficiente:** O cooperado vai presencialmente à clínica e precisa aguardar na recepção a checagem manual de CPF ou ligação para a cooperativa.
+2. **Constrangimento Público:** Se o cooperado possuir qualquer pendência, o bloqueio ocorre na frente de outros pacientes no balcão da clínica.
+3. **Gargalos de Autorização Humana:** Pedidos que dependem de um funcionário da cooperativa para dar "OK" ficam travados em finais de semana, feriados ou fora do horário comercial.
+4. **Fechamento Mensal Caótico:** Prestadores sem previsibilidade de faturamento, gerando divergências no fechamento do mês.
 
 ---
 
@@ -67,9 +63,9 @@ As cooperativas de saúde enfrentam desafios críticos de gestão:
 
 ```mermaid
 flowchart LR
-    A["Ecossistema Multitenant Isolado"] --> B["Governança e Cota Capital"]
-    B --> C["Jornada Digital do Cooperado"]
-    C --> D["Ciclo Fechado com Prestadores"]
+    A["Motor de Elegibilidade Instantâneo"] --> B["Agendamento 100% Online"]
+    B --> C["Agenda Digital do Prestador"]
+    C --> D["Faturamento Fechado (Dia 05)"]
     
     style A fill:#0d9488,stroke:#0f766e,color:#fff
     style B fill:#14b8a6,stroke:#0d9488,color:#fff
@@ -77,176 +73,128 @@ flowchart LR
     style D fill:#6366f1,stroke:#4f46e5,color:#fff
 ```
 
-1. **Multitenancy com Isolamento Rigoroso:** Banco de dados e parâmetros exclusivos da CB Saúde, garantindo total conformidade com a LGPD.
-2. **Ciclo Financeiro Cooperativo Automatizado:** Controle nativo de cotas de capital social, rateio de sobras, mensalidades e conciliação bancária.
-3. **Acesso Democrático e Sem Barreiras:** Carteirinhas digitais com validação via QR Code, portal de autoatendimento e Link Mágico para dependentes sem necessidade de download de aplicativos pesados.
-4. **Regra de Faturamento do Dia 05:** Ciclo contratual previsível para fechamento, auditoria técnica e liquidação de prestadores de serviços médicos.
+1. **Motor de Elegibilidade em Tempo Real:** O sistema analisa algorítmicamente em milissegundos se o cooperado está ativo, em dia com a Cota Capital e com documentação homologada.
+2. **Autorização Digital Instantânea:** Procedimentos eletivos são pré-autorizados na hora pelo sistema, sem necessitar de atendente ou carimbo manual.
+3. **Mobilidade Total (Mobile First):** O cooperado escolhe o parceiro credenciado, o serviço e a data preferencial direto pelo celular.
+4. **Painel do Parceiro Focado em Atendimentos:** As clínicas recebem a lista de pacientes com guias já aprovadas e valores pré-acordados, precisando apenas confirmar a realização.
 
 ---
 
 ## Slide 4: Definição dos Atores e Papéis no Sistema
 
-Uma visão clara e didática de quem opera o sistema e quais são suas atribuições:
-
 | Ator / Perfil | Descrição e Papel Estratégico | O Que Faz no Sistema |
 | :--- | :--- | :--- |
-| **1. Diretoria e Gestão Operacional** *(Presidente, Diretor Financeiro, Gerente)* | Liderança executiva responsável pelo cumprimento do estatuto, saúde financeira e controle dos fluxos da cooperativa. | Analisa indicadores em tempo real, aprova novas adesões, monitora contas bancárias e liquida faturas médicas. |
-| **2. Conselho Fiscal e Auditoria** *(Presidente do Conselho Fiscal, Auditor)* | Órgão independente de fiscalização patrimonial e conformidade regulatória. | Acessa relatórios contábeis, livros fiscais, trilhas de auditoria e garante transparência aos cooperados. |
-| **3. Cooperado Titular** *(Membro Associado)* | O associado que forma o patrimônio societário e usufrui da rede credenciada de benefícios. | Consulta sua Carteirinha Digital, acompanha saldo de Cota Capital, agenda serviços e gerencia seus dependentes. |
-| **4. Dependente Familiar** *(Cônjuge, Filhos e Agregados)* | Beneficiário vinculado ao plano familiar do cooperado. | Acessa sua carteirinha digital individual diretamente via Link Mágico seguro pelo WhatsApp/E-mail sem senha complexa. |
-| **5. Prestador Credenciado** *(Clínicas, Laboratórios e Médicos)* | Rede assistencial conveniada à cooperativa para atender os associados. | Consulta a elegibilidade em tempo real, abre guias de atendimento e envia lotes de faturamento para pagamento. |
+| **1. Diretoria e Gestão Operacional** *(Presidente, Diretor Financeiro, Gerente)* | Liderança executiva responsável pela sustentabilidade financeira e governança da cooperativa. | Monitora os painéis em tempo real, homologa novas propostas na fila e liquida as faturas médicas consolidadas. |
+| **2. Conselho Fiscal e Auditoria** *(Presidente do Conselho Fiscal, Auditor)* | Órgão independente de conformidade estatutária e integridade financeira. | Audita balancetes contábeis, livros fiscais, trilhas de conformidade LGPD e saldos de Cota Capital. |
+| **3. Cooperado Titular** *(Membro Associado)* | O associado que forma o patrimônio cooperativo e utiliza a rede de benefícios. | Consulta a Carteirinha Digital, pesquisa a Rede Credenciada, solicita agendamentos online e acompanha seus dependentes. |
+| **4. Dependente Familiar** *(Cônjuge, Filhos e Agregados)* | Beneficiário coberto pelo plano familiar do cooperado. | Acessa sua carteirinha individual diretamente via Link Mágico seguro pelo WhatsApp/E-mail sem senha complexa. |
+| **5. Prestador Credenciado** *(Clínicas, Laboratórios e Consultórios)* | Rede médica parceira conveniada para prestar os serviços de saúde. | Visualiza a fila de agendamentos recebidos, atende com garantia de cobertura e conclui atendimentos para a fatura do Dia 05. |
 
 ---
 
 ## Slide 5: Fluxo 1 — Adesão e Ingresso Societário Digital
 
-### Objetivo
-Substituir processos físicos de admissão por uma jornada digital fluida, transparente e auditada.
-
 ```mermaid
 sequenceDiagram
     autonumber
     actor Candidato as Proponente (Novo Cooperado)
-    participant Portal as Portal Público / Landing Page
+    participant Portal as Landing Page / Adesão
     participant Gerente as Gerente de Operações
     participant Sistema as Núcleo Siscoop3F
 
     Candidato->>Portal: Preenche ficha cadastral e escolhe Plano (Individual/Familiar)
     Candidato->>Portal: Anexa documento oficial (RG/CNH) e aceita termos LGPD
-    Portal->>Sistema: Registra proposta no status "Pendente / Em Análise"
-    Gerente->>Sistema: Avalia documentação na fila de homologação
-    Gerente->>Sistema: Clica em "Aprovar Cooperado"
-    Sistema->>Sistema: Cria matrícula, gera conta de acesso e emite Carteirinha Digital
-    Sistema-->>Candidato: Notificação com credenciais e boas-vindas
+    Portal->>Sistema: Registra proposta no status "Pendente"
+    Gerente->>Sistema: Avalia documentação na fila de homologação e clica em "Aprovar"
+    Sistema->>Sistema: Gera matrícula, conta de acesso, Cota Capital e Carteirinha Digital
+    Sistema-->>Candidato: Notificação com credenciais de boas-vindas
 ```
-
-### Destaques para a Apresentação
-- Redução do tempo de admissão de semanas para poucos minutos.
-- Pré-validação de CPF e prevenção contra duplicidade cadastral.
-- Vinculação automática ao Plano de Adesão escolhido e programação da Cota Capital.
 
 ---
 
 ## Slide 6: Fluxo 2 — Governança Financeira e Cota Capital
 
-### Objetivo
-Demonstrar a sustentabilidade econômico-financeira da cooperativa através do controle rigoroso de caixa e patrimônio líquido.
-
-### Principais Recursos
 1. **Gestão de Contas Bancárias Integradas:**
-   - Visualização consolidada de saldos em instituições cooperativas parceiras (ex.: Sicoob e Sicredi).
-   - Movimentações categorizadas entre receitas operacionais, despesas administrativas e repasses médicos.
-2. **Integralização da Cota Capital Social:**
-   - Rastreamento individual do patrimônio integralizado por cada cooperado.
-   - Histórico de parcelas, emissão de cobranças automáticas e controle de quitação.
-3. **Painel do Conselho Fiscal:**
-   - Relatórios pré-formatados para balancetes mensais e prestação de contas em Assembleia Geral Ordinária (AGO).
+   - Visualização em tempo real de disponibilidades em bancos parceiros (ex.: Sicoob e Sicredi - R$ 397.150,00).
+   - Movimentações segregadas entre receitas associativas, despesas administrativas e repasses médicos.
+2. **Integralização Transparente da Cota Capital:**
+   - Acompanhamento do patrimônio individual de cada cooperado.
+   - Histórico de parcelas e segurança jurídica estatutária.
 
 ---
 
-## Slide 7: Fluxo 3 — Experiência do Cooperado e Dependentes
+## Slide 7: Fluxo 3 — Agendamento 100% Online & Elegibilidade Instantânea
 
-### Objetivo
-Oferecer conveniência moderna na palma da mão, eliminando burocracias e intermediários manuais.
-
-### Funcionalidades Demonstradas
-- **Carteirinha Digital com QR Code:**
-  - Identificação visual imediata do número de matrícula, validade e tipo de plano.
-  - Padrão anti-fraude: código verificável instantaneamente pela recepção do prestador.
-- **Link Mágico para Dependentes:**
-  - Dependentes acessam suas carteirinhas via link único e confirmação simples dos 5 primeiros dígitos do CPF.
-  - Não exige memorização de login e senhas pelos familiares, tornando o uso acessível a idosos e jovens.
-- **Transparência em Convênios e Tabela de Preços:**
-  - Consulta direta aos parceiros conveniados (farmácias, clínicas de imagem, óticas e academias) com as porcentagens reais de desconto pactuadas.
-
----
-
-## Slide 8: Fluxo 4 — Relacionamento com Prestadores e a "Regra do Dia 05"
-
-### Objetivo
-Garantir previsibilidade financeira à cooperativa e segurança no pagamento da rede assistencial.
+### A Grande Inovação Operacional
+O cooperado não precisa de autorizações burocráticas demoradas. O sistema valida tudo em tempo real:
 
 ```mermaid
 flowchart TD
-    A["Cooperado chega à Clínica/Hospital"] --> B["Recepção digita CPF ou lê QR Code"]
-    B --> C{"Verificação de Elegibilidade Automática"}
-    C -->|Cooperado Adimplente| D["Emite Guia de Atendimento com Valor Pactuado"]
-    C -->|Inadimplente / Pendência| E["Alerta Visual: Atendimento Bloqueado pelo Sistema"]
-    D --> F["Procedimento Realizado"]
-    F --> G["Até Dia 05: Prestador Consolida e Envia Lote de Faturas"]
-    G --> H["Gerência / Auditoria Concilia e Libera Pagamento no Siscoop3F"]
+    A["Cooperado escolhe Prestador e Procedimento"] --> B["Motor de Elegibilidade Siscoop3F"]
+    B --> C{"Análise Algorítmica Instantânea"}
+    C -->|Cooperado com Pendência| D["Bloqueio Amigável com Orientação no App"]
+    C -->|100% Regular & Apto| E["⚡ Guia Digital Emitida Instantaneamente"]
+    E --> F["Cooperado escolhe Data e Turno (Manhã/Tarde)"]
+    F --> G["Agendamento Confirmado! Enviado para a Clínica"]
 ```
 
-### O Valor da "Regra do Dia 05"
-- **Para a Cooperativa:** O setor financeiro recebe as faturas organizadas em data fixa, eliminando pagamentos avulsos e descontrole de fluxo de caixa.
-- **Para o Prestador:** Confiança de que todos os atendimentos devidamente autorizados serão auditados e liquidados com pontualidade.
+### O que o Motor Analisa Automaticamente:
+- **Status do Cooperado:** Ativo e homologado.
+- **Adimplência de Cota Capital:** Nenhuma parcela vencida em aberto.
+- **Mensalidade:** Nenhuma pendência fora da tolerância.
+- **Credenciamento do Prestador:** Parceiro ativo e procedimento contratualmente acordado.
+
+---
+
+## Slide 8: Fluxo 4 — Painel do Prestador & Regra do Dia 05
+
+### O Prestador não atende no escuro:
+1. **Recepção Livre de Burocracia:** O prestador não precisa buscar CPF no balcão nem telefonar para a cooperativa.
+2. **Central de Atendimentos Recebidos:** A clínica abre seu painel e vê todos os pacientes já agendados com número da guia e valor acordado.
+3. **Conclusão com 1 Clique:** Após a consulta, o prestador clica em "Concluir Atendimento". O procedimento vai direto para o lote de fechamento do **Dia 05**.
 
 ---
 
 ## Slide 9: Painel Executivo e Indicadores Estratégicos (KPIs)
 
-Métricas gerenciais exibidas em painel interativo para subsidiar tomadas de decisão da Diretoria:
-
 ```
 ┌─────────────────────────┬─────────────────────────┬─────────────────────────┐
 │     QUADRO SOCIAL       │      ATENDIMENTOS       │   FINANÇAS OPERACIONAIS │
-│ 5 Associados Cadastrados│ 2 Agendamentos Ativos   │ Saldo Caixa Consolidado │
+│ 5 Associados Cadastrados│ 4 Agendamentos Digitais │ Saldo Caixa Consolidado │
 │ 3 Titulares Adimplentes │ 100% Guias Validadas    │ R$ 397.150,00           │
-│ 2 Propostas na Fila     │ 0 Glosas Recorrentes    │ 0 Inadimplência Oculta  │
+│ 2 Propostas na Fila     │ 0 Espera de Balcão      │ Faturamento em Dia      │
 └─────────────────────────┴─────────────────────────┴─────────────────────────┘
 ```
 
-1. **Taxa de Crescimento do Quadro Social:** Novos membros ingressantes versus desfiliações.
-2. **Índice de Adimplência e Cota Capital:** Percentual da receita previsto vs. realizado em cada competência.
-3. **Volume de Produção Médica por Especialidade:** Mapeamento das áreas com maior demanda (Clínica Geral, Cardiologia, Pediatria e Exames).
-
 ---
 
-## Slide 10: Roteiro Prático de Demonstração (O "Caminho Feliz")
+## Slide 10: Roteiro Prático de Demonstração (O Caminho Feliz 100% Digital)
 
-Para uma apresentação impecável de 15 a 20 minutos, siga a sequência passo a passo abaixo:
+Seqüência prática de 15 minutos para encantar a Diretoria:
 
-```mermaid
-flowchart LR
-    P1["Passo 1: Acesso Inicial & Diretoria"] --> P2["Passo 2: Aprovar Proposta na Fila"]
-    P2 --> P3["Passo 3: Portal do Cooperado & Carteirinha"]
-    P3 --> P4["Passo 4: Validação no Prestador de Serviços"]
-    P4 --> P5["Passo 5: Painel Financeiro e Faturamento"]
-```
+### Passo 1: O Ponto de Vista do Cooperado (Agendamento em 30 Segundos)
+- **Login:** `joao.associado@gmail.com` (senha: `senha123`).
+- **Ação:** Entrar em **Rede Credenciada > Clínica São Lucas**. Clicar no botão **Agendar**.
+- **O que mostrar:** O Motor de Elegibilidade informando em verde: *"Elegibilidade Confirmada! Cadastro 100% regular"*. Escolher data, turno e clicar em **Confirmar**. Mostrar a guia digital emitida na hora.
 
-### Passo 1: Visão Geral de Governança
-- **Acesso:** Faça login com `presidente@cbsaude.com.br` ou `admin@cbsaude.com.br` (senha: `senha123`).
-- **O que mostrar:** O visual personalizado com a identidade da CB Saúde, saldo consolidado das contas bancárias e a síntese do quadro associativo.
+### Passo 2: A Prova de Segurança (Cenário com Pendência)
+- **Login:** `carlos.inadimplente@gmail.com` (senha: `senha123`).
+- **Ação:** Entrar na Rede Credenciada e tentar agendar uma consulta.
+- **O que mostrar:** O sistema informando de forma segura e elegante que existe uma parcela de Cota Capital pendente, impedindo a emissão indevida da guia e resguardando o caixa da cooperativa.
 
-### Passo 2: Homologação de Nova Adesão ao Vivo
-- **Acesso:** Alternar para `gerente@cbsaude.com.br`.
-- **Ação:** Navegar em **Associados > Candidatos / Propostas**.
-- **O que mostrar:** Localizar a proposta da **Dra. Fernanda Lima Cavalcante**, abrir seus documentos anexos e clicar em **Aprovar**. Mostrar a geração instantânea do registro de cooperada e a emissão automática de sua carteirinha.
+### Passo 3: O Ponto de Vista da Clínica Parceira
+- **Login:** `sao.lucas@gmail.com` (senha: `senha123`).
+- **O que mostrar:** A tela sem formulários de balcão. O agendamento que João Silva acabou de fazer já aparece na tabela com a guia autorizada. Clicar no botão **Concluir Atendimento** para demonstrar o fechamento do ciclo.
 
-### Passo 3: O Ponto de Vista do Cooperado
-- **Acesso:** Fazer login com `joao.associado@gmail.com` (senha: `senha123`).
-- **O que mostrar:** O painel limpo do cooperado, sua **Carteirinha Digital** ativa com QR Code e a relação de seus dependentes. Demonstrar em outra aba o **Link Mágico** da dependente Ana Beatriz Silva abrindo imediatamente no celular sem senha complexa.
-
-### Passo 4: O Teste de Validação na Clínica Credenciada
-- **Acesso:** Fazer login com o prestador `sao.lucas@gmail.com` (senha: `senha123`).
-- **Ação 1 (Sucesso):** Buscar a carteirinha ou CPF de João Silva (`123.456.789-09`). O sistema autoriza instantaneamente e exibe os serviços e valores acordados.
-- **Ação 2 (Segurança):** Buscar o CPF de Carlos Eduardo (`852.963.741-04`). O sistema acusa pendência financeira e bloqueia a abertura indevida de guia, resguardando o caixa da cooperativa.
-
-### Passo 5: Fechamento Financeiro e Faturas
-- **Acesso:** Retornar ao painel do gerente ou diretor financeiro.
-- **O que mostrar:** A lista de faturas do dia 05, status de conciliação das guias médicas e a liberação de pagamento com comprovante.
+### Passo 4: Governança e Diretoria
+- **Login:** `presidente@cbsaude.com.br` ou `gerente@cbsaude.com.br`.
+- **O que mostrar:** O painel consolidado com o total de atendimentos realizados, saldo bancário do Sicoob e Sicredi, e a proposta da Dra. Fernanda pronta para homologação ao vivo.
 
 ---
 
 ## Slide 11: Conclusão, Segurança e Próximos Passos
 
-### Benefícios Diretos para a CB Saúde
-- **Controle Integral:** Redução a zero de procedimentos não autorizados ou atendimentos de associados suspensos.
-- **Conformidade Estatutária:** Prestação de contas estruturada para o Conselho Fiscal e auditorias externas.
-- **Retenção de Cooperados:** Experiência moderna, ágil e digital para os médicos cooperados e seus dependentes.
-- **Escalabilidade:** Capacidade técnica para crescer de 100 para 50.000 vidas sem necessidade de troca de sistema.
-
-### Próximos Passos Sugeridos
-1. Validação final dos parâmetros estatutários da CB Saúde.
-2. Homologação das contas bancárias para geração de PIX e boletos automáticos.
-3. Treinamento da equipe de atendimento e credenciamento dos prestadores prioritários.
+- **Zero Atendimento de Balcão:** Fim das filas e constrangimentos na recepção das clínicas.
+- **Autonomia Total do Cooperado:** Solicitação e agendamento pelo celular em qualquer dia ou horário.
+- **Segurança Financeira:** O motor algorítmico impede qualquer atendimento de inadimplentes antes mesmo de chegar à clínica.
+- **Previsibilidade Contratual:** Prestadores com faturamento transparente e pontual na Regra do Dia 05.

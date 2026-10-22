@@ -1,302 +1,348 @@
 <script setup>
 import PrestadorLayout from '@/Layouts/PrestadorLayout.vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
-import axios from 'axios';
+import { ref, computed } from 'vue';
 import {
     Squares2X2Icon,
-    MagnifyingGlassIcon,
     CheckCircleIcon,
-    XCircleIcon,
-    ExclamationTriangleIcon,
     ClockIcon,
     ClipboardDocumentListIcon,
+    CalendarDaysIcon,
+    CurrencyDollarIcon,
     UserIcon,
-    TagIcon
+    BuildingOffice2Icon,
+    ArrowPathIcon,
+    CheckBadgeIcon,
 } from '@heroicons/vue/24/outline';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import InputError from '@/Components/InputError.vue';
 
 const props = defineProps({
     prestador: Object,
     solicitacoes: Array,
+    stats: Object,
     servicos: Array,
 });
 
 const page = usePage();
-const primaryColor = computed(() => page.props.tenant?.primary_color || '#2563eb');
+const primaryColor = computed(() => page.props.tenant?.primary_color || '#0d9488');
 
-const form = useForm({
-    identificacao: '',
-    servico_id: '',
-    observacoes: ''
+const concluirForm = useForm({
+    observacoes: '',
 });
 
-const searchResults = ref([]);
-const isSearching = ref(false);
-const showDropdown = ref(false);
-const searchDropdownRef = ref(null);
+const selectedSolicitacao = ref(null);
+const showConcluirModal = ref(false);
 
-let searchTimeout;
-
-watch(() => form.identificacao, (newVal) => {
-    // Prevent search if selected from dropdown
-    const selected = searchResults.value.find(s => s.cpf === newVal || s.matricula === newVal);
-    if (selected) {
-        showDropdown.value = false;
-        return;
-    }
-    
-    if (newVal.length < 3) {
-        searchResults.value = [];
-        showDropdown.value = false;
-        return;
-    }
-
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(async () => {
-        isSearching.value = true;
-        try {
-            const response = await axios.get(route('prestador.buscar-cooperado', { q: newVal }));
-            searchResults.value = response.data;
-            showDropdown.value = searchResults.value.length > 0;
-        } catch (error) {
-            console.error('Erro na busca', error);
-        } finally {
-            isSearching.value = false;
-        }
-    }, 400);
-});
-
-const selectCooperado = (cooperado) => {
-    form.identificacao = cooperado.cpf; 
-    searchResults.value = [];
-    showDropdown.value = false;
+const abrirModalConcluir = (sol) => {
+    selectedSolicitacao.value = sol;
+    concluirForm.observacoes = sol.observacoes || '';
+    showConcluirModal.value = true;
 };
 
-const closeDropdown = (e) => {
-    if (searchDropdownRef.value && !searchDropdownRef.value.contains(e.target)) {
-        showDropdown.value = false;
-    }
-};
+const confirmarConclusao = () => {
+    if (!selectedSolicitacao.value) return;
 
-onMounted(() => document.addEventListener('click', closeDropdown));
-onUnmounted(() => document.removeEventListener('click', closeDropdown));
-
-const submitSolicitacao = () => {
-    form.post(route('prestador.solicitar'), {
+    concluirForm.post(route('prestador.solicitacoes.concluir', selectedSolicitacao.value.id), {
         preserveScroll: true,
         onSuccess: () => {
-            if (page.props.flash?.success) {
-                form.reset();
-            }
+            showConcluirModal.value = false;
+            selectedSolicitacao.value = null;
         }
     });
 };
 
 const statusConfig = {
-    'pendente_autorizacao': { color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-500/10', icon: ClockIcon, label: 'Aguardando Hélio / Coop' },
-    'aprovado_cooperativa': { color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10', icon: CheckCircleIcon, label: 'Autorizado' },
-    'realizado': { color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10', icon: ClipboardDocumentListIcon, label: 'Realizado' },
-    'negado': { color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-500/10', icon: XCircleIcon, label: 'Não Autorizado' }
+    'aprovado_cooperativa': {
+        color: 'text-emerald-500',
+        bg: 'bg-emerald-50 dark:bg-emerald-500/10',
+        border: 'border-emerald-200 dark:border-emerald-500/20',
+        badge: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
+        icon: CheckBadgeIcon,
+        label: 'Autorizado & Agendado'
+    },
+    'pendente_autorizacao': {
+        color: 'text-amber-500',
+        bg: 'bg-amber-50 dark:bg-amber-500/10',
+        border: 'border-amber-200 dark:border-amber-500/20',
+        badge: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
+        icon: ClockIcon,
+        label: 'Em Processamento'
+    },
+    'realizado': {
+        color: 'text-blue-500',
+        bg: 'bg-blue-50 dark:bg-blue-500/10',
+        border: 'border-blue-200 dark:border-blue-500/20',
+        badge: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+        icon: ClipboardDocumentListIcon,
+        label: 'Atendimento Concluído'
+    },
 };
 
-const getStatus = (status) => statusConfig[status] || statusConfig['pendente_autorizacao'];
+const getStatus = (status) => statusConfig[status] || statusConfig['aprovado_cooperativa'];
 
+const formatCurrency = (val) => {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+};
+
+// Filtro de solicitações
+const filtroStatus = ref('todos');
+const solicitacoesFiltradas = computed(() => {
+    if (filtroStatus.value === 'todos') return props.solicitacoes;
+    if (filtroStatus.value === 'agendados') return props.solicitacoes.filter(s => s.status === 'aprovado_cooperativa');
+    if (filtroStatus.value === 'realizados') return props.solicitacoes.filter(s => s.status === 'realizado');
+    return props.solicitacoes;
+});
 </script>
 
 <template>
-    <Head title="Painel do Parceiro" />
+    <Head title="Painel do Parceiro — Central de Atendimentos Online" />
 
     <PrestadorLayout>
         <template #header>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight">Painel de Atendimentos</h2>
+                    <h2 class="text-2xl font-black text-[var(--text-heading)] tracking-tight">Central de Agendamentos & Atendimentos</h2>
                     <p class="text-[12px] text-[var(--text-muted)] mt-0.5 font-bold">
-                        Inicie solicitações e acompanhe as autorizações da cooperativa.
+                        Fluxo 100% digital: visualize as solicitações agendadas pelos cooperados com autorização garantida.
                     </p>
                 </div>
                 <div class="p-3 bg-[var(--bg-card)] rounded-xl border border-[var(--border-color)]">
-                    <Squares2X2Icon class="w-6 h-6 text-primary-dynamic" />
+                    <BuildingOffice2Icon class="w-6 h-6 text-primary-dynamic" />
                 </div>
             </div>
         </template>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-12">
-            
-            <!-- Coluna Esquerda: Nova Solicitação -->
-            <div class="lg:col-span-5 space-y-6">
-                
-                <!-- Flash Messages -->
-                <div v-if="$page.props.flash?.success" class="bg-emerald-50 text-emerald-700 p-4 rounded-xl border border-emerald-100 flex items-center">
-                    <CheckCircleIcon class="w-5 h-5 mr-3 flex-shrink-0" />
-                    <span class="text-sm font-bold">{{ $page.props.flash.success }}</span>
-                </div>
-                
-                <div v-if="$page.props.flash?.error === 'inadimplente'" class="bg-rose-50 border border-rose-200 p-5 rounded-xl">
-                    <div class="flex items-start">
-                        <div class="shrink-0 bg-rose-100 p-2 rounded-full mt-1">
-                            <ExclamationTriangleIcon class="w-6 h-6 text-rose-600" />
-                        </div>
-                        <div class="ml-4">
-                            <h3 class="text-base font-black text-rose-800">Cooperado com Restrições</h3>
-                            <p class="text-sm text-rose-700 font-medium mt-1">
-                                O sistema identificou pendências financeiras (Ex: Cota Capital em aberto). Por favor, oriente o cooperado a regularizar a situação pelo aplicativo ou entrar em contato com a cooperativa.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+        <div class="space-y-6 pb-12">
 
-                <div v-else-if="$page.props.flash?.error === 'cooperado_nao_encontrado'" class="bg-amber-50 text-amber-700 p-4 rounded-xl border border-amber-200 flex items-center">
-                    <ExclamationTriangleIcon class="w-5 h-5 mr-3 flex-shrink-0" />
-                    <span class="text-sm font-bold">Cooperado não encontrado com este CPF ou Matrícula.</span>
-                </div>
-
-                <!-- Formulário de Novo Atendimento -->
-                <div class="zynix-card p-6 border-t-4 border-t-primary-dynamic relative overflow-hidden group">
-                    <div class="absolute -right-10 -top-10 text-slate-100 dark:text-slate-800/50 transform rotate-12 transition-transform duration-500 group-hover:scale-110 pointer-events-none">
-                        <ClipboardDocumentListIcon class="w-48 h-48" />
-                    </div>
-                    
-                    <h3 class="text-lg font-black text-[var(--text-heading)] mb-6 flex items-center relative z-10">
-                        <UserIcon class="w-5 h-5 mr-2 text-primary-dynamic" /> Iniciar Novo Atendimento
-                    </h3>
-
-                    <form @submit.prevent="submitSolicitacao" class="space-y-5 relative z-10">
-                        
-                        <div>
-                            <InputLabel for="identificacao" value="CPF ou Matrícula do Cooperado" class="!font-black text-[10px] uppercase tracking-widest" />
-                            <div class="relative" ref="searchDropdownRef">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <MagnifyingGlassIcon v-if="!isSearching" class="h-4 w-4 text-slate-400" />
-                                    <svg v-else class="animate-spin h-4 w-4 text-primary-dynamic" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                </div>
-                                <TextInput 
-                                    id="identificacao" 
-                                    v-model="form.identificacao" 
-                                    type="text" 
-                                    class="mt-1 block w-full pl-10 transition-colors focus:border-primary-dynamic focus:ring-primary-dynamic" 
-                                    placeholder="Digite o Nome, CPF ou Matrícula..."
-                                    autocomplete="off"
-                                    @focus="() => { if (searchResults.length > 0) showDropdown = true; }"
-                                    required 
-                                />
-
-                                <!-- Autocomplete Dropdown -->
-                                <div v-if="showDropdown && searchResults.length > 0" class="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden max-h-60 overflow-y-auto">
-                                    <ul class="py-1">
-                                        <li v-for="coop in searchResults" :key="coop.id" @click="selectCooperado(coop)" class="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer border-b border-slate-100 dark:border-slate-700/50 last:border-0 transition-colors">
-                                            <div class="flex items-center justify-between">
-                                                <div>
-                                                    <p class="text-sm font-black text-slate-800 dark:text-slate-200">{{ coop.nome }}</p>
-                                                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">CPF: {{ coop.cpf || 'N/A' }}</p>
-                                                </div>
-                                                <div class="bg-primary-dynamic/10 text-primary-dynamic px-2 py-1 rounded text-[10px] font-black tracking-widest uppercase">
-                                                    MAT: {{ coop.matricula }}
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <InputError :message="form.errors.identificacao" class="mt-2" />
-                        </div>
-
-                        <div>
-                            <InputLabel for="servico_id" value="Serviço ou Produto" class="!font-black text-[10px] uppercase tracking-widest" />
-                            <div class="relative mt-1">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <TagIcon class="h-4 w-4 text-slate-400" />
-                                </div>
-                                <select 
-                                    id="servico_id" 
-                                    v-model="form.servico_id" 
-                                    class="block w-full pl-10 text-sm rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary-dynamic focus:ring focus:ring-primary-dynamic/20"
-                                    required
-                                >
-                                    <option value="" disabled selected>Selecione um item do seu catálogo</option>
-                                    <option v-for="srv in servicos" :key="srv.id" :value="srv.id">
-                                        {{ srv.nome }} {{ srv.valor_acordado ? `(R$ ${parseFloat(srv.valor_acordado).toFixed(2)})` : '' }}
-                                    </option>
-                                </select>
-                            </div>
-                            <InputError :message="form.errors.servico_id" class="mt-2" />
-                        </div>
-
-                        <div>
-                            <InputLabel for="observacoes" value="Observações Adicionais (Opcional)" class="!font-black text-[10px] uppercase tracking-widest" />
-                            <textarea 
-                                id="observacoes" 
-                                v-model="form.observacoes" 
-                                rows="3" 
-                                class="mt-1 block w-full text-sm rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary-dynamic focus:ring focus:ring-primary-dynamic/20 resize-none" 
-                                placeholder="Dente 45, Retorno, etc."
-                            ></textarea>
-                            <InputError :message="form.errors.observacoes" class="mt-2" />
-                        </div>
-
-                        <div class="pt-2">
-                            <PrimaryButton class="w-full justify-center !py-4 shadow-lg shadow-primary-dynamic/20" :disabled="form.processing || servicos.length === 0">
-                                {{ form.processing ? 'Verificando e Enviando...' : 'Solicitar Autorização' }}
-                            </PrimaryButton>
-                            <p v-if="servicos.length === 0" class="text-xs text-rose-500 mt-2 text-center font-bold">
-                                Você precisa cadastrar serviços no catálogo primeiro.
-                            </p>
-                        </div>
-                    </form>
-                </div>
+            <!-- Flash Messages -->
+            <div v-if="$page.props.flash?.success" class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 flex items-center shadow-sm">
+                <CheckCircleIcon class="w-5 h-5 mr-3 flex-shrink-0" />
+                <span class="text-sm font-bold">{{ $page.props.flash.success }}</span>
             </div>
 
-            <!-- Coluna Direita: Últimas Solicitações -->
-            <div class="lg:col-span-7 space-y-6">
-                <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
-                    <div class="px-6 py-5 border-b border-[var(--border-color)] flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/20">
-                        <h3 class="text-base font-black text-[var(--text-heading)]">Atendimentos Recentes</h3>
-                    </div>
-                    
-                    <div class="p-6">
-                        <div v-if="solicitacoes.length > 0" class="space-y-4">
-                            <div v-for="sol in solicitacoes" :key="sol.id" class="flex items-center justify-between p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-app)] hover:border-primary-dynamic/30 transition-all">
-                                <div class="flex items-center gap-4">
-                                    <div :class="['w-10 h-10 rounded-full flex items-center justify-center shrink-0', getStatus(sol.status).bg, getStatus(sol.status).color]">
-                                        <component :is="getStatus(sol.status).icon" class="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-black text-[var(--text-heading)]">{{ sol.paciente }}</p>
-                                        <div class="flex items-center gap-2 mt-0.5">
-                                            <span class="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">Mat: {{ sol.matricula }}</span>
-                                            <span class="text-xs text-[var(--text-muted)] font-medium">{{ sol.servico }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="text-right flex flex-col items-end">
-                                    <span :class="['text-[10px] font-black uppercase tracking-widest', getStatus(sol.status).color]">
-                                        {{ getStatus(sol.status).label }}
-                                    </span>
-                                    <span class="text-[10px] text-slate-400 font-bold mt-1">{{ sol.data }}</span>
-                                </div>
-                            </div>
+            <!-- Cards de Métricas em Tempo Real -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <div class="zynix-card p-5 border-l-4 border-l-primary-dynamic">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Total de Solicitações</p>
+                            <p class="text-2xl font-black text-[var(--text-heading)] mt-1">{{ stats?.total_recebidas || solicitacoes.length }}</p>
                         </div>
-                        <div v-else class="text-center py-12">
-                            <Squares2X2Icon class="w-12 h-12 text-slate-200 mx-auto mb-3" />
-                            <p class="text-sm text-[var(--text-muted)] font-bold">Nenhum atendimento iniciado ainda.</p>
+                        <div class="w-10 h-10 rounded-xl bg-primary-dynamic/10 text-primary-dynamic flex items-center justify-center">
+                            <ClipboardDocumentListIcon class="w-5 h-5" />
                         </div>
                     </div>
                 </div>
+
+                <div class="zynix-card p-5 border-l-4 border-l-emerald-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Agendados & Aprovados</p>
+                            <p class="text-2xl font-black text-emerald-600 mt-1">{{ stats?.agendadas || 0 }}</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                            <CalendarDaysIcon class="w-5 h-5" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="zynix-card p-5 border-l-4 border-l-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Atendidos neste Mês</p>
+                            <p class="text-2xl font-black text-blue-600 mt-1">{{ stats?.realizadas || 0 }}</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                            <CheckCircleIcon class="w-5 h-5" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="zynix-card p-5 border-l-4 border-l-purple-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Fatura Prevista (Dia 05)</p>
+                            <p class="text-2xl font-black text-purple-600 mt-1">{{ formatCurrency(stats?.total_faturado_mes || 0) }}</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-500 flex items-center justify-center">
+                            <CurrencyDollarIcon class="w-5 h-5" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Central de Agendamentos e Solicitações Recebidas -->
+            <div class="zynix-card p-6">
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-lg font-black text-[var(--text-heading)] tracking-tight flex items-center gap-2">
+                            <CalendarDaysIcon class="w-5 h-5 text-primary-dynamic" />
+                            Agendamentos & Solicitações Recebidas
+                        </h3>
+                        <p class="text-xs text-[var(--text-muted)] font-medium mt-0.5">
+                            Pacientes elegíveis com autorização gerada automaticamente pelo sistema da cooperativa.
+                        </p>
+                    </div>
+
+                    <!-- Filtros Rápidos -->
+                    <div class="flex items-center gap-2">
+                        <button 
+                            @click="filtroStatus = 'todos'" 
+                            :class="['px-3 py-1.5 rounded-lg text-xs font-bold transition-all', filtroStatus === 'todos' ? 'bg-primary-dynamic text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200']"
+                        >
+                            Todos ({{ solicitacoes.length }})
+                        </button>
+                        <button 
+                            @click="filtroStatus = 'agendados'" 
+                            :class="['px-3 py-1.5 rounded-lg text-xs font-bold transition-all', filtroStatus === 'agendados' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200']"
+                        >
+                            Agendados ({{ stats?.agendadas || 0 }})
+                        </button>
+                        <button 
+                            @click="filtroStatus = 'realizados'" 
+                            :class="['px-3 py-1.5 rounded-lg text-xs font-bold transition-all', filtroStatus === 'realizados' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200']"
+                        >
+                            Concluídos ({{ stats?.realizadas || 0 }})
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabela de Solicitações Recebidas -->
+                <div v-if="solicitacoesFiltradas.length > 0" class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-[var(--border-color)] text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] bg-slate-50/50 dark:bg-slate-800/30">
+                                <th class="py-3 px-4">Guia / Código</th>
+                                <th class="py-3 px-4">Paciente / Beneficiário</th>
+                                <th class="py-3 px-4">Procedimento / Especialidade</th>
+                                <th class="py-3 px-4">Data Agendada</th>
+                                <th class="py-3 px-4">Valor Acordado</th>
+                                <th class="py-3 px-4">Status</th>
+                                <th class="py-3 px-4 text-right">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[var(--border-color)] text-sm">
+                            <tr v-for="sol in solicitacoesFiltradas" :key="sol.id" class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
+                                
+                                <td class="py-4 px-4 font-mono font-bold text-xs text-primary-dynamic">
+                                    {{ sol.codigo_guia }}
+                                </td>
+
+                                <td class="py-4 px-4">
+                                    <div class="font-bold text-[var(--text-heading)]">{{ sol.paciente }}</div>
+                                    <div class="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider">
+                                        Titular: {{ sol.titular_nome }} • Mat: {{ sol.matricula }}
+                                    </div>
+                                </td>
+
+                                <td class="py-4 px-4">
+                                    <div class="font-semibold text-slate-700 dark:text-slate-200">{{ sol.servico }}</div>
+                                    <div v-if="sol.observacoes" class="text-xs text-slate-400 italic line-clamp-1 mt-0.5">
+                                        "{{ sol.observacoes }}"
+                                    </div>
+                                </td>
+
+                                <td class="py-4 px-4">
+                                    <div v-if="sol.data_agendada" class="font-black text-slate-800 dark:text-slate-200">
+                                        {{ sol.data_agendada }}
+                                    </div>
+                                    <div v-else class="text-xs text-slate-400 font-medium">
+                                        A definir
+                                    </div>
+                                </td>
+
+                                <td class="py-4 px-4 font-black text-slate-700 dark:text-slate-200">
+                                    {{ formatCurrency(sol.valor_cobrado) }}
+                                </td>
+
+                                <td class="py-4 px-4">
+                                    <span :class="['inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider', getStatus(sol.status).badge]">
+                                        <component :is="getStatus(sol.status).icon" class="w-3.5 h-3.5" />
+                                        {{ getStatus(sol.status).label }}
+                                    </span>
+                                </td>
+
+                                <td class="py-4 px-4 text-right">
+                                    <button 
+                                        v-if="sol.status === 'aprovado_cooperativa'"
+                                        @click="abrirModalConcluir(sol)"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black uppercase tracking-wider shadow-sm transition-all"
+                                    >
+                                        <CheckCircleIcon class="w-4 h-4" />
+                                        Concluir Atendimento
+                                    </button>
+                                    <span v-else-if="sol.status === 'realizado'" class="text-xs font-bold text-slate-400">
+                                        Atendido em {{ sol.data_realizacao || sol.data }}
+                                    </span>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div v-else class="text-center py-12 border border-dashed border-[var(--border-color)] rounded-xl mt-4">
+                    <CalendarDaysIcon class="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                    <h4 class="text-base font-black text-[var(--text-heading)]">Nenhum agendamento encontrado</h4>
+                    <p class="text-xs text-[var(--text-muted)] max-w-sm mx-auto mt-1">
+                        Assim que os cooperados realizarem solicitações online pelo aplicativo, elas aparecerão aqui automaticamente pré-autorizadas.
+                    </p>
+                </div>
+
             </div>
 
         </div>
+
+        <!-- Modal de Confirmação de Atendimento Concluído -->
+        <div v-if="showConcluirModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[var(--border-color)] animate-in fade-in zoom-in-95">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                        <CheckCircleIcon class="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-[var(--text-heading)] tracking-tight">Confirmar Atendimento</h3>
+                        <p class="text-xs text-[var(--text-muted)]">Guia: {{ selectedSolicitacao?.codigo_guia }}</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl mb-4 space-y-1.5 text-xs">
+                    <p><strong class="text-slate-700 dark:text-slate-300">Paciente:</strong> {{ selectedSolicitacao?.paciente }}</p>
+                    <p><strong class="text-slate-700 dark:text-slate-300">Procedimento:</strong> {{ selectedSolicitacao?.servico }}</p>
+                    <p><strong class="text-slate-700 dark:text-slate-300">Valor Acordado:</strong> {{ formatCurrency(selectedSolicitacao?.valor_cobrado) }}</p>
+                </div>
+
+                <div class="mb-5">
+                    <label class="block text-xs font-bold text-[var(--text-heading)] mb-1">
+                        Observações Clínicas / Laudo do Atendimento (Opcional):
+                    </label>
+                    <textarea 
+                        v-model="concluirForm.observacoes"
+                        rows="3" 
+                        class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-emerald-500 focus:ring focus:ring-emerald-200"
+                        placeholder="Ex: Consulta realizada sem intercorrências. Prescrição entregue ao paciente."
+                    ></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3">
+                    <button 
+                        @click="showConcluirModal = false" 
+                        class="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                    >
+                        Cancelar
+                    </button>
+                    <button 
+                        @click="confirmarConclusao"
+                        :disabled="concluirForm.processing"
+                        class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider rounded-lg shadow-sm transition-all"
+                    >
+                        Confirmar e Lançar Fatura
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </PrestadorLayout>
 </template>
-
-<style scoped>
-.text-primary-dynamic { color: v-bind(primaryColor); }
-.bg-primary-dynamic { background-color: v-bind(primaryColor) !important; }
-.border-primary-dynamic { border-color: v-bind(primaryColor) !important; }
-</style>

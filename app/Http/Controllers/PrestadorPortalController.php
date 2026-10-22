@@ -41,29 +41,79 @@ class PrestadorPortalController extends Controller
     }
 
     /**
-     * Dashboard do Prestador / Parceiro
+     * Dashboard do Prestador / Parceiro: Focado em Solicitações e Agendamentos Recebidos Online
      */
     public function dashboard(): Response
     {
         $prestador = $this->getPrestador();
         
-        $solicitacoes = $this->prestadorService->getDashboardSolicitacoes($prestador->id, 10)
+        // Solicitações e Agendamentos recebidos de cooperados
+        $solicitacoes = SolicitacaoServico::with(['associado', 'servico', 'dependente', 'agendamento'])
+            ->where('prestador_id', $prestador->id)
+            ->orderBy('created_at', 'desc')
+            ->get()
             ->map(fn($s) => [
                 'id' => $s->id,
-                'paciente' => $s->associado->nome ?? 'N/A',
-                'matricula' => str_pad((string)($s->associado->id ?? 0), 4, '0', STR_PAD_LEFT),
+                'codigo_guia' => $s->codigo_guia ?? "GUIA-{$s->id}",
+                'paciente' => $s->dependente ? $s->dependente->nome . ' (Dependente)' : ($s->associado->nome ?? 'N/A'),
+                'titular_nome' => $s->associado->nome ?? 'N/A',
+                'matricula' => $s->associado->matricula ?? str_pad((string)($s->associado->id ?? 0), 4, '0', STR_PAD_LEFT),
                 'servico' => $s->servico->nome ?? 'Outros',
+                'valor_cobrado' => (float)($s->valor_cobrado ?? 0),
                 'status' => $s->status,
+                'data_agendada' => $s->data_agendada ? \Carbon\Carbon::parse($s->data_agendada)->format('d/m/Y H:i') : null,
+                'data_realizacao' => $s->data_realizacao ? \Carbon\Carbon::parse($s->data_realizacao)->format('d/m/Y H:i') : null,
+                'observacoes' => $s->observacoes,
                 'data' => $s->created_at->format('d/m/Y H:i'),
             ]);
+
+        // Contadores para o Dashboard
+        $stats = [
+            'total_recebidas' => $solicitacoes->count(),
+            'agendadas' => $solicitacoes->where('status', 'aprovado_cooperativa')->count(),
+            'realizadas' => $solicitacoes->where('status', 'realizado')->count(),
+            'total_faturado_mes' => $solicitacoes->where('status', 'realizado')->sum('valor_cobrado'),
+        ];
 
         $servicos = $prestador->servicos()->where('ativo', true)->get();
 
         return Inertia::render('Prestador/Dashboard', [
             'prestador' => $prestador,
             'solicitacoes' => $solicitacoes,
+            'stats' => $stats,
             'servicos' => $servicos,
         ]);
+    }
+
+    /**
+     * Concluir Atendimento (Realizado pelo Prestador)
+     */
+    public function concluirAtendimento(Request $request, $id): RedirectResponse
+    {
+        $prestador = $this->getPrestador();
+        $solicitacao = SolicitacaoServico::where('prestador_id', $prestador->id)->findOrFail($id);
+
+        $solicitacao->update([
+            'status' => 'realizado',
+            'data_realizacao' => now(),
+            'observacoes' => $request->input('observacoes', $solicitacao->observacoes),
+        ]);
+
+        if ($solicitacao->agendamento) {
+            $solicitacao->agendamento->update(['status' => 'realizado']);
+        }
+
+        // Notificar o associado
+        if ($solicitacao->associado && $solicitacao->associado->user) {
+            $solicitacao->associado->user->notify(new \App\Notifications\AppDatabaseNotification(
+                'Atendimento Concluído',
+                "Seu procedimento ({$solicitacao->servico->nome}) foi concluído com sucesso por {$prestador->nome}.",
+                route('cooperado.minhas-solicitacoes'),
+                'CheckCircleIcon'
+            ));
+        }
+
+        return back()->with('success', 'Atendimento marcado como realizado com sucesso! Procedimento lançado para fatura mensal.');
     }
 
     public function buscarCooperado(BuscarCooperadoRequest $request): JsonResponse

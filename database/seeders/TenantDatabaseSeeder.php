@@ -953,63 +953,108 @@ class TenantDatabaseSeeder extends Seeder
             ]
         );
 
-        // Solicitações de Autorização (Fluxo Invertido: Prestador -> Gerência -> Cooperado)
+        // Solicitações e Agendamentos 100% Online (Elegibilidade Instantânea)
         if ($servicoCardio && $servicoClinico && $servicoLab && $servicoEco) {
-            // 1. Pendente de aprovação (aparece na tela /saude/autorizacoes para aprovar ao vivo!)
+            // 1. Agendamento Aprovado Instantaneamente e Confirmado para Amanhã (João Silva)
+            $dataAmanha = now()->addDay()->setHour(14)->setMinute(30)->setSecond(0);
+            $agendamento1 = Agendamento::updateOrCreate(
+                [
+                    'user_id' => $joaoUser->id,
+                    'especialidade' => $servicoCardio->nome,
+                    'prestador_id' => $clinicaSaoLucas->id,
+                ],
+                [
+                    'tipo' => 'consulta',
+                    'data_hora' => $dataAmanha,
+                    'status' => 'confirmado',
+                    'valor_cobrado' => $servicoCardio->valor_acordado,
+                    'modalidade' => 'presencial',
+                    'observacoes' => 'Agendado online pelo portal do cooperado. Elegibilidade confirmada instantaneamente.',
+                ]
+            );
+
             SolicitacaoServico::updateOrCreate(
                 [
                     'associado_id' => $joao->id,
                     'prestador_id' => $clinicaSaoLucas->id,
                     'servico_id' => $servicoCardio->id,
-                    'status' => 'pendente_autorizacao',
                 ],
                 [
+                    'codigo_guia' => 'GUIA-' . now()->format('Ymd') . '-A89K2',
+                    'agendamento_id' => $agendamento1->id,
                     'valor_cobrado' => $servicoCardio->valor_acordado,
-                    'observacoes' => 'Solicitação de check-up cardiológico anual do cooperado titular João Silva.',
+                    'status' => 'aprovado_cooperativa',
+                    'data_agendada' => $dataAmanha,
+                    'observacoes' => 'Consulta Cardiológica agendada e autorizada automaticamente pelo sistema.',
                 ]
             );
 
-            // 2. Segunda guia pendente (para Maria Clara no Laboratório Central)
+            // 2. Agendamento para a Dependente Ana Beatriz Silva (Filtrada no portal)
+            $dataDepoisDeAmanha = now()->addDays(2)->setHour(10)->setMinute(0)->setSecond(0);
+            $agendamento2 = Agendamento::updateOrCreate(
+                [
+                    'user_id' => $joaoUser->id,
+                    'especialidade' => $servicoLab->nome,
+                    'prestador_id' => $labCentral->id,
+                ],
+                [
+                    'tipo' => 'exame',
+                    'data_hora' => $dataDepoisDeAmanha,
+                    'status' => 'confirmado',
+                    'valor_cobrado' => $servicoLab->valor_acordado,
+                    'modalidade' => 'presencial',
+                    'observacoes' => 'Check-up Laboratorial agendado online para a dependente Ana Beatriz Silva.',
+                ]
+            );
+
             SolicitacaoServico::updateOrCreate(
                 [
-                    'associado_id' => $maria->id,
+                    'associado_id' => $joao->id,
+                    'dependente_id' => $depEsposa->id,
                     'prestador_id' => $labCentral->id,
                     'servico_id' => $servicoLab->id,
-                    'status' => 'pendente_autorizacao',
                 ],
                 [
+                    'codigo_guia' => 'GUIA-' . now()->format('Ymd') . '-DEP71',
+                    'agendamento_id' => $agendamento2->id,
                     'valor_cobrado' => $servicoLab->valor_acordado,
-                    'observacoes' => 'Bateria de exames pré-operatórios solicitada pelo médico assistente.',
+                    'status' => 'aprovado_cooperativa',
+                    'data_agendada' => $dataDepoisDeAmanha,
+                    'observacoes' => 'Exames laboratoriais para dependente com autorização digital instantânea.',
                 ]
             );
 
-            // 3. Guia já aprovada pela cooperativa
+            // 3. Atendimento já Realizado (Concluído pelo Prestador e Faturado)
             SolicitacaoServico::updateOrCreate(
                 [
                     'associado_id' => $joao->id,
                     'prestador_id' => $drMarcelo->id,
                     'servico_id' => $servicoEco->id,
-                    'status' => 'aprovado_cooperativa',
                 ],
                 [
+                    'codigo_guia' => 'GUIA-20261015-EXAM1',
                     'valor_cobrado' => $servicoEco->valor_acordado,
-                    'observacoes' => 'Procedimento liberado pela gerência operacional.',
-                    'data_realizacao' => now()->subDays(4),
+                    'status' => 'realizado',
+                    'data_agendada' => now()->subDays(6)->setHour(16)->setMinute(0),
+                    'data_realizacao' => now()->subDays(6)->setHour(16)->setMinute(45),
+                    'observacoes' => 'Ecocardiograma realizado com laudo anexado ao prontuário do cooperado.',
                 ]
             );
 
-            // 4. Guia negada (histórico)
+            // 4. Guia Concluída na Clínica São Lucas para compor o total faturado do mês
             SolicitacaoServico::updateOrCreate(
                 [
                     'associado_id' => $maria->id,
                     'prestador_id' => $clinicaSaoLucas->id,
                     'servico_id' => $servicoClinico->id,
-                    'status' => 'negado',
                 ],
                 [
+                    'codigo_guia' => 'GUIA-20261018-MED04',
                     'valor_cobrado' => $servicoClinico->valor_acordado,
-                    'observacoes' => 'Retorno dentro do prazo de 15 dias.',
-                    'motivo_recusa' => 'Retorno de consulta dentro de 15 dias já está incluso na consulta inicial.',
+                    'status' => 'realizado',
+                    'data_agendada' => now()->subDays(3)->setHour(11)->setMinute(0),
+                    'data_realizacao' => now()->subDays(3)->setHour(11)->setMinute(35),
+                    'observacoes' => 'Consulta clínica geral realizada. Paciente medicada.',
                 ]
             );
         }

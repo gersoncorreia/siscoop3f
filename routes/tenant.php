@@ -77,9 +77,11 @@ Route::middleware([
                         Route::delete('/documentos/{id}', [\App\Http\Controllers\Cooperado\CooperadoDocumentoController::class, 'destroy'])->name('documentos.destroy');
                         Route::get('/documentos/{id}/download', [\App\Http\Controllers\Cooperado\CooperadoDocumentoController::class, 'download'])->name('documentos.download');
 
-                        // Rede de Prestadores
+                        // Rede de Prestadores & Agendamento 100% Online
                         Route::get('/prestadores', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'prestadores'])->name('prestadores');
                         Route::get('/prestadores/{id}', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'prestadorDetalhe'])->name('prestadores.show');
+                        Route::get('/prestadores/{id}/servicos/{servicoId}/elegibilidade', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'checarElegibilidade'])->name('prestadores.elegibilidade');
+                        Route::post('/prestadores/{id}/solicitar-agendar', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'solicitarEAgendar'])->name('prestadores.solicitar-agendar');
                         Route::get('/minhas-solicitacoes', [\App\Http\Controllers\Cooperado\CooperadoServicoController::class, 'minhasSolicitacoes'])->name('minhas-solicitacoes');
 
                         // Perfil do Cliente / Cooperado
@@ -118,6 +120,7 @@ Route::middleware([
                 ->name('prestador.')
                 ->group(function () {
                     Route::get('/', [\App\Http\Controllers\PrestadorPortalController::class, 'dashboard'])->name('dashboard');
+                    Route::post('/solicitacoes/{id}/concluir', [\App\Http\Controllers\PrestadorPortalController::class, 'concluirAtendimento'])->name('solicitacoes.concluir');
                     Route::post('/solicitar', [\App\Http\Controllers\PrestadorPortalController::class, 'solicitarAutorizacao'])->name('solicitar');
                     Route::get('/buscar-cooperado', [\App\Http\Controllers\PrestadorPortalController::class, 'buscarCooperado'])->name('buscar-cooperado');
                     

@@ -12,15 +12,29 @@ class SolicitacaoServico extends Model
 
     protected $fillable = [
         'associado_id',
+        'dependente_id',
         'prestador_id',
         'servico_id',
         'fatura_id',
+        'agendamento_id',
+        'codigo_guia',
         'observacoes',
         'status',
         'motivo_recusa',
         'valor_cobrado',
+        'data_agendada',
         'data_realizacao'
     ];
+
+    public function dependente()
+    {
+        return $this->belongsTo(Dependente::class);
+    }
+
+    public function agendamento()
+    {
+        return $this->belongsTo(Agendamento::class);
+    }
 
     public function associado()
     {

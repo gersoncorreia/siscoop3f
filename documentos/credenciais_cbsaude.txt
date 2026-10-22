@@ -5,6 +5,7 @@ Tenant:              CB Saúde — Cooperativa de Saúde, Governança e Benefíc
 Ambiente Local:      http://cbsaude.localhost:8000
 Ambiente Produção:   https://cbsaude.siscoop3f.com.br
 Senha Padrão Global: senha123
+Modelo Operacional:  100% ONLINE — MOTOR DE ELEGIBILIDADE INSTANTÂNEO & AGENDAMENTO DIGITAL
 ====================================================================================================
 
 ----------------------------------------------------------------------------------------------------
@@ -44,7 +45,7 @@ Senha para todos:    senha123
     Nome:            Hélio Gerente de Operações
     E-mail:          gerente@cbsaude.com.br
     Perfil:          Gerente
-    Atribuições:     Homologação de novas propostas de adesão na fila e conciliação de faturas médicas.
+    Atribuições:     Homologação de novas propostas de adesão na fila e acompanhamento de faturas médicas.
 
 [5] PRESIDENTE DO CONSELHO FISCAL
     Nome:            Dra. Patrícia Conselho Fiscal
@@ -83,7 +84,7 @@ Senha para todos:    senha123
     Atribuições:     Acesso às deliberações societárias e painéis de governança.
 
 ----------------------------------------------------------------------------------------------------
-3. COOPERADOS TITULARES (PORTAL DO COOPERADO)
+3. COOPERADOS TITULARES (PORTAL DO COOPERADO — FLUXO 100% ONLINE)
 ----------------------------------------------------------------------------------------------------
 URL de Acesso:       http://cbsaude.localhost:8000/login  ou  https://cbsaude.siscoop3f.com.br/login
 Senha para todos:    senha123
@@ -94,10 +95,12 @@ Senha para todos:    senha123
     Matrícula:       20260101
     Plano:           Adesão Cooperado Familiar
     Carteirinha:     2026-00101 (Ativa / Validade 1 ano / QR Code gerado)
-    Cota Capital:    R$ 3.000,00 Integralizada
+    Cota Capital:    R$ 3.000,00 Integralizada (100% Adimplente)
     Dependentes:     2 cadastrados (Ana Beatriz e Lucas)
-    Situação:        100% Adimplente. Usuário principal para demonstrar a Carteirinha Digital,
-                     agendamentos, dependentes e aprovação instantânea na clínica médica.
+    Agendamento Atual: Possui Consulta Cardiológica agendada e pré-autorizada na Clínica São Lucas
+                       (Guia: GUIA-20261022-A89K2 para amanhã às 14:30).
+    Demonstração:    Acessa a Rede Credenciada, clica na Clínica São Lucas e faz um novo agendamento
+                     em 2 cliques com o Motor de Elegibilidade validando em tempo real.
 
 [2] MARIA CLARA SOUZA (Cooperada Ativa Titular)
     E-mail:          maria.cooperada@gmail.com
@@ -106,45 +109,49 @@ Senha para todos:    senha123
     Plano:           Adesão Cooperado Titular
     Carteirinha:     2026-00102 (Ativa)
     Cota Capital:    Em integralização pontual
-    Situação:        Adimplente com histórico regular de solicitações e reembolsos.
+    Situação:        Adimplente com histórico de consulta realizada e faturada.
 
-[3] CARLOS EDUARDO MENDES (Cenário de Inadimplência / Bloqueio no Prestador)
+[3] CARLOS EDUARDO MENDES (Cenário de Inadimplência / Bloqueio pelo Motor de Elegibilidade)
     E-mail:          carlos.inadimplente@gmail.com
     CPF:             852.963.741-04
     Matrícula:       20260103
     Plano:           Adesão Cooperado Titular
     Carteirinha:     2026-00103
     Situação:        Possui parcela de Cota Capital em aberto há 15 dias e mensalidade vencida.
-    Objetivo:        Quando a recepção da clínica busca este CPF no Portal do Prestador, o sistema
-                     acusa automaticamente a inelegibilidade por pendência financeira.
+    Demonstração:    Ao tentar agendar qualquer serviço no portal, o Motor de Elegibilidade avisa
+                     imediatamente na tela que há restrição por Cota Capital, resguardando o caixa
+                     da cooperativa e orientando a regularização sem constrangimento público.
 
 ----------------------------------------------------------------------------------------------------
-4. PROPOSTAS DE ADESÃO NA FILA (PARA HOMOLOGAR AO VIVO NA APRESENTAÇÃO)
+4. PRESTADORES DE SERVIÇOS CREDENCIADOS (PORTAL DO PRESTADOR — CENTRAL DE AGENDAMENTOS ONLINE)
 ----------------------------------------------------------------------------------------------------
-Acesse como Gerente (gerente@cbsaude.com.br) ou Admin (admin@cbsaude.com.br) para avaliar:
+URL de Acesso:       http://cbsaude.localhost:8000/login  ou  https://cbsaude.siscoop3f.com.br/login
+Senha para todos:    senha123
 
-[1] DRA. FERNANDA LIMA CAVALCANTE (Proposta Pronta para Aprovação Instantânea)
-    CPF:             654.987.321-09
-    E-mail:          fernanda.cavalcante@gmail.com
-    Matrícula:       20260104
-    Plano Solicitado: Adesão Cooperado Familiar (pagamento via PIX)
-    Status Atual:    Pendente
-    Documentos:      Documento de Identidade anexado e pronto para homologação.
-    Demonstração:    O Gerente abre a proposta, clica em "Aprovar" e o sistema gera automaticamente
-                     o registro ativo de cooperada e sua carteirinha digital.
+[1] CLÍNICA SÃO LUCAS (Prestador Principal para Teste do Fluxo Feliz)
+    E-mail:          sao.lucas@gmail.com
+    Tipo:            Clínica Médica Multiespecialidades
+    Especialidades:  Pediatria, Clínica Geral, Cardiologia
+    Dashboard:       Apresenta o painel de "Central de Agendamentos & Atendimentos Recebidos".
+                     Visualiza o agendamento de João Silva já confirmado (Guia GUIA-20261022-A89K2).
+    Demonstração:    Clica no botão "Concluir Atendimento" da guia para registrar o procedimento
+                     e enviar automaticamente para a fatura do dia 05.
 
-[2] MARCOS VINÍCIUS PEIXOTO (Proposta em Análise Documental)
-    CPF:             159.753.486-02
-    E-mail:          marcos.peixoto@gmail.com
-    Matrícula:       20260105
-    Plano Solicitado: Adesão Cooperado Titular (pagamento via Boleto)
-    Status Atual:    Análise Documental
+[2] LABORATÓRIO CENTRAL DIAGNÓSTICOS
+    E-mail:          lab.central@gmail.com
+    Tipo:            Hospital / Centro de Diagnósticos
+    Especialidades:  Análises Clínicas, Exames de Imagem, Genética
+    Dashboard:       Visualiza o agendamento da dependente Ana Beatriz Silva (Guia GUIA-20261022-DEP71).
+
+[3] DR. MARCELO SILVA (CARDIOLOGIA)
+    E-mail:          marcelo.silva@gmail.com
+    Tipo:            Médico Pessoa Física (Consultório)
+    Especialidades:  Cardiologia, Ecocardiografia
+    Histórico:       Procedimento realizado (Ecocardiograma GUIA-20261015-EXAM1 - R$ 280,00).
 
 ----------------------------------------------------------------------------------------------------
 5. DEPENDENTES (ACESSO DIRETO POR LINK MÁGICO OU LOGIN)
 ----------------------------------------------------------------------------------------------------
-O Link Mágico dispensa senha complexa: basta informar os 5 primeiros dígitos do CPF do dependente!
-
 [1] ANA BEATRIZ OLIVEIRA SILVA (Cônjuge de João Silva)
     CPF:             529.982.247-25
     PIN de Acesso:   52998 (Cinco primeiros dígitos do CPF)
@@ -161,39 +168,16 @@ O Link Mágico dispensa senha complexa: basta informar os 5 primeiros dígitos d
     Link Mágico Produção:   https://cbsaude.siscoop3f.com.br/acesso-dependente/token-lucas-filho-stfsaude-2026
 
 ----------------------------------------------------------------------------------------------------
-6. PRESTADORES DE SERVIÇOS CREDENCIADOS (PORTAL DO PRESTADOR)
+6. PROPOSTAS DE ADESÃO NA FILA (HOMOLOGAÇÃO AO VIVO)
 ----------------------------------------------------------------------------------------------------
-URL de Acesso:       http://cbsaude.localhost:8000/login  ou  https://cbsaude.siscoop3f.com.br/login
-Senha para todos:    senha123
+[1] DRA. FERNANDA LIMA CAVALCANTE (Proposta Pronta para Aprovação Instantânea)
+    CPF:             654.987.321-09
+    E-mail:          fernanda.cavalcante@gmail.com
+    Status Atual:    Pendente (Plano Familiar via PIX)
+    Demonstração:    O Gerente aprova com 1 clique e emite a carteirinha imediatamente.
 
-[1] CLÍNICA SÃO LUCAS (Prestador Principal para Teste do Fluxo Feliz)
-    E-mail:          sao.lucas@gmail.com
-    Tipo:            Clínica Médica Multiespecialidades
-    Especialidades:  Pediatria, Clínica Geral, Cardiologia
-    Serviços:        Consulta Clínica Geral (R$ 110,00), Avaliação Cardiológica + ECG (R$ 210,00), Consulta Pediátrica (R$ 130,00)
-    Demonstração:    Realiza a busca de elegibilidade do cooperado João Silva (aprovado) e de Carlos Eduardo (bloqueado).
-
-[2] LABORATÓRIO CENTRAL DIAGNÓSTICOS
-    E-mail:          lab.central@gmail.com
-    Tipo:            Hospital / Centro de Diagnósticos
-    Especialidades:  Análises Clínicas, Exames de Imagem, Genética
-    Serviços:        Check-up Laboratorial Completo 15 exames (R$ 145,00), Ultrassonografia Abdominal (R$ 165,00)
-
-[3] DR. MARCELO SILVA (CARDIOLOGIA)
-    E-mail:          marcelo.silva@gmail.com
-    Tipo:            Médico Pessoa Física (Consultório)
-    Especialidades:  Cardiologia, Ecocardiografia
-    Serviços:        Ecocardiograma com Doppler (R$ 280,00), Teste Ergométrico (R$ 240,00)
-
-[4] REDE CONVENIADA INTERENTIDADES (CONTRATO SANTA CASA / CB SAÚDE)
-    - Clínica Médica & Hospital São Lucas:     clinica.lucas@santacasa.com.br
-    - Laboratório Diagnósticos da Amazônia:    laboratorio.amazonia@santacasa.com.br
-    - Centro Odontológico Sorriso Real:        sorrisoreal@santacasa.com.br
-
-----------------------------------------------------------------------------------------------------
-7. CONTAS BANCÁRIAS E DISPONIBILIDADES DA COOPERATIVA (PAINEL FINANCEIRO)
-----------------------------------------------------------------------------------------------------
-- Sicoob Cooperativo (Agência: 4102 / Conta: 78900-4): Saldo R$ 284.750,00
-- Sicredi (Agência: 0915 / Conta: 33210-9):            Saldo R$ 112.400,00
-- Saldo Consolidado de Disponibilidades:               R$ 397.150,00
+[2] MARCOS VINÍCIUS PEIXOTO (Proposta em Análise Documental)
+    CPF:             159.753.486-02
+    E-mail:          marcos.peixoto@gmail.com
+    Status Atual:    Análise Documental
 ====================================================================================================
