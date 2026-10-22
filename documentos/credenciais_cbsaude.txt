@@ -1,7 +1,7 @@
 ====================================================================================================
                         SISCOOP3F — GUIA DE CREDENCIAIS & ACESSOS (CB SAÚDE)
 ====================================================================================================
-Tenant: CB Saúde — Cooperativa de Saúde, Governança e Benefícios
+Tenant:              CB Saúde — Cooperativa de Saúde, Governança e Benefícios
 Ambiente Local:      http://cbsaude.localhost:8000
 Ambiente Produção:   https://cbsaude.siscoop3f.com.br
 Senha Padrão Global: senha123
@@ -13,7 +13,8 @@ Senha Padrão Global: senha123
 URL de Acesso:       http://localhost:8000/login  ou  https://siscoop3f.com.br/login
 E-mail:              admin@siscoop.com.br
 Senha:               password (ou senha123)
-Perfil / Papel:      Super Admin (Gestor Central de todos os Tenants e Contratos Interentidades)
+Perfil / Papel:      Super Admin
+Atribuição:          Acesso master à criação de tenants, monitoramento global e contratos interentidades.
 
 ----------------------------------------------------------------------------------------------------
 2. DIRETORIA EXECUTIVA, GOVERNANÇA E OPERAÇÃO (CB SAÚDE)
@@ -22,64 +23,64 @@ URL de Acesso:       http://cbsaude.localhost:8000/login  ou  https://cbsaude.si
 Senha para todos:    senha123
 
 [1] ADMINISTRADOR GERAL DA COOPERATIVA
-    E-mail:          admin@cbsaude.com.br
     Nome:            Admin Geral da Cooperativa
-    Papel:           Administrador Cooperativa
-    Finalidade:      Gestão total de parâmetros, cadastros de convênios, tabela de serviços e relatórios.
+    E-mail:          admin@cbsaude.com.br
+    Perfil:          Administrador Cooperativa
+    Atribuições:     Gestão total do sistema, parametrizações, módulos, convênios e relatórios gerais.
 
 [2] DIRETOR PRESIDENTE
-    E-mail:          presidente@cbsaude.com.br
     Nome:            Dr. Roberto Presidente
-    Papel:           Presidente
-    Finalidade:      Visão executiva estratégica, aprovações de alto nível e prestação de contas estatutária.
+    E-mail:          presidente@cbsaude.com.br
+    Perfil:          Presidente
+    Atribuições:     Painel executivo, acompanhamento estatutário e deliberações de diretoria.
 
 [3] DIRETOR ADMINISTRATIVO FINANCEIRO
-    E-mail:          diretor@cbsaude.com.br
     Nome:            Carlos Diretor Adm. Financeiro
-    Papel:           Diretor Administrativo Financeiro
-    Finalidade:      Contas bancárias (Sicoob/Sicredi), fluxo de caixa, aportes de Cota Capital e faturamento.
+    E-mail:          diretor@cbsaude.com.br
+    Perfil:          Diretor Administrativo Financeiro
+    Atribuições:     Gestão de contas bancárias (Sicoob / Sicredi), conciliações e fluxo de caixa.
 
 [4] GERENTE DE OPERAÇÕES
-    E-mail:          gerente@cbsaude.com.br
     Nome:            Hélio Gerente de Operações
-    Papel:           Gerente
-    Finalidade:      Aprovação de propostas de adesão na fila e conciliação de faturas médicas (Regra do dia 05).
+    E-mail:          gerente@cbsaude.com.br
+    Perfil:          Gerente
+    Atribuições:     Homologação de novas propostas de adesão na fila e conciliação de faturas médicas.
 
 [5] PRESIDENTE DO CONSELHO FISCAL
-    E-mail:          fiscal@cbsaude.com.br
     Nome:            Dra. Patrícia Conselho Fiscal
-    Papel:           Presidente do Conselho Fiscal
-    Finalidade:      Auditoria preventiva de balancetes, livros fiscais, atas e transparência contábil.
+    E-mail:          fiscal@cbsaude.com.br
+    Perfil:          Presidente do Conselho Fiscal
+    Atribuições:     Fiscalização contábil, auditoria preventiva de balancetes, livros fiscais e atas.
 
 [6] CONSULTOR ESTRATÉGICO
-    E-mail:          consultor@cbsaude.com.br
     Nome:            Eduardo Consultor Estratégico
-    Papel:           Consultor
-    Finalidade:      Indicadores de desempenho, evolução de quadro associativo e relatórios analíticos.
+    E-mail:          consultor@cbsaude.com.br
+    Perfil:          Consultor
+    Atribuições:     Métricas de crescimento, expansão do quadro societário e KPIs estratégicos.
 
 [7] AUDITORIA INDEPENDENTE
-    E-mail:          auditoria@cbsaude.com.br
     Nome:            Sérgio Auditor Independente
-    Papel:           Auditoria
-    Finalidade:      Trilhas de auditoria, conformidade LGPD e verificação de integridade operacional.
+    E-mail:          auditoria@cbsaude.com.br
+    Perfil:          Auditoria
+    Atribuições:     Trilhas de auditoria, conformidade LGPD e integridade dos processos.
 
 [8] CONTABILIDADE
-    E-mail:          contabil@cbsaude.com.br
     Nome:            Mariana Contadora
-    Papel:           Contábil
-    Finalidade:      Conciliação patrimonial, fechamento de competência e plano de contas.
+    E-mail:          contabil@cbsaude.com.br
+    Perfil:          Contábil
+    Atribuições:     Plano de contas, fechamento contábil e conciliação patrimonial de Cota Capital.
 
 [9] ATENDIMENTO AO COOPERADO
-    E-mail:          atendente@cbsaude.com.br
     Nome:            Beatriz Atendimento ao Cooperado
-    Papel:           Atendente
-    Finalidade:      Triagem inicial, apoio ao cooperado e conferência prévia de documentos.
+    E-mail:          atendente@cbsaude.com.br
+    Perfil:          Atendente
+    Atribuições:     Atendimento e recepção ao cooperado, triagem de documentos e suporte inicial.
 
 [10] CONSELHEIRO DE ADMINISTRAÇÃO
-    E-mail:          conselho@cbsaude.com.br
     Nome:            Conselheiro Vogal da Diretoria
-    Papel:           Conselho
-    Finalidade:      Acompanhamento de deliberações e painel de governança.
+    E-mail:          conselho@cbsaude.com.br
+    Perfil:          Conselho
+    Atribuições:     Acesso às deliberações societárias e painéis de governança.
 
 ----------------------------------------------------------------------------------------------------
 3. COOPERADOS TITULARES (PORTAL DO COOPERADO)
@@ -92,18 +93,20 @@ Senha para todos:    senha123
     CPF:             123.456.789-09
     Matrícula:       20260101
     Plano:           Adesão Cooperado Familiar
-    Carteirinha:     2026-00101 (Válida / Ativa com QR Code)
-    Cota Capital:    Integralizada (R$ 3.000,00)
-    Situação:        100% Adimplente, apto a consultas, exames e com dependentes vinculados.
+    Carteirinha:     2026-00101 (Ativa / Validade 1 ano / QR Code gerado)
+    Cota Capital:    R$ 3.000,00 Integralizada
+    Dependentes:     2 cadastrados (Ana Beatriz e Lucas)
+    Situação:        100% Adimplente. Usuário principal para demonstrar a Carteirinha Digital,
+                     agendamentos, dependentes e aprovação instantânea na clínica médica.
 
 [2] MARIA CLARA SOUZA (Cooperada Ativa Titular)
     E-mail:          maria.cooperada@gmail.com
     CPF:             390.533.447-05
     Matrícula:       20260102
     Plano:           Adesão Cooperado Titular
-    Carteirinha:     2026-00102 (Válida / Ativa)
-    Cota Capital:    Em integralização regular
-    Situação:        Adimplente com histórico de reembolsos e atendimentos.
+    Carteirinha:     2026-00102 (Ativa)
+    Cota Capital:    Em integralização pontual
+    Situação:        Adimplente com histórico regular de solicitações e reembolsos.
 
 [3] CARLOS EDUARDO MENDES (Cenário de Inadimplência / Bloqueio no Prestador)
     E-mail:          carlos.inadimplente@gmail.com
@@ -111,65 +114,86 @@ Senha para todos:    senha123
     Matrícula:       20260103
     Plano:           Adesão Cooperado Titular
     Carteirinha:     2026-00103
-    Situação:        Possui parcela de Cota Capital em atraso de 15 dias.
-    Objetivo no Teste: Quando a clínica busca este CPF no Portal do Prestador, o sistema acusa
-                      automaticamente inelegibilidade por pendência financeira.
+    Situação:        Possui parcela de Cota Capital em aberto há 15 dias e mensalidade vencida.
+    Objetivo:        Quando a recepção da clínica busca este CPF no Portal do Prestador, o sistema
+                     acusa automaticamente a inelegibilidade por pendência financeira.
 
 ----------------------------------------------------------------------------------------------------
-4. PROPOSTAS DE ADESÃO EM ANÁLISE (PARA DEMONSTRAR O FLUXO DE APROVAÇÃO AO VIVO)
+4. PROPOSTAS DE ADESÃO NA FILA (PARA HOMOLOGAR AO VIVO NA APRESENTAÇÃO)
 ----------------------------------------------------------------------------------------------------
+Acesse como Gerente (gerente@cbsaude.com.br) ou Admin (admin@cbsaude.com.br) para avaliar:
+
 [1] DRA. FERNANDA LIMA CAVALCANTE (Proposta Pronta para Aprovação Instantânea)
     CPF:             654.987.321-09
     E-mail:          fernanda.cavalcante@gmail.com
-    Status Atual:    Pendente (Aguardando homologação pelo Gerente de Operações)
-    Plano Solicitado: Adesão Cooperado Familiar
-    Documento Anexo: RG / CNH já enviado no sistema
+    Matrícula:       20260104
+    Plano Solicitado: Adesão Cooperado Familiar (pagamento via PIX)
+    Status Atual:    Pendente
+    Documentos:      Documento de Identidade anexado e pronto para homologação.
+    Demonstração:    O Gerente abre a proposta, clica em "Aprovar" e o sistema gera automaticamente
+                     o registro ativo de cooperada e sua carteirinha digital.
 
 [2] MARCOS VINÍCIUS PEIXOTO (Proposta em Análise Documental)
     CPF:             159.753.486-02
     E-mail:          marcos.peixoto@gmail.com
+    Matrícula:       20260105
+    Plano Solicitado: Adesão Cooperado Titular (pagamento via Boleto)
     Status Atual:    Análise Documental
-    Plano Solicitado: Adesão Cooperado Titular
 
 ----------------------------------------------------------------------------------------------------
-5. DEPENDENTES (PORTAL E ACESSO SEGURO VIA LINK MÁGICO)
+5. DEPENDENTES (ACESSO DIRETO POR LINK MÁGICO OU LOGIN)
 ----------------------------------------------------------------------------------------------------
+O Link Mágico dispensa senha complexa: basta informar os 5 primeiros dígitos do CPF do dependente!
+
 [1] ANA BEATRIZ OLIVEIRA SILVA (Cônjuge de João Silva)
     CPF:             529.982.247-25
     PIN de Acesso:   52998 (Cinco primeiros dígitos do CPF)
-    URL Link Mágico: http://cbsaude.localhost:8000/acesso-dependente/token-ana-beatriz-stfsaude-2026
-    Produção:        https://cbsaude.siscoop3f.com.br/acesso-dependente/token-ana-beatriz-stfsaude-2026
-    Login Convencional:
+    Link Mágico Local:      http://cbsaude.localhost:8000/acesso-dependente/token-ana-beatriz-stfsaude-2026
+    Link Mágico Produção:   https://cbsaude.siscoop3f.com.br/acesso-dependente/token-ana-beatriz-stfsaude-2026
+    Acesso Convencional:
       E-mail:        ana.dependente@gmail.com
       Senha:         senha123
 
 [2] LUCAS OLIVEIRA SILVA (Filho de João Silva)
     CPF:             111.444.777-35
     PIN de Acesso:   11144 (Cinco primeiros dígitos do CPF)
-    URL Link Mágico: http://cbsaude.localhost:8000/acesso-dependente/token-lucas-filho-stfsaude-2026
-    Produção:        https://cbsaude.siscoop3f.com.br/acesso-dependente/token-lucas-filho-stfsaude-2026
+    Link Mágico Local:      http://cbsaude.localhost:8000/acesso-dependente/token-lucas-filho-stfsaude-2026
+    Link Mágico Produção:   https://cbsaude.siscoop3f.com.br/acesso-dependente/token-lucas-filho-stfsaude-2026
 
 ----------------------------------------------------------------------------------------------------
-6. PRESTADORES DE SERVIÇO CREDENCIADOS (PORTAL DO PRESTADOR)
+6. PRESTADORES DE SERVIÇOS CREDENCIADOS (PORTAL DO PRESTADOR)
 ----------------------------------------------------------------------------------------------------
 URL de Acesso:       http://cbsaude.localhost:8000/login  ou  https://cbsaude.siscoop3f.com.br/login
 Senha para todos:    senha123
 
-[1] CLÍNICA SÃO LUCAS
+[1] CLÍNICA SÃO LUCAS (Prestador Principal para Teste do Fluxo Feliz)
     E-mail:          sao.lucas@gmail.com
     Tipo:            Clínica Médica Multiespecialidades
     Especialidades:  Pediatria, Clínica Geral, Cardiologia
-    Finalidade:      Validação de carteirinhas, abertura de guias de atendimento e emissão do lote do dia 05.
+    Serviços:        Consulta Clínica Geral (R$ 110,00), Avaliação Cardiológica + ECG (R$ 210,00), Consulta Pediátrica (R$ 130,00)
+    Demonstração:    Realiza a busca de elegibilidade do cooperado João Silva (aprovado) e de Carlos Eduardo (bloqueado).
 
 [2] LABORATÓRIO CENTRAL DIAGNÓSTICOS
     E-mail:          lab.central@gmail.com
     Tipo:            Hospital / Centro de Diagnósticos
     Especialidades:  Análises Clínicas, Exames de Imagem, Genética
-    Finalidade:      Execução de exames laboratoriais e check-ups autorizados.
+    Serviços:        Check-up Laboratorial Completo 15 exames (R$ 145,00), Ultrassonografia Abdominal (R$ 165,00)
 
 [3] DR. MARCELO SILVA (CARDIOLOGIA)
     E-mail:          marcelo.silva@gmail.com
     Tipo:            Médico Pessoa Física (Consultório)
     Especialidades:  Cardiologia, Ecocardiografia
-    Finalidade:      Exames de alto custo com autorização prévia e faturamento direto.
+    Serviços:        Ecocardiograma com Doppler (R$ 280,00), Teste Ergométrico (R$ 240,00)
+
+[4] REDE CONVENIADA INTERENTIDADES (CONTRATO SANTA CASA / CB SAÚDE)
+    - Clínica Médica & Hospital São Lucas:     clinica.lucas@santacasa.com.br
+    - Laboratório Diagnósticos da Amazônia:    laboratorio.amazonia@santacasa.com.br
+    - Centro Odontológico Sorriso Real:        sorrisoreal@santacasa.com.br
+
+----------------------------------------------------------------------------------------------------
+7. CONTAS BANCÁRIAS E DISPONIBILIDADES DA COOPERATIVA (PAINEL FINANCEIRO)
+----------------------------------------------------------------------------------------------------
+- Sicoob Cooperativo (Agência: 4102 / Conta: 78900-4): Saldo R$ 284.750,00
+- Sicredi (Agência: 0915 / Conta: 33210-9):            Saldo R$ 112.400,00
+- Saldo Consolidado de Disponibilidades:               R$ 397.150,00
 ====================================================================================================
