@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Prestador;
 use App\Models\PrestadorServico;
+use App\Models\SolicitacaoServico;
 use App\Http\Requests\Prestador\BuscarCooperadoRequest;
 use App\Http\Requests\Prestador\SolicitarAutorizacaoRequest;
 use App\Http\Requests\Prestador\StoreServicoRequest;
