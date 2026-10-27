@@ -1,0 +1,307 @@
+====================================================================================================
+           ESTUDO DE PRECIFICAÇÃO, VALORAÇÃO E VIABILIDADE COMERCIAL — SISCOOP3F
+====================================================================================================
+Projeto:         SISCOOP3F — Plataforma de Gestão, Governança, Benefícios e Rede Prestadora
+Público-Alvo:    Cooperativas de Saúde, Trabalho, Crédito, Mútuas e Administradoras de Benefícios
+Data do Estudo:  Outubro de 2026
+Autor:           Equipe Estratégica & Comercial Siscoop3F
+====================================================================================================
+
+SUMÁRIO EXECUTIVO:
+1. INTRODUÇÃO & ARQUITETURA DE VALOR DO SISCOOP3F
+2. BENCHMARKING DE MERCADO (COMO O SETOR COBRA HOJE)
+3. MODELOS DE COMERCIALIZAÇÃO (CENÁRIOS DE VENDA)
+   - CENÁRIO 1: SaaS Puro Baseado em Vidas Ativas (Recorrência Escalável)
+   - CENÁRIO 2: SaaS Híbrido (Plataforma Base Fixa + Vidas/Transações)
+   - CENÁRIO 3: Licenciamento White-Label Corporativo Dedicado
+   - CENÁRIO 4: Modelo de Parceria por Sucesso / Cobrança Transacional
+4. SIMULAÇÕES FINANCEIRAS DETALHADAS POR PORTE DE COOPERATIVA
+5. CÁLCULO DE RETORNO SOBRE O INVESTIMENTO (ROI) PARA O CLIENTE
+6. MATRIZ DE PREÇOS RECOMENDADA PARA PROPOSTA COMERCIAL (TABELA DE VENDA)
+7. ESTRATÉGIA DE NEGOCIAÇÃO E GATILHOS DE FECHAMENTO
+====================================================================================================
+
+----------------------------------------------------------------------------------------------------
+1. INTRODUÇÃO & ARQUITETURA DE VALOR DO SISCOOP3F
+----------------------------------------------------------------------------------------------------
+O SISCOOP3F não é um simples sistema de cadastro ou ERP genérico. Ele é uma plataforma verticalizada 
+de alta especialização que resolve os 4 maiores gargalos de uma cooperativa:
+
+[A] GESTÃO SOCIETÁRIA & PATRIMONIAL (COTA CAPITAL):
+    - Controle rigoroso da Cota Capital (subscrição, integralização, parcelamento e resgate).
+    - Transparência patrimonial para o associado (sensação real de dono da cooperativa).
+    - Prestação de contas auditada para Conselho Fiscal e Assembleias (AGO/AGE).
+
+[B] MOTOR DE ELEGIBILIDADE INSTANTÂNEO (ZERO BUROCRACIA & BLINDAGEM DE CAIXA):
+    - Elimina 100% da "inadimplência silenciosa" (cooperados atrasados que usam serviços antes de pagar).
+    - Validação matemática de adimplência, carência e documentação em tempo real (sub-segundo).
+    - Emissão de Guia Digital com código único criptografado sem intervenção humana.
+
+[C] REDE CREDENCIADA MULTI-SEGMENTO & REGRA DO DIA 05:
+    - Painel dedicado para parceiros médicos, clínicas, laboratórios, farmácias, óticas e academias.
+    - Fechamento mensal automatizado até o dia 05 com auditoria de faturas e upload de notas fiscais.
+    - Gestão automática de coparticipação (ex.: 30% em reembolsos) e liquidação pontual.
+
+[D] MOBILIDADE TOTAL & CONFORMIDADE LGPD:
+    - Portal Web/Mobile para Titulares.
+    - Link Mágico por 5 dígitos do CPF para Dependentes (elimina 80% do suporte de senhas esquecidas).
+    - Banco de dados multitenant isolado por cooperativa (conformidade estrita com LGPD e ANS).
+
+----------------------------------------------------------------------------------------------------
+2. BENCHMARKING DE MERCADO (COMO O SETOR COBRA HOJE)
+----------------------------------------------------------------------------------------------------
+A pesquisa de mercado no Brasil para softwares de saúde suplementar, operadoras e cooperativas aponta:
+
+A) Softwares Médicos Básicos (iClinic, Amplimed, Feegow, ClinicWeb):
+   - Foco: Apenas consultório/clínica (agenda, prontuário e receituário).
+   - Preço: R$ 80 a R$ 350 por médico/mês.
+   - Limitação: Não possuem Cota Capital, não atendem cooperativas nem gerenciam rede de convênios.
+
+B) ERPs Corporativos Tradicionais (TOTVS Saúde / Protheus, Benner, Philips Tasy, Senior):
+   - Foco: Grandes hospitais e operadoras de planos de saúde gigantes (+50.000 vidas).
+   - Preço de Implantação (Setup): R$ 80.000 a R$ 350.000+.
+   - Mensalidade: R$ 15.000 a R$ 60.000/mês + taxas de banco de dados e servidores dedicados.
+   - Limitação: Projetos pesadíssimos, lentos (6 a 12 meses para implantar) e inacessíveis para 
+     cooperativas de médio e pequeno porte.
+
+C) Softwares de Gestão de Cooperativas Gerais (Sistemas OCB/Sescoop homologados):
+   - Foco: Folha, contabilidade e livro societário.
+   - Preço: R$ 1.500 a R$ 6.000/mês.
+   - Limitação: Não possuem portal do prestador, agendamento online nem carteirinha digital.
+
+OPORTUNIDADE DO SISCOOP3F (OCEANO AZUL):
+O Siscoop3F ocupa a faixa premium de alto valor agregado com custo acessível: entrega os recursos 
+dos grandes ERPs (multitenancy, motor de elegibilidade, portal do associado e do prestador) com 
+a agilidade de implantação em nuvem de 15 a 30 dias.
+
+----------------------------------------------------------------------------------------------------
+3. MODELOS DE COMERCIALIZAÇÃO (CENÁRIOS DE VENDA)
+----------------------------------------------------------------------------------------------------
+
+====================================================================================================
+CENÁRIO 1: SaaS PURO BASEADO EM VIDAS ATIVAS (RECORRÊNCIA ESCALÁVEL)
+====================================================================================================
+Conceito: O cliente paga uma taxa mensal proporcional ao número total de vidas ativas cadastradas 
+(Titulares + Dependentes ativos que possuem carteirinha digital no sistema).
+
+Vantagem para a Cooperativa: Risco zero. Se a cooperativa for pequena no início, paga pouco; à medida 
+que cresce e fatura mais mensalidades, o sistema acompanha o crescimento.
+Vantagem para Você (Fornecedor): Previsibilidade total de receita recorrente mensal (MRR) que cresce 
+organicamente sem você precisar vender novos contratos.
+
+Tabela Regressiva por Faixa de Vidas:
+┌──────────────────────────────┬────────────────────────────┬──────────────────────────────────────┐
+│ Faixa de Vidas (Tit + Dep)   │ Valor por Vida / Mês       │ Piso Mínimo Garantido da Faixa       │
+├──────────────────────────────┼────────────────────────────┼──────────────────────────────────────┤
+│ Até 1.000 vidas              │ R$ 4,50 / vida             │ R$ 2.500,00 / mês (Piso inicial)     │
+│ De 1.001 a 3.000 vidas       │ R$ 3,80 / vida             │ R$ 4.500,00 / mês                    │
+│ De 3.001 a 7.000 vidas       │ R$ 3,20 / vida             │ R$ 11.400,00 / mês                   │
+│ De 7.001 a 15.000 vidas      │ R$ 2,60 / vida             │ R$ 22.400,00 / mês                   │
+│ Acima de 15.000 vidas        │ R$ 1,90 a R$ 2,20 / vida   │ Sob negociação corporativa           │
+└──────────────────────────────┴────────────────────────────┴──────────────────────────────────────┘
+
+Taxa de Implantação e Setup (Onboarding Único):
+- R$ 8.000,00 a R$ 15.000,00 (Parametrização de planos, migração de associados, layout e treinamento).
+
+====================================================================================================
+CENÁRIO 2: SaaS HÍBRIDO (PLATAFORMA BASE FIXA + VIDAS ATIVAS) — [RECOMENDADO]
+====================================================================================================
+Conceito: A cooperativa contrata uma "Mensalidade Base de Plataforma" que dá direito a todos os 
+módulos (Diretoria, Conselho Fiscal, Portais de Prestadores, LGPD e Infraestrutura) e paga um valor 
+marginal reduzido por vida ativa gerenciada.
+
+Estrutura de Preço:
+- Mensalidade Base da Plataforma: R$ 2.800,00 / mês (inclui até 500 vidas)
+- Adicional por Vida Extra (a partir da 501ª vida): R$ 1,80 a R$ 2,50 / vida / mês.
+- Taxa de Setup / Implantação: R$ 12.000,00 (pode ser parcelada em 3x).
+
+Exemplo Prático:
+- Cooperativa com 2.500 vidas:
+  * Base fixa: R$ 2.800,00
+  * 2.000 vidas extras x R$ 2,20 = R$ 4.400,00
+  * Mensalidade Total: R$ 7.200,00 / mês.
+
+Vantagem: Garante uma receita mínima estável para cobrir custos de servidores, suporte e manutenção, 
+com margem muito atrativa para o fornecedor.
+
+====================================================================================================
+CENÁRIO 3: LICENCIAMENTO ENTERPRISE / WHITE-LABEL DEDICADO
+====================================================================================================
+Conceito: Aplicado para cooperativas de grande porte ou federações que exigem contrato de licença 
+corporativa exclusiva, domínio institucional próprio, personalização visual profunda e servidores 
+isolados em nuvem própria.
+
+Estrutura de Preço:
+- Taxa de Licença de Uso & Customização Inicial: R$ 45.000,00 a R$ 80.000,00 (Entrada / Setup).
+- Mensalidade de Suporte Técnico, Sustentação e SLA 24/7:
+  * Cooperativa até 10.000 vidas: R$ 9.500,00 / mês fixos.
+  * Cooperativa de 10.001 a 25.000 vidas: R$ 16.500,00 / mês fixos.
+  * Acima de 25.000 vidas: R$ 24.000,00 / mês fixos.
+- Horas de customização adicional de relatórios/módulos: R$ 180,00 a R$ 250,00 / hora técnica.
+
+====================================================================================================
+CENÁRIO 4: MODELO DE PARCERIA POR TRANSAÇÃO / SUCESSO (GROWTH PARTNER)
+====================================================================================================
+Conceito: Excelente para cooperativas novas ou em fase de reestruturação que têm receio de custos fixos.
+O sistema cobra uma taxa fixa simbólica e uma pequena porcentagem sobre os pagamentos e mensalidades 
+que transitam pela plataforma.
+
+Estrutura de Preço:
+- Mensalidade de Infraestrutura: R$ 1.500,00 / mês.
+- Taxa sobre Mensalidades / Cotas Recebidas: 1,5% a 2,5% do volume financeiro arrecadado via sistema.
+- Taxa por Guia de Atendimento / Consulta Realizada: R$ 1,00 a R$ 2,00 por atendimento concluído.
+
+Exemplo:
+- A cooperativa arrecada R$ 200.000,00/mês em mensalidades e processa 800 consultas médicas:
+  * Fixo: R$ 1.500,00
+  * 2% sobre arrecadação: R$ 4.000,00
+  * 800 guias x R$ 1,50: R$ 1.200,00
+  * Fatura Total Siscoop3F: R$ 6.700,00 / mês.
+
+----------------------------------------------------------------------------------------------------
+4. SIMULAÇÕES FINANCEIRAS DETALHADAS POR PORTE DE COOPERATIVA
+----------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------
+SIMULAÇÃO A: COOPERATIVA DE PEQUENO PORTE (Ex.: CB Saúde na fase inicial)
+----------------------------------------------------------------------------------------------------
+Perfil:
+- 600 Cooperados Titulares + 900 Dependentes = 1.500 Vidas Ativas
+- Faturamento Médio da Cooperativa: R$ 225.000,00 / mês (Mensalidade média R$ 150/vida)
+- Rede Credenciada: 25 clínicas, laboratórios e farmácias parceiras
+
+Preço Sugerido (Modelo SaaS Híbrido Recomendado):
+- Taxa de Setup / Implantação: R$ 9.800,00 (em 2x de R$ 4.900,00)
+- Mensalidade Fixa Base (inclui 500 vidas): R$ 2.800,00 / mês
+- Adicional Vidas Extras: 1.000 vidas x R$ 2,20 = R$ 2.200,00 / mês
+- TOTAL MENSALIDADE: R$ 5.000,00 / mês
+
+Impacto Percentual no Caixa da Cooperativa:
+- O software custa apenas 2,22% do faturamento da cooperativa (extremamente saudável).
+- Faturamento Anual do Contrato para Você:
+  * Ano 1: R$ 9.800 (Setup) + (12 x R$ 5.000) = R$ 69.800,00
+  * Ano 2 em diante: R$ 60.000,00 / ano recorrentes.
+
+----------------------------------------------------------------------------------------------------
+SIMULAÇÃO B: COOPERATIVA DE MÉDIO PORTE
+----------------------------------------------------------------------------------------------------
+Perfil:
+- 2.000 Cooperados Titulares + 3.000 Dependentes = 5.000 Vidas Ativas
+- Faturamento Médio da Cooperativa: R$ 850.000,00 / mês
+- Rede Credenciada: 80 parceiros credenciados em todo o estado
+
+Preço Sugerido:
+- Taxa de Setup / Implantação: R$ 18.000,00 (em 3x de R$ 6.000,00)
+- Mensalidade por Vida (Tabela Regressiva a R$ 2,80/vida):
+  * 5.000 vidas x R$ 2,80 = R$ 14.000,00 / mês.
+
+Impacto Percentual no Caixa da Cooperativa:
+- O software custa 1,64% do faturamento bruto da cooperativa.
+- Faturamento Anual do Contrato para Você:
+  * Ano 1: R$ 18.000 (Setup) + (12 x R$ 14.000) = R$ 186.000,00
+  * Ano 2 em diante: R$ 168.000,00 / ano recorrentes.
+
+----------------------------------------------------------------------------------------------------
+SIMULAÇÃO C: GRANDE COOPERATIVA REGIONAL / FEDERAÇÃO
+----------------------------------------------------------------------------------------------------
+Perfil:
+- 6.000 Titulares + 10.000 Dependentes = 16.000 Vidas Ativas
+- Faturamento Médio da Cooperativa: R$ 2.800.000,00 / mês
+- Rede Credenciada: Mais de 200 prestadores
+
+Preço Sugerido (Modelo Enterprise Customizado):
+- Taxa de Setup / Migração de Legados: R$ 45.000,00
+- Mensalidade por Vida (Faixa R$ 2,10/vida):
+  * 16.000 vidas x R$ 2,10 = R$ 33.600,00 / mês.
+
+Impacto Percentual no Caixa da Cooperativa:
+- O software custa apenas 1,20% do faturamento da cooperativa.
+- Faturamento Anual do Contrato para Você:
+  * Ano 1: R$ 45.000 (Setup) + (12 x R$ 33.600) = R$ 448.200,00
+  * Ano 2 em diante: R$ 403.200,00 / ano recorrentes.
+
+----------------------------------------------------------------------------------------------------
+5. CÁLCULO DE RETORNO SOBRE O INVESTIMENTO (ROI) PARA A COOPERATIVA
+----------------------------------------------------------------------------------------------------
+Durante a reunião de apresentação para o Presidente e Diretor Financeiro, você não deve vender 
+o Siscoop3F como um "custo", mas sim como um mecanismo que GERA ECONOMIA DIRETA E SUPERIOR AO SEU VALOR.
+
+VEJA A CONTA QUE CONVENCE A DIRETORIA:
+(Exemplo baseado em uma cooperativa de 2.000 vidas ativas):
+
+1. Economia com Eliminação de Carteirinhas Físicas de PVC e Correios:
+   - Emissão de 2.000 carteirinhas em PVC: R$ 12,00 por unidade = R$ 24.000,00
+   - Envio por Correios / Portador (R$ 8,50 por carta): R$ 17.000,00
+   - Reemissões por perda/desgaste (15% ao ano): R$ 6.150,00
+   - TOTAL ECONOMIZADO COM CARTEIRINHA DIGITAL E LINK MÁGICO: R$ 47.150,00 no primeiro ano!
+
+2. Bloqueio da "Inadimplência Silenciosa" com o Motor de Elegibilidade em Tempo Real:
+   - Em cooperativas com autorização manual ou de balcão, em média 4% dos atendimentos são feitos 
+     por cooperados com parcelas de Cota Capital ou mensalidade vencidas.
+   - Em uma cooperativa com 600 atendimentos médicos/mês a um custo médio de R$ 130,00 por procedimento:
+     * 4% de consultas indevidas = 24 consultas/mês
+     * Prejuízo evitado: 24 x R$ 130,00 = R$ 3.120,00 / mês
+     * ECONOMIA ANUAL BLINDADA NO CAIXA: R$ 37.440,00 / ano!
+
+3. Redução de Mão de Obra e Erros Operacionais (Horas Salariais):
+   - Elimina a necessidade de 2 atendentes exclusivos para autorização de guias e emissão de boletos.
+   - Custo CLT de 2 atendentes (salário + encargos): R$ 6.500,00 / mês = R$ 78.000,00 / ano.
+
+RESUMO DO ROI PARA O CLIENTE:
+- Economia Total Gerada pelo Siscoop3F no Ano: R$ 162.590,00
+- Investimento Anual no Siscoop3F (SaaS + Setup): R$ 74.000,00
+- SALDO POSITIVO LÍQUIDO NO CAIXA DA COOPERATIVA: + R$ 88.590,00
+👉 O sistema se paga totalmente e ainda "devolve" quase R$ 90 mil de lucro/sobra para a cooperativa!
+
+----------------------------------------------------------------------------------------------------
+6. MATRIZ DE PREÇOS RECOMENDADA PARA PROPOSTA COMERCIAL (TABELA DE VENDA)
+----------------------------------------------------------------------------------------------------
+Use esta tabela pronta na hora de formular a Proposta Oficial para a CB Saúde ou novos clientes:
+
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                            TABELA OFICIAL DE PLANOS SISCOOP3F                                   │
+├──────────────────────────┬──────────────────────────┬──────────────────────────┬─────────────────┤
+│ ITEM / PLANO             │ PLANO ESSENCIAL (START)  │ PLANO CORPORATE (MÉDIO)  │ PLANO ENTERPRISE│
+├──────────────────────────┼──────────────────────────┼──────────────────────────┼─────────────────┤
+│ Porte da Cooperativa     │ Até 1.500 Vidas          │ Até 5.000 Vidas          │ Acima de 5.000  │
+│ Portais Inclusos         │ Diretoria + Cooperado    │ Todos os 4 Portais       │ Todos + APIs    │
+│ Motor de Elegibilidade   │ Incluso 100% Online      │ Incluso 100% Online      │ Incluso 100%    │
+│ Carteirinha Digital + QR │ Ilimitada                │ Ilimitada                │ Ilimitada       │
+│ Link Mágico Dependentes  │ Incluso                  │ Incluso                  │ Incluso         │
+│ Gestão Cota Capital      │ Incluso                  │ Incluso + Relatórios     │ Incluso Full    │
+│ Faturamento Rede Dia 05  │ Até 30 prestadores       │ Ilimitado                │ Ilimitado       │
+│ SLA de Suporte           │ Horário Comercial (8x5)  │ Prioritário (12x6)       │ Dedicado 24x7   │
+├──────────────────────────┼──────────────────────────┼──────────────────────────┼─────────────────┤
+│ TAXA DE SETUP (ÚNICA)    │ R$ 8.900,00 (em até 2x)  │ R$ 14.500,00 (em até 3x) │ R$ 28.000,00    │
+├──────────────────────────┼──────────────────────────┼──────────────────────────┼─────────────────┤
+│ MENSALIDADE RECORRENTE   │ R$ 4.200,00 / mês        │ R$ 8.900,00 / mês        │ Sob Consulta    │
+│ (Ou por Vida Ativa)      │ (ou R$ 3,60/vida ativa)  │ (ou R$ 2,70/vida ativa)  │ (R$ 1,90 a 2,20)│
+└──────────────────────────┴──────────────────────────┴──────────────────────────┴─────────────────┘
+
+SERVIÇOS ADICIONAIS OPCIONAIS (CROSS-SELL):
+1. Módulo de Votação Online para Assembleia Geral (AGO/AGE): R$ 3.500,00 por evento ou + R$ 600/mês.
+2. Integração com Gateway de Pagamento PIX com Split Automático: R$ 4.000,00 (Setup de homologação).
+3. Personalização de Relatórios Customizados para Auditoria Externa: R$ 1.800,00 por relatório.
+
+----------------------------------------------------------------------------------------------------
+7. ESTRATÉGIA DE NEGOCIAÇÃO E GATILHOS DE FECHAMENTO
+----------------------------------------------------------------------------------------------------
+Ao apresentar a proposta de valor para a Diretoria da CB Saúde, aplique os seguintes passos:
+
+Gatilho 1: "Desconto de Inauguração / Parceiro Pioneiro"
+- Apresente o preço de tabela do Setup (ex.: R$ 14.500,00) e aplique uma bonificação institucional:
+  > *"Como a CB Saúde está sendo nossa cooperativa modelo e referência no Amazonas, concedemos 35% 
+     de desconto no onboarding, reduzindo de R$ 14.500 para R$ 9.400 em 3 parcelas."*
+
+Gatilho 2: "Cláusula de Transição Suave"
+- No primeiro trimestre (meses 1 a 3), enquanto a base está sendo cadastrada e os parceiros credenciados, 
+  cobre uma mensalidade reduzida de implantação (ex.: R$ 3.200,00/mês), subindo para a mensalidade 
+  integral (R$ 5.000,00/mês) a partir do 4º mês. Isso destrói qualquer objeção de "pagar sem estar usando 100%".
+
+Gatilho 3: "O Risco Inverso"
+- Mostre que continuar com planilhas, papéis e atendimentos de balcão custa, por mês, pelo menos 3 vezes 
+  mais caro em perdas, fraudes e glosas do que a mensalidade do Siscoop3F.
+
+====================================================================================================
+                       FIM DO DOCUMENTO DE PRECIFICAÇÃO E VALOR
+====================================================================================================
