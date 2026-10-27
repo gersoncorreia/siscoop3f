@@ -1,302 +1,89 @@
 ====================================================================================================
-           ESTUDO DE PRECIFICAÇÃO, VALORAÇÃO E VIABILIDADE COMERCIAL — SISCOOP3F
-                 (MODELO MULTI-ENTIDADE PARA QUALQUER CNPJ / INSTITUIÇÃO)
+                        SISCOOP3F — GUIA PRÁTICO DE PRECIFICAÇÃO E VENDAS
+                             (Guia Comercial Simplificado para Qualquer CNPJ)
 ====================================================================================================
-Projeto:         SISCOOP3F — Plataforma Integrada de Gestão de Membros, Benefícios, 
-                 Governança, Motor de Elegibilidade e Rede Credenciada Parceira
-Mercado-Alvo:    Cooperativas, Associações Profissionais, Sindicatos, Clubes de Benefícios, 
-                 Cartões de Saúde/Descontos, Fundações, Mútuas e Empresas Corporativas (RH)
-Data de Revisão: Outubro de 2026
-Autor:           Equipe Estratégica, Comercial & Engenharia Siscoop3F
-====================================================================================================
-
-SUMÁRIO EXECUTIVO:
-1. O NOVO POSICIONAMENTO: UMA PLATAFORMA MULTI-SEGMENTO PARA QUALQUER CNPJ
-2. AS 6 PERSONAS DE CLIENTES CNPJ QUE PODEM CONTRATAR O SISTEMA
-3. ARQUITETURA DE VALOR UNIVERSAL DO SISTEMA (POR QUE QUALQUER CNPJ PRECISA)
-4. MATRIZ DE MODALIDADES DE CONTRATAÇÃO (4 FORMAS DE QUALQUER CNPJ ADQUIRIR)
-   - MODALIDADE A: SaaS Por Vidas / Associados (Escala Orgânica)
-   - MODALIDADE B: SaaS Híbrido Corporativo (Base Fixa + Vidas Excedentes) [CAMPEÃ]
-   - MODALIDADE C: Licença White-Label Enterprise Dedicada (Marca Própria)
-   - MODALIDADE D: Revenue Share / Transacional (Por Guia ou Transação Concluída)
-5. SIMULAÇÕES FINANCEIRAS COMPARATIVAS POR TIPO DE CNPJ
-   - Caso 1: Cooperativa de Saúde / Trabalho Médica (Ex.: CB Saúde)
-   - Caso 2: Associação de Classe / Sindicato / Mútua de Servidores
-   - Caso 3: Cartão de Saúde Popular / Clube de Descontos Privado (Startup / PME)
-   - Caso 4: Empresa de Grande Porte (Gestão de Convênios para RH de Funcionários)
-6. CÁLCULO DE RETORNO SOBRE O INVESTIMENTO (ROI) UNIVERSAL PARA QUALQUER CNPJ
-7. TABELA OFICIAL DE PREÇOS RECOMENDADA (MATRIZ PRONTA PARA PROPOSTA COMERCIAL)
-8. ESTRATÉGIAS DE NEGOCIAÇÃO, GATILHOS E CLÁUSULAS CONTRATUAIS
+Objetivo:        Manual direto e objetivo para precificar, negociar e fechar contratos do Siscoop3F.
+Público-Alvo:    Cooperativas, Associações, Sindicatos, Cartões de Saúde, Clubes e RHs de Empresas.
 ====================================================================================================
 
 ----------------------------------------------------------------------------------------------------
-1. O NOVO POSICIONAMENTO: UMA PLATAFORMA MULTI-SEGMENTO PARA QUALQUER CNPJ
+1. O QUE É O SISCOOP3F EM UMA FRASE?
 ----------------------------------------------------------------------------------------------------
-O SISCOOP3F evoluiu de um sistema estritamente cooperativo para um ECOSSISTEMA ROBUSTO DE GESTÃO 
-DE BENEFÍCIOS, RELACIONAMENTO E REDE DE CONVÊNIOS para qualquer pessoa jurídica (CNPJ) que precise 
-administrar um grupo de pessoas (cooperados, associados, clientes, alunos ou funcionários) e 
-conectá-las a uma rede de parceiros comerciais e prestadores credenciados.
-
-O sistema resolve 4 desafios idênticos em qualquer CNPJ:
-1. Como emitir identificação segura com validação antifraude (Carteirinha Digital + QR Code).
-2. Como permitir que o dependente/familiar acesse benefícios sem sobrecarregar o suporte com senhas 
-   (Link Mágico por 5 dígitos do CPF).
-3. Como garantir que uma pessoa inadimplente NÃO utilize a rede de parceiros gerando dívidas para 
-   a empresa (Motor de Elegibilidade Automático em tempo real).
-4. Como pagar a rede de parceiros em data fixa sem planilhas confusas (Regra do Dia 05 com auditoria).
+É uma plataforma completa que gerencia associados/membros, emite carteirinhas digitais no celular, 
+conecta uma rede de parceiros (médicos, farmácias, óticas) e BLOQUEIA automaticamente quem está 
+inadimplente, evitando prejuízos para o CNPJ contratante.
 
 ----------------------------------------------------------------------------------------------------
-2. AS 6 PERSONAS DE CLIENTES CNPJ QUE PODEM CONTRATAR O SISTEMA
+2. QUEM SÃO OS CLIENTES? (QUEM COMPRA ESTE SISTEMA)
 ----------------------------------------------------------------------------------------------------
-
-[PERSONA 1: COOPERATIVAS (Saúde, Trabalho, Crédito, Agro e Mútuas)]
-- O que gerenciam: Cooperados, formação e resgate de Cota Capital, rateio de sobras, assembleias e 
-  prestação de contas para Conselho Fiscal.
-- Dor que o sistema sana: Descontrole no patrimônio das cotas e consultas indevidas de inadimplentes.
-
-[PERSONA 2: ASSOCIAÇÕES DE CLASSE E SINDICATOS (OAB, CREA, Servidores Públicos, etc.)]
-- O que gerenciam: Milhares de filiados que pagam anuidade ou mensalidade sindical e têm direito 
-  a descontos em escolas, faculdades, óticas, farmácias e clínicas.
-- Dor que o sistema sana: Carteirinhas físicas de papel/PVC caras, perda de controle de quem pagou 
-  a anuidade e parceiros desatualizados.
-
-[PERSONA 3: CARTÕES DE DESCONTO / CARTÕES DE SAÚDE POPULAR (Healthtechs e Franquias)]
-- O que gerenciam: Modelo puramente B2C/B2B onde famílias pagam R$ 25 a R$ 60/mês para ter 
-  consultas a preços populares em clínicas parceiras.
-- Dor que o sistema sana: Fraudes de pacientes cancelados usando descontos e lentidão para fechar 
-  o repasse mensal das clínicas credenciadas.
-
-[PERSONA 4: CLUBES DE BENEFÍCIOS E ENTIDADES DE VANTAGENS (Associações de Bairro, Igrejas, Clubes)]
-- O que gerenciam: Membros que usufruem de rede conveniada em farmácias, supermercados, postos e lazer.
-- Dor que o sistema sana: Falta de tecnologia móvel para o associado provar seu vínculo na hora da compra.
-
-[PERSONA 5: RH DE MÉDIAS E GRANDES EMPRESAS (Benefício Corporativo Próprio)]
-- O que gerenciam: Funcionários e seus dependentes que utilizam convênios firmados diretamente 
-  pela empresa com clínicas, academias (estilo Gympass interno) e farmácias.
-- Dor que o sistema sana: Conciliação manual do fechamento do mês para desconto em folha de pagamento.
-
-[PERSONA 6: FUNDAÇÕES E INSTITUIÇÕES DE ASSISTÊNCIA PRIVADA]
-- O que gerenciam: Programas sociais e de saúde suplementar fechados para colaboradores e aposentados.
-- Dor que o sistema sana: Auditoria estrita e conformidade integral com LGPD exigida por estatutos.
+• Cooperativas (Saúde, Trabalho, Crédito, Mútuas): Controle de cotas e rede médica.
+• Associações e Sindicatos: Carteirinhas digitais e convênios para filiados.
+• Cartões de Benefício / Saúde Popular: Venda de planos com consultas e exames com desconto.
+• RH de Empresas: Gestão de benefícios e convênios internos para colaboradores.
 
 ----------------------------------------------------------------------------------------------------
-3. ARQUITETURA DE VALOR UNIVERSAL DO SISTEMA
-----------------------------------------------------------------------------------------------------
-Para qualquer CNPJ contratante, o Siscoop3F entrega uma suíte completa de 4 frentes:
-
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                             SUÍTE MODULAR SISCOOP3F (PLUG & PLAY)                                │
-├─────────────────────────┬─────────────────────────┬─────────────────────────┬────────────────────┤
-│ PORTAL DIRETORIA / RH   │ PORTAL DO MEMBRO / APP  │ LINK MÁGICO FAMILIAR    │ PORTAL DO PARCEIRO │
-├─────────────────────────┼─────────────────────────┼─────────────────────────┼────────────────────┤
-│ • Painel 360° do CNPJ   │ • Carteirinha Digital   │ • Acesso sem senha      │ • Agenda e Calen-  │
-│ • Conciliação bancária  │ • Agendamento Online    │ • 5 dígitos do CPF      │   dário Integrado  │
-│ • Gestão de inadimplên- │ • Rede Credenciada com  │ • Carteirinha individual│ • Validação de     │
-│   cia e bloqueio        │   geolocalização        │ • Total segurança LGPD  │   guias na hora    │
-│ • Auditoria e relatórios│ • Extrato financeiro/PIX│ • Zero chamados no SAC  │ • Fechamento no    │
-│   em Excel em 1 clique  │ • Gestão de dependentes │   para recuperar senha  │   Dia 05 com NF    │
-└─────────────────────────┴─────────────────────────┴─────────────────────────┴────────────────────┘
-
-----------------------------------------------------------------------------------------------------
-4. MATRIZ DE MODALIDADES DE CONTRATAÇÃO (4 FORMAS DE QUALQUER CNPJ ADQUIRIR)
-----------------------------------------------------------------------------------------------------
-O contratante CNPJ pode escolher entre 4 modelos de negócio aquele que melhor se encaixa no seu 
-momento financeiro e fluxo de caixa:
-
-====================================================================================================
-MODALIDADE A: SaaS POR VIDAS ATIVAS (CRESCIMENTO ORGÂNICO)
-====================================================================================================
-- Para quem é indicada: Associações, clubes de benefícios e cartões de saúde que estão expandindo 
-  e querem pagar estritamente proporcional ao número de usuários cadastrados.
-- Métrica: Soma de Titulares + Dependentes ativos no mês com carteirinha liberada.
-
-Tabela Regressiva por Vidas Ativas:
-┌──────────────────────────────┬────────────────────────────┬──────────────────────────────────────┐
-│ Faixa de Vidas (Tit + Dep)   │ Custo Unitário por Vida/Mês│ Piso Mínimo Contratual Mensal        │
-├──────────────────────────────┼────────────────────────────┼──────────────────────────────────────┤
-│ Até 1.000 vidas              │ R$ 3,90 / vida             │ R$ 2.200,00 / mês (Franquia mínima)  │
-│ De 1.001 a 3.000 vidas       │ R$ 3,20 / vida             │ R$ 3.900,00 / mês                    │
-│ De 3.001 a 7.000 vidas       │ R$ 2,50 / vida             │ R$ 9.600,00 / mês                    │
-│ De 7.001 a 15.000 vidas      │ R$ 1,90 / vida             │ R$ 17.500,00 / mês                   │
-│ Acima de 15.000 vidas        │ R$ 1,40 a R$ 1,60 / vida   │ Contrato Corporativo Personalizado   │
-└──────────────────────────────┴────────────────────────────┴──────────────────────────────────────┘
-* Setup / Onboarding Único: R$ 6.000,00 a R$ 12.000,00 (migração de cadastros e parametrização).
-
-====================================================================================================
-MODALIDADE B: SaaS HÍBRIDO CORPORATIVO (BASE FIXA + VIDAS EXCEDENTES) — [A MAIS CONTRATADA]
-====================================================================================================
-- Para quem é indicada: Cooperativas, empresas consolidadas, sindicatos e fundações que exigem 
-  orçamento mensal previsível, sem surpresas na fatura.
-- Como funciona: A instituição paga uma assinatura fixa que cobre todos os módulos, servidores, 
-  suporte e uma franquia inicial de vidas. Vidas que excederem a franquia pagam taxa marginal baixa.
-
-Estrutura da Modalidade Híbrida:
-- Assinatura Base de Plataforma: R$ 2.900,00 / mês (inclui até 800 vidas)
-- Adicional por Vida Extra (a partir da 801ª vida): R$ 1,80 / vida / mês.
-- Taxa de Setup / Implantação: R$ 9.500,00 (em até 3x de R$ 3.166,00).
-
-Exemplo:
-- Uma empresa com 2.000 vidas cadastradas:
-  * Mensalidade Fixa (cobre 800 vidas): R$ 2.900,00
-  * 1.200 vidas excedentes x R$ 1,80: R$ 2.160,00
-  * FATURA MENSAL TOTAL: R$ 5.060,00 / mês.
-
-====================================================================================================
-MODALIDADE C: LICENCIAMENTO WHITE-LABEL ENTERPRISE DEDICADO (MARCA PRÓPRIA)
-====================================================================================================
-- Para quem é indicada: Grandes operadoras, redes de franquias de cartões de saúde ou federações 
-  que exigem que o sistema rode em domínio próprio (ex: app.nomedocliente.com.br), com logomarca 
-  exclusiva, app personalizado nas lojas e infraestrutura isolada em nuvem privada.
-
-Estrutura de Preço:
-- Taxa de Licença de Uso & Customização de Marca (Setup): R$ 35.000,00 a R$ 65.000,00.
-- Mensalidade de Sustentação, Suporte e SLA 24/7:
-  * Até 10.000 vidas gerenciadas: R$ 8.500,00 / mês fixos.
-  * De 10.001 a 25.000 vidas gerenciadas: R$ 14.900,00 / mês fixos.
-  * Acima de 25.000 vidas gerenciadas: R$ 21.000,00 / mês fixos.
-- Horas de desenvolvimento de integrações proprietárias (APIs): R$ 180,00 / hora.
-
-====================================================================================================
-MODALIDADE D: REVENUE SHARE / COBRANÇA TRANSACIONAL (RISCO ZERO)
-====================================================================================================
-- Para quem é indicada: Startups, novos cartões de desconto ou sindicatos com fluxo de caixa reduzido 
-  que não querem assumir mensalidades altas antes de faturar.
-- Como funciona: O sistema cobra um valor base pequeno de sustentação e monetiza sobre as transações 
-  e atendimentos concluídos na rede conveniada.
-
-Estrutura de Preço:
-- Mensalidade Base de Nuvem: R$ 1.200,00 / mês.
-- Taxa por Guia / Atendimento Concluído com Sucesso: R$ 1,50 por atendimento.
-- Taxa sobre Mensalidades Cobradas pelo Sistema: 2,0% sobre o montante financeiro arrecadado.
-
-----------------------------------------------------------------------------------------------------
-5. SIMULAÇÕES FINANCEIRAS COMPARATIVAS POR TIPO DE CNPJ
+3. AS 3 FORMAS DE VENDER (ESCOLHA UMA PARA CADA CLIENTE)
 ----------------------------------------------------------------------------------------------------
 
-----------------------------------------------------------------------------------------------------
-SIMULAÇÃO 1: COOPERATIVA DE SAÚDE OU TRABALHO (Ex.: CB Saúde)
-----------------------------------------------------------------------------------------------------
-- Perfil: 1.500 vidas (cooperados e dependentes) | Faturamento mensal estimado: R$ 225.000,00
-- Modalidade Escolhida: Híbrida Corporativa
-- Setup: R$ 9.500,00 (2x R$ 4.750,00)
-- Mensalidade: R$ 2.900,00 (cobre 800) + (700 x R$ 1,80) = R$ 4.160,00 / mês.
-- Peso no faturamento da cooperativa: Apenas 1,84% da receita mensal.
-- Ganho financeiro anual para você: R$ 59.420,00 no 1º ano / R$ 49.920,00 nos anos seguintes.
+[OPÇÃO 1: POR NÚMERO DE VIDAS / PESSOAS] -> Mais simples para o cliente entender
+A empresa paga um valor fixo por mês para cada pessoa ativa cadastrada:
+• Até 1.000 pessoas:    R$ 3,50 por pessoa / mês   (Mínimo de R$ 2.200,00/mês)
+• De 1.001 a 5.000:     R$ 2,50 por pessoa / mês
+• Acima de 5.000:       R$ 1,80 por pessoa / mês
+
+[OPÇÃO 2: PLANO MENSAL FIXO (HÍBRIDO)] -> CAMPEÃO DE VENDAS (Previsibilidade total)
+O cliente paga uma mensalidade fixa que cobre o sistema inteiro e uma franquia de vidas:
+• MENSALIDADE BASE:     R$ 2.900,00 / mês (já inclui até 800 vidas)
+• Se passar de 800:     R$ 1,80 por vida excedente / mês
+Exemplo: Empresa com 1.500 pessoas = R$ 2.900 + (700 extras x R$ 1,80) = R$ 4.160,00/mês.
+
+[OPÇÃO 3: WHITE-LABEL ENTERPRISE] -> Para grandes empresas / marcas próprias
+O sistema roda no domínio próprio da empresa com a marca dela 100% personalizada:
+• Setup de Implantação: R$ 35.000,00 (único)
+• Mensalidade Fixa:     R$ 8.500,00 a R$ 15.000,00 / mês (suporte e servidores dedicados)
 
 ----------------------------------------------------------------------------------------------------
-SIMULAÇÃO 2: SINDICATO OU ASSOCIAÇÃO DE CLASSE PROFISSIONAL
-----------------------------------------------------------------------------------------------------
-- Perfil: 4.000 associados | Mensalidade associativa: R$ 45,00/mês | Arrecadação: R$ 180.000,00/mês
-- Modalidade Escolhida: SaaS por Vidas Ativas (Faixa R$ 2,50/vida)
-- Setup: R$ 8.000,00
-- Mensalidade: 4.000 associados x R$ 2,50 = R$ 10.000,00 / mês.
-- Por que o Sindicato Contrata: Antes eles gastavam R$ 38.000/ano imprimindo carteirinhas de PVC e 
-  tinham 12% de associados inadimplentes que continuavam usando convênios de farmácia e faculdade. 
-  O sistema elimina as fraudes e o custo de PVC na hora!
-
-----------------------------------------------------------------------------------------------------
-SIMULAÇÃO 3: CARTÃO DE SAÚDE POPULAR / CLUBE DE BENEFÍCIOS (EMPRESA PRIVADA)
-----------------------------------------------------------------------------------------------------
-- Perfil: Empresa comercial que vende assinaturas de saúde por R$ 39,90/mês por família.
-- Base: 2.500 famílias (7.500 vidas ativas).
-- Faturamento do Cartão de Saúde: 2.500 x R$ 39,90 = R$ 99.750,00 / mês.
-- Modalidade Escolhida: SaaS por Vidas (Faixa R$ 1,90/vida)
-- Mensalidade Siscoop3F: 7.500 vidas x R$ 1,90 = R$ 14.250,00 / mês.
-- Ganho da Empresa: Tem um sistema completo de operadora, com validação de elegibilidade e agendamento 
-  online, sem precisar gastar R$ 200.000 desenvolvendo do zero.
-
-----------------------------------------------------------------------------------------------------
-SIMULAÇÃO 4: RH DE GRANDE EMPRESA CORPORATIVA (GESTÃO DE CONVÊNIOS INTERNOS)
-----------------------------------------------------------------------------------------------------
-- Perfil: Indústria ou rede varejista com 1.200 colaboradores e 2.000 dependentes (3.200 vidas).
-- A empresa oferece convênios com farmácias, óticas e clínicas com desconto em folha.
-- Modalidade Escolhida: Híbrida Corporativa
-- Setup: R$ 12.000,00 (parametrização com o sistema de folha de pagamento).
-- Mensalidade: R$ 2.900 (base) + (2.400 vidas extras x R$ 1,80) = R$ 7.220,00 / mês.
-- Ganho para o RH: Economiza mais de 120 horas mensais de conferência manual de notas de farmácia 
-  e clínicas, graças ao fechamento automático da Regra do Dia 05.
-
-----------------------------------------------------------------------------------------------------
-6. CÁLCULO DE RETORNO SOBRE O INVESTIMENTO (ROI) UNIVERSAL PARA QUALQUER CNPJ
-----------------------------------------------------------------------------------------------------
-Em qualquer reunião com Diretoria, Presidente de Associação ou Diretor de RH, a decisão é tomada 
-pelo RETORNO FINANCEIRO:
-
-┌────────────────────────────────────────────────────────┬────────────────────────────────────────┐
-│ LINHA DE DESPERDÍCIO NO MODELO TRADICIONAL / PLANILHAS │ VALOR ECONOMIZADO COM O SISCOOP3F/ANO │
-├────────────────────────────────────────────────────────┼────────────────────────────────────────┤
-│ 1. Emissão de Carteirinhas em PVC + Correios/Frete     │ R$ 35.000 a R$ 60.000 / ano            │
-│    (R$ 15 por cartão emitido + 15% de perda/reemissão) │                                        │
-│                                                        │                                        │
-│ 2. Bloqueio de Atendimentos de Inadimplentes           │ R$ 28.000 a R$ 55.000 / ano            │
-│    (Motor de Elegibilidade barra uso indevido na hora) │                                        │
-│                                                        │                                        │
-│ 3. Redução de Mão de Obra e Erros em Guias Manuais     │ R$ 45.000 a R$ 80.000 / ano            │
-│    (Elimina a necessidade de 1 a 2 atendentes de SAC)  │                                        │
-│                                                        │                                        │
-│ 4. Recuperação Integral de Coparticipações             │ R$ 18.000 a R$ 35.000 / ano            │
-│    (Cobrança automática de percentuais de reembolso)   │                                        │
-├────────────────────────────────────────────────────────┼────────────────────────────────────────┤
-│ ECONOMIA TOTAL ESTIMADA GERADA PELO SISTEMA            │ R$ 126.000 a R$ 230.000 / ano          │
-│ Custo Médio Anual do Siscoop3F (SaaS + Setup)          │ R$ 55.000 a R$ 85.000 / ano            │
-│ LUCRO / SOBRA LÍQUIDA REAL NO CAIXA DA EMPRESA         │ DE +R$ 71.000 A +R$ 145.000 / ANO!     │
-└────────────────────────────────────────────────────────┴────────────────────────────────────────┘
-👉 Conclusão irrefutável: O software não é despesa, é uma máquina de redução de custos que se paga 
-   já nos primeiros 90 dias de implantação!
-
-----------------------------------------------------------------------------------------------------
-7. TABELA OFICIAL DE PREÇOS RECOMENDADA (MATRIZ PRONTA PARA PROPOSTA COMERCIAL)
-----------------------------------------------------------------------------------------------------
-Esta tabela pode ser apresentada diretamente para qualquer CNPJ:
-
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                     TABELA COMERCIAL SISCOOP3F — PLANOS POR PERFIL CNPJ                         │
-├──────────────────────────┬──────────────────────────┬──────────────────────────┬─────────────────┤
-│ CARACTERÍSTICA           │ PLANO COMPACT            │ PLANO BUSINESS PRO       │ PLANO ENTERPRISE│
-├──────────────────────────┼──────────────────────────┼──────────────────────────┼─────────────────┤
-│ Perfil de CNPJ Indicado  │ Associações / PMEs       │ Cooperativas / Sindicatos│ Grandes Redes / │
-│                          │ e Clubes até 1.000 vidas │ e Cartões até 5.000 vidas│ Federações (+5k)│
-│ Portais Habilitados      │ Painel Gestão + Membros  │ Todos os 4 Portais Full  │ Todos + APIs    │
-│ Carteirinha Digital + QR │ Ilimitada                │ Ilimitada                │ Ilimitada       │
-│ Link Mágico Dependentes  │ Incluso                  │ Incluso                  │ Incluso         │
-│ Motor de Elegibilidade   │ 100% Automático Online   │ 100% Automático Online   │ 100% Automático │
-│ Fechamento Rede (Dia 05) │ Até 20 parceiros         │ Ilimitado                │ Ilimitado       │
-│ Gestão Financeira / PIX  │ Incluso                  │ Incluso + Conciliação    │ Multi-contas    │
-│ Cota Capital (Se Cooper.)│ Opcional                 │ Incluso                  │ Incluso Full    │
-│ Suporte e Atendimento   │ Horário Comercial (8x5)  │ Prioritário (12x6)       │ Dedicado 24/7   │
-├──────────────────────────┼──────────────────────────┼──────────────────────────┼─────────────────┤
-│ TAXA DE SETUP / ONBOARD  │ R$ 6.900,00 (em até 2x)  │ R$ 12.500,00 (em até 3x) │ R$ 24.000,00+   │
-├──────────────────────────┼──────────────────────────┼──────────────────────────┼─────────────────┤
-│ MENSALIDADE PADRÃO       │ R$ 3.200,00 / mês        │ R$ 6.900,00 / mês        │ Sob Proposta    │
-│ (Opção por Vida Ativa)   │ (ou R$ 3,40 / vida ativa)│ (ou R$ 2,40 / vida ativa)│ (R$ 1,40 a 1,80)│
-└──────────────────────────┴──────────────────────────┴──────────────────────────┴─────────────────┘
-
-MÓDULOS EXTRAS OPCIONAIS (ADICIONAIS POR DEMANDA):
-1. Módulo de Votação Eletrônica e Assembleias Online: R$ 2.900,00 por evento ou + R$ 450,00/mês.
-2. Integração com Gateway de Cobrança com Split Automático: R$ 3.500,00 (Setup único).
-3. Customização de Relatórios Específicos para Auditoria / Conselhos: R$ 1.500,00 por demanda.
-4. Aplicativo Mobile Próprio nas Lojas (Google Play e App Store): R$ 18.000,00 setup + R$ 900/mês.
-
-----------------------------------------------------------------------------------------------------
-8. ESTRATÉGIAS DE NEGOCIAÇÃO E GATILHOS DE FECHAMENTO PARA QUALQUER CNPJ
+4. TABELA PRONTA DE PLANOS PARA APRESENTAR NA PROPOSTA
 ----------------------------------------------------------------------------------------------------
 
-Gatilho 1: O Argumento da Substituição de Custos
-- Mostre para o cliente que ele já gasta esse dinheiro hoje de forma desordenada (cartões físicos, 
-  horas extras de funcionários conferindo notas, fraudes de inadimplentes e impressões). O Siscoop3F 
-  apenas reorganiza essa verba para um sistema inteligente e ainda gera sobras no caixa.
+┌────────────────────────────┬────────────────────────────┬────────────────────────────┐
+│ PLANO                      │ PLANO START                │ PLANO PRO (RECOMENDADO)    │
+├────────────────────────────┼────────────────────────────┼────────────────────────────┤
+│ Capacidade                 │ Até 1.000 pessoas          │ Até 5.000 pessoas          │
+│ Portais Inclusos           │ Painel Gestão + Membros    │ Todos os 4 Portais Full    │
+│ Carteirinha Digital + QR   │ Ilimitada                  │ Ilimitada                  │
+│ Link Mágico Dependentes    │ Incluso (Acesso via CPF)   │ Incluso                    │
+│ Bloqueio de Inadimplência  │ 100% Automático            │ 100% Automático            │
+│ Fechamento Rede (Dia 05)   │ Até 20 parceiros           │ Ilimitado                  │
+│ Cota Capital (Se Cooper.)  │ Opcional                   │ Incluso                    │
+├────────────────────────────┼────────────────────────────┼────────────────────────────┤
+│ TAXA DE SETUP (Única)      │ R$ 6.900,00 (em até 2x)    │ R$ 12.000,00 (em até 3x)   │
+├────────────────────────────┼────────────────────────────┼────────────────────────────┤
+│ MENSALIDADE RECORRENTE     │ R$ 3.200,00 / mês          │ R$ 6.500,00 / mês          │
+│ (Ou por pessoa)            │ (ou R$ 3,20 por pessoa)    │ (ou R$ 2,20 por pessoa)    │
+└────────────────────────────┴────────────────────────────┴────────────────────────────┘
 
-Gatilho 2: A Rampa de Implantação (Meses 1 a 3 com Mensalidade Reduzida)
-- Para facilitar a assinatura rápida do contrato sem medo:
-  > *"Nos primeiros 60 dias, durante o período de parametrização e adaptação da sua equipe, cobramos 
-     apenas 50% da mensalidade. O valor integral só vigora a partir do momento em que o sistema 
-     estiver 100% rodando e gerando valor para a sua empresa."*
+----------------------------------------------------------------------------------------------------
+5. O ARGUMENTO DE VENDA QUE FECHA O CONTRATO (O SISTEMA SE PAGA SOZINHO!)
+----------------------------------------------------------------------------------------------------
+Mostre para o Presidente ou Diretor que o sistema NÃO É UM CUSTO, mas sim uma ECONOMIA IMEDIATA:
 
-Gatilho 3: Flexibilidade de Modalidade
-- Se o cliente hesitar pelo custo fixo, apresente a Modalidade A (por vidas ativas) ou a Modalidade D 
-  (transacional). Se o cliente hesitar por não querer surpresas de faturamento variável, apresente a 
-  Modalidade B (híbrida com valor previsível). Você tem o formato ideal para qualquer perfil de diretor.
+Em uma base média de 2.000 pessoas:
+1. Elimina cartões de plástico (PVC) e Correios:  Economiza R$ 40.000 / ano
+2. Bloqueia inadimplentes na hora na clínica:     Evita prejuízos de R$ 35.000 / ano
+3. Elimina conferência manual de planilhas:       Economiza R$ 50.000 / ano em mão de obra
 
-====================================================================================================
-               FIM DO ESTUDO MULTI-ENTIDADE DE PRECIFICAÇÃO E VALOR — SISCOOP3F
+TOTAL ECONOMIZADO PELA EMPRESA:                   R$ 125.000 / ano
+Custo Anual do Siscoop3F (Mensalidade + Setup):   R$ 55.000 / ano
+LUCRO / SOBRA DIRETA NO CAIXA DO CLIENTE:        + R$ 70.000 / ano livre!
+
+👉 Frase de Fechamento: "Diretor, continuar com papéis e planilhas custa R$ 125 mil por ano em perdas. 
+O Siscoop3F resolve tudo isso e ainda coloca R$ 70 mil de economia líquida no seu caixa."
+
+----------------------------------------------------------------------------------------------------
+6. FACILITADOR DE FECHAMENTO (PARA ASSINAR NA HORA)
+----------------------------------------------------------------------------------------------------
+• Rampa de Entrada: Ofereça 50% de desconto na mensalidade nos primeiros 60 dias enquanto a base 
+  estiver sendo cadastrada. Isso elimina o medo do cliente de "pagar sem estar usando 100%".
+• Setup Parcelado: Parcele o valor de implantação em 3x sem juros no contrato.
 ====================================================================================================
