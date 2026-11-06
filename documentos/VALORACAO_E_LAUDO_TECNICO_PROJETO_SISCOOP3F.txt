@@ -14,10 +14,10 @@ Este laudo técnico mensura, fundamenta e certifica o valor econômico do sistem
 Siscoop3F desenvolvido integralmente sob medida.
 
 • VALOR TOTAL DO DESENVOLVIMENTO (ATIVO TECNOLÓGICO):    R$ 44.000,00
-  (-) Aporte Prévio Inicial (Servidores & Créditos IA):  R$  6.000,00
+  (-) Aporte Prévio Inicial (Servidores & Créditos IA):  R$  4.461,60
   -----------------------------------------------------------------
-• VALOR LÍQUIDO A SER INTEGRALIZADO / LANÇADO:          R$ 38.000,00
-  (Trinta e oito mil reais)
+• VALOR LÍQUIDO A SER INTEGRALIZADO / LANÇADO:          R$ 39.538,40
+  (Trinta e nove mil, quinhentos e trinta e oito reais e quarenta centavos)
 
 EQUILÍBRIO COMERCIAL ESTRATÉGICO:
 - Não desvaloriza o projeto: Um sistema multi-tenant enterprise desse porte em software
@@ -98,9 +98,9 @@ TOTAL BRUTO DE HORAS TRABALHADAS:                  440 h        R$ 100,00     R$
 
 COMPOSIÇÃO FINANCEIRA FINAL:
 Total das Horas de Engenharia de Software:                                    R$ 44.000,00
-(-) Aporte de infraestrutura/IA repassado no início:                         -R$  6.000,00
+(-) Aporte de infraestrutura/IA repassado no início:                         -R$  4.461,60
 ------------------------------------------------------------------------------------------
-SALDO LÍQUIDO A SER FATURADO / INTEGRALIZADO NO CNPJ:                         R$ 38.000,00
+SALDO LÍQUIDO A SER FATURADO / INTEGRALIZADO NO CNPJ:                         R$ 39.538,40
 
 > NOTA TÉCNICA: A taxa horária de R$ 100,00/h praticada situa-se na média conservadora do
   mercado brasileiro para Desenvolvedores Sênior / Tech Leads (que oscila entre
@@ -124,8 +124,9 @@ A viabilidade desse valor para a nova empresa se sustenta no modelo comercial j�
      • Receita Recorrente Mensal (MRR):     2 x R$ 2.900,00  = R$  5.800,00/mês
      • Faturamento no 1º trimestre:        R$ 13.800 + (R$ 5.800 x 3) = R$ 31.200,00
      • Faturamento no 4º mês:              R$ 37.000,00 acumulados.
+     • Faturamento no 5º mês:              R$ 42.800,00 acumulados.
    - Resultado: Em apenas 4 a 5 meses de operação com apenas 2 cooperativas, a empresa recupera
-     integralmente os R$ 38.000,00 investidos no sistema, passando a ter lucro líquido recorrente.
+     integralmente os R$ 39.538,40 investidos no sistema, passando a ter lucro líquido recorrente.
 
 --------------------------------------------------------------------------------
 6. ORIENTAÇÃO PARA LANÇAMENTO CONTÁBIL NA NOVA EMPRESA
