@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Laudo Técnico-Contábil e Valoração Patrimonial de Software - Siscoop3F</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    @page {
+      size: A4;
+      margin: 14mm 16mm 14mm 16mm;
+      @bottom-right {
+        content: counter(page) " de " counter(pages);
+        font-family: 'Inter', sans-serif;
+        font-size: 8pt;
+        color: #94a3b8;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      line-height: 1.5;
+      font-size: 9.5pt;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      border-bottom: 2px solid #0f766e;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .badge-doc {
+      display: inline-block;
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      color: #ffffff;
+      font-size: 7.5pt;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    .title {
+      font-size: 15pt;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.25;
+      margin: 0 0 4px 0;
+    }
+
+    .subtitle {
+      font-size: 9pt;
+      color: #475569;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .header-meta {
+      text-align: right;
+      font-size: 8pt;
+      color: #64748b;
+    }
+
+    .header-meta strong {
+      color: #0f172a;
+    }
+
+    .section-title {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #0f766e;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-left: 3.5px solid #0f766e;
+      padding-left: 8px;
+      margin: 16px 0 10px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Cards de Destaque Financeiro */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .summary-card {
+      border-radius: 8px;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .summary-card.highlight {
+      background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+      border-color: #5eead4;
+      box-shadow: 0 2px 4px rgba(13, 148, 136, 0.08);
+    }
+
+    .card-label {
+      font-size: 7.5pt;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .card-value {
+      font-size: 14pt;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+
+    .card-value.highlight-text {
+      color: #0f766e;
+    }
+
+    .card-caption {
+      font-size: 7.5pt;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    /* Módulos do Sistema */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .module-box {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: #ffffff;
+    }
+
+    .module-box h4 {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .module-box ul {
+      margin: 0;
+      padding-left: 14px;
+      font-size: 8pt;
+      color: #475569;
+    }
+
+    .module-box li {
+      margin-bottom: 3px;
+    }
+
+    /* Métricas Técnicas */
+    .metrics-bar {
+      display: flex;
+      justify-content: space-between;
+      background: #0f172a;
+      color: #ffffff;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin-bottom: 14px;
+    }
+
+    .metric-item {
+      text-align: center;
+    }
+
+    .metric-item .num {
+      font-size: 13pt;
+      font-weight: 800;
+      color: #2dd4bf;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .metric-item .lbl {
+      font-size: 7pt;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Tabela de Horas */
+    table.hours-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 14px 0;
+      font-size: 8pt;
+    }
+
+    table.hours-table th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      text-align: left;
+      padding: 6px 10px;
+      border-top: 1px solid #cbd5e1;
+      border-bottom: 1px solid #cbd5e1;
+      text-transform: uppercase;
+      font-size: 7pt;
+      letter-spacing: 0.05em;
+    }
+
+    table.hours-table td {
+      padding: 5.5px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+    }
+
+    table.hours-table tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    table.hours-table .text-right {
+      text-align: right;
+    }
+
+    table.hours-table .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    table.hours-table tr.total-row td {
+      background: #f8fafc;
+      font-weight: 700;
+      border-top: 1.5px solid #cbd5e1;
+      border-bottom: 1.5px solid #cbd5e1;
+      color: #0f172a;
+    }
+
+    table.hours-table tr.final-row td {
+      background: #f0fdfa;
+      font-weight: 800;
+      border-top: 2px solid #0f766e;
+      border-bottom: 2px solid #0f766e;
+      color: #0f766e;
+      font-size: 8.5pt;
+    }
+
+    /* Box Informativo / Contábil */
+    .info-box {
+      border: 1px dashed #cbd5e1;
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: #fafafa;
+      font-size: 8pt;
+      color: #475569;
+      margin-bottom: 12px;
+    }
+
+    .info-box strong {
+      color: #0f172a;
+    }
+
+    /* Assinatura */
+    .signature-area {
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      page-break-inside: avoid;
+    }
+
+    .signature-box {
+      width: 250px;
+      text-align: center;
+      border-top: 1px solid #94a3b8;
+      padding-top: 6px;
+      font-size: 8pt;
+    }
+
+    .signature-box strong {
+      display: block;
+      color: #0f172a;
+      font-size: 8.5pt;
+    }
+
+    .signature-box span {
+      color: #64748b;
+      font-size: 7.5pt;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABEÇALHO -->
+  <div class="header">
+    <div>
+      <div class="badge-doc">Documento Técnico-Contábil Oficial</div>
+      <h1 class="title">Laudo de Valoração e Ativo Tecnológico</h1>
+      <p class="subtitle">Plataforma SaaS Integrada de Gestão de Benefícios e Rede Credenciada • Siscoop3F / CB Saúde</p>
+    </div>
+    <div class="header-meta">
+      <div><strong>Emissão:</strong> 05/11/2026</div>
+      <div><strong>Responsável:</strong> Gerson Correia Lima Neto</div>
+      <div><strong>Finalidade:</strong> Integralização / Ativo Intangível (CPC 04)</div>
+    </div>
+  </div>
+
+  <!-- 1. SUMÁRIO EXECUTIVO E VALORES -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="card-label">Valor Bruto do Ativo</div>
+      <div class="card-value">R$ 44.000,00</div>
+      <div class="card-caption">440h de engenharia de software especializada</div>
+    </div>
+    <div class="summary-card">
+      <div class="card-label">(-) Aporte Inicial Realizado</div>
+      <div class="card-value" style="color: #dc2626;">- R$ 4.461,60</div>
+      <div class="card-caption">Servidores, infraestrutura & créditos de IA</div>
+    </div>
+    <div class="summary-card highlight">
+      <div class="card-label">Saldo Líquido Contábil</div>
+      <div class="card-value highlight-text">R$ 39.538,40</div>
+      <div class="card-caption">Valor a ser integralizado / faturado à empresa</div>
+    </div>
+  </div>
+
+  <!-- 2. MÉTRICAS OBJETIVAS DO CÓDIGO -->
+  <div class="metrics-bar">
+    <div class="metric-item">
+      <div class="num">35.902</div>
+      <div class="lbl">Linhas de Código Core</div>
+    </div>
+    <div class="metric-item">
+      <div class="num">358</div>
+      <div class="lbl">Arquivos de Código & Telas</div>
+    </div>
+    <div class="metric-item">
+      <div class="num">81</div>
+      <div class="lbl">Commits de Evolução Registrados</div>
+    </div>
+    <div class="metric-item">
+      <div class="num">32</div>
+      <div class="lbl">Testes Automatizados (Pest PHP)</div>
+    </div>
+    <div class="metric-item">
+      <div class="num">4</div>
+      <div class="lbl">Portais Web Integrados</div>
+    </div>
+  </div>
+
+  <!-- 3. ESCOPO DOS 4 PORTAIS ENTREGUES -->
+  <div class="section-title">1. Composição dos Módulos e Portais Entregues</div>
+  <div class="modules-grid">
+    <div class="module-box">
+      <h4>Portal Master & Admin Multi-Tenant</h4>
+      <ul>
+        <li>Isolamento de banco de dados por cliente (Stancl Tenancy).</li>
+        <li>Gestão flexível de planos, contratos, taxas de adesão e cotas.</li>
+        <li>Trilha de auditoria completa de aprovações com comprovante anexado.</li>
+        <li>Módulo financeiro com conciliação, extratos e relatórios em PDF/Excel.</li>
+      </ul>
+    </div>
+    <div class="module-box">
+      <h4>Portal do Cooperado & Beneficiário</h4>
+      <ul>
+        <li>Carteirinha digital interativa com QR Code dinâmico anti-fraude.</li>
+        <li>Consulta online da rede credenciada por especialidade e localidade.</li>
+        <li>Agendamento online 100% autônomo com validação imediata de status.</li>
+        <li>Gestão completa de dependentes com validação algorítmica de CPF.</li>
+        <li>Acesso autônomo para dependentes via Magic Link com verificação de CPF.</li>
+      </ul>
+    </div>
+    <div class="module-box">
+      <h4>Portal do Prestador / Rede Credenciada</h4>
+      <ul>
+        <li>Painel moderno em abas operacionais (Dashboard, Agenda e Faturas).</li>
+        <li>Calendário interativo com modal universal de ações imediatas.</li>
+        <li>Listagem paginada de solicitações recebidas em tempo real.</li>
+        <li>Validação direta de elegibilidade sem necessidade de guias em papel.</li>
+      </ul>
+    </div>
+    <div class="module-box">
+      <h4>Motor Público de Adesão & Compliance LGPD</h4>
+      <ul>
+        <li>Landing page institucional integrada, editável diretamente pelo Admin.</li>
+        <li>Fluxo público de adesão com sanitização e proteção contra duplicidade.</li>
+        <li>Múltiplos gateways: PIX Automático/Manual, Boleto e Cartão de Crédito.</li>
+        <li>Criptografia de dados sensíveis em repouso conforme a LGPD.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 4. DEMONSTRATIVO DE HORAS TRABALHADAS -->
+  <div class="section-title">2. Apuração de Horas Técnicas & Formação de Custo</div>
+  <table class="hours-table">
+    <thead>
+      <tr>
+        <th style="width: 60%;">Módulo Técnico / Especialidade Desenvolvida</th>
+        <th class="text-right" style="width: 12%;">Horas</th>
+        <th class="text-right" style="width: 14%;">Valor/Hora</th>
+        <th class="text-right" style="width: 14%;">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1. Arquitetura Multi-Tenant com Bancos Isolados e Modelagem de Dados</td>
+        <td class="text-right font-mono">45 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 4.500,00</td>
+      </tr>
+      <tr>
+        <td>2. Motor de Adesão Pública, Validações Algorítmicas e Proteção LGPD</td>
+        <td class="text-right font-mono">40 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 4.000,00</td>
+      </tr>
+      <tr>
+        <td>3. Gateways de Pagamento (PIX/Boleto), Cota Capital e Módulo Financeiro</td>
+        <td class="text-right font-mono">45 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 4.500,00</td>
+      </tr>
+      <tr>
+        <td>4. Portal do Cooperado, Carteirinha Digital QR Code e Gestão de Dependentes</td>
+        <td class="text-right font-mono">55 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 5.500,00</td>
+      </tr>
+      <tr>
+        <td>5. Acesso Magic Link de Dependentes com Verificação de Segurança de CPF</td>
+        <td class="text-right font-mono">25 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 2.500,00</td>
+      </tr>
+      <tr>
+        <td>6. Portal do Prestador de Serviços (Abas Operacionais, Agenda e Faturamento)</td>
+        <td class="text-right font-mono">50 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 5.000,00</td>
+      </tr>
+      <tr>
+        <td>7. Motor de Elegibilidade Instantânea e Agendamento Online Autônomo</td>
+        <td class="text-right font-mono">45 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 4.500,00</td>
+      </tr>
+      <tr>
+        <td>8. Painel Master Admin, Trilha de Auditoria e Exportação de Relatórios</td>
+        <td class="text-right font-mono">45 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 4.500,00</td>
+      </tr>
+      <tr>
+        <td>9. Testes Automatizados de Regressão e Segurança (Pest PHP)</td>
+        <td class="text-right font-mono">35 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 3.500,00</td>
+      </tr>
+      <tr>
+        <td>10. Infraestrutura Docker, Containers Nginx SSL e Homologação em Servidor VPS</td>
+        <td class="text-right font-mono">20 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 2.000,00</td>
+      </tr>
+      <tr>
+        <td>11. Documentação Técnica, Manuais de Implantação e Credenciais de Demonstração</td>
+        <td class="text-right font-mono">35 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 3.500,00</td>
+      </tr>
+      <tr class="total-row">
+        <td>TOTAL BRUTO DE HORAS TRABALHADAS</td>
+        <td class="text-right font-mono">440 h</td>
+        <td class="text-right font-mono">R$ 100,00</td>
+        <td class="text-right font-mono">R$ 44.000,00</td>
+      </tr>
+      <tr>
+        <td colspan="3" style="color: #dc2626; font-weight: 600;">(-) Aporte Prévio Inicial Realizado (Servidores VPS & Ferramentas IA)</td>
+        <td class="text-right font-mono" style="color: #dc2626; font-weight: 700;">- R$ 4.461,60</td>
+      </tr>
+      <tr class="final-row">
+        <td colspan="3">SALDO LÍQUIDO A SER INTEGRALIZADO / LANÇADO CONTABILMENTE</td>
+        <td class="text-right font-mono">R$ 39.538,40</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 5. JUSTIFICATIVA DE MERCADO E PAYBACK -->
+  <div class="section-title">3. Justificativa de Mercado e Retorno do Investimento (Payback)</div>
+  <div class="info-box">
+    <strong>Benchmark de Mercado:</strong> O desenvolvimento de uma solução proprietária multi-tenant com 4 portais e conformidade com a LGPD via fábrica de software tradicional tem orçamento estimado entre <strong>R$ 80.000,00 e R$ 130.000,00</strong>. A valoração de R$ 44.000,00 bruto representa uma economia direta de mais de 50% obtida graças à arquitetura de alta produtividade com inteligência artificial.
+  </div>
+
+  <div class="info-box" style="background: #f0fdf4; border-color: #86efac;">
+    <strong>Demonstrativo de Payback Rápido (Apenas 2 Clientes):</strong><br>
+    Com a comercialização no modelo SaaS estruturado (Setup de R$ 6.900,00 + R$ 2.900,00/mês por entidade):
+    <ul style="margin: 4px 0 2px 0; padding-left: 18px;">
+      <li>Receita imediata com 2 Setups: <strong>R$ 13.800,00</strong></li>
+      <li>Receita mensal recorrente combinada (2 clientes): <strong>R$ 5.800,00/mês</strong></li>
+      <li>Faturamento acumulado ao 5º mês: <strong>R$ 42.800,00</strong> &rarr; <em>Quita 100% dos R$ 39.538,40 investidos</em>.</li>
+    </ul>
+    A nova empresa recupera todo o capital aplicado em menos de um semestre, mantendo faturamento perpétuo.
+  </div>
+
+  <!-- 6. ORIENTAÇÃO CONTÁBIL -->
+  <div class="section-title">4. Enquadramento e Instrução Contábil</div>
+  <div class="info-box">
+    <strong>Classificação Contábil:</strong> Ativo Não Circulante &rarr; Ativo Intangível (CPC 04 / IAS 38 - Softwares e Aplicações Desenvolvidas).<br>
+    <strong>Amortização Fiscal:</strong> Taxa de 20% ao ano (vida útil estimada de 5 anos), gerando benefício fiscal de depreciação contábil.<br>
+    <strong>Suporte Documental:</strong> Este Laudo Técnico acompanhado de Contrato de Cessão de Direitos Patrimoniais de Software ou Nota Fiscal de Serviços de Desenvolvimento Tecnológico.
+  </div>
+
+  <!-- ASSINATURAS -->
+  <div class="signature-area">
+    <div class="signature-box">
+      <strong>Gerson Correia Lima Neto</strong>
+      <span>Engenheiro de Software Responsável<br>Desenvolvedor da Plataforma</span>
+    </div>
+    <div class="signature-box">
+      <strong>Empresa Contratante</strong>
+      <span>Representante Legal / Sócio Administrador<br>Aceite do Laudo e Integralização</span>
+    </div>
+  </div>
+
+</body>
+</html>
