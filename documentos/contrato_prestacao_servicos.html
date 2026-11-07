@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Contrato de Prestação de Serviços, Cessão de Software e Suporte Técnico - Integreservice</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    @page {
+      size: A4;
+      margin: 14mm 16mm 14mm 16mm;
+      @bottom-right {
+        content: "Página " counter(page) " de " counter(pages);
+        font-family: 'Inter', sans-serif;
+        font-size: 7.5pt;
+        color: #94a3b8;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      line-height: 1.45;
+      font-size: 8.5pt;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      border-bottom: 2px solid #0f766e;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .badge-doc {
+      display: inline-block;
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      color: #ffffff;
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+
+    .title {
+      font-size: 13.5pt;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.25;
+      margin: 0 0 3px 0;
+    }
+
+    .subtitle {
+      font-size: 8.5pt;
+      color: #475569;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .header-meta {
+      text-align: right;
+      font-size: 7.5pt;
+      color: #64748b;
+    }
+
+    .header-meta strong {
+      color: #0f172a;
+    }
+
+    .parties-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .party-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 10px;
+      background: #f8fafc;
+    }
+
+    .party-card h4 {
+      margin: 0 0 4px 0;
+      font-size: 8pt;
+      font-weight: 700;
+      color: #0f766e;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .party-card p {
+      margin: 0;
+      font-size: 7.5pt;
+      color: #334155;
+      line-height: 1.4;
+    }
+
+    .clause {
+      margin-bottom: 11px;
+    }
+
+    .clause-title {
+      font-size: 9pt;
+      font-weight: 700;
+      color: #0f766e;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-left: 3px solid #0f766e;
+      padding-left: 6px;
+      margin: 10px 0 5px 0;
+    }
+
+    p, li {
+      text-align: justify;
+      margin: 0 0 4px 0;
+    }
+
+    ul {
+      margin: 3px 0 6px 0;
+      padding-left: 16px;
+    }
+
+    li {
+      margin-bottom: 2px;
+    }
+
+    /* Cards Financeiro */
+    .finance-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 8px 0;
+    }
+
+    .finance-box {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 8px 10px;
+      background: #fafafa;
+    }
+
+    .finance-box.highlight {
+      background: #f0fdfa;
+      border-color: #5eead4;
+    }
+
+    .finance-box h5 {
+      margin: 0 0 4px 0;
+      font-size: 7.5pt;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    .finance-box .val {
+      font-size: 13pt;
+      font-weight: 800;
+      color: #0f172a;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .finance-box.highlight .val {
+      color: #0f766e;
+    }
+
+    .finance-box .desc {
+      font-size: 7pt;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Tabela SLA */
+    table.sla-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6px 0 8px 0;
+      font-size: 7.5pt;
+    }
+
+    table.sla-table th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      padding: 4px 8px;
+      text-align: left;
+      border-top: 1px solid #cbd5e1;
+      border-bottom: 1px solid #cbd5e1;
+      text-transform: uppercase;
+      font-size: 6.5pt;
+    }
+
+    table.sla-table td {
+      padding: 4px 8px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+    }
+
+    table.sla-table tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Assinaturas */
+    .signatures {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      page-break-inside: avoid;
+    }
+
+    .signature-line {
+      border-top: 1px solid #94a3b8;
+      text-align: center;
+      padding-top: 5px;
+      font-size: 7.5pt;
+    }
+
+    .signature-line strong {
+      display: block;
+      color: #0f172a;
+      font-size: 8pt;
+    }
+
+    .signature-line span {
+      color: #64748b;
+    }
+
+    .witnesses {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      page-break-inside: avoid;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABEÇALHO -->
+  <div class="header">
+    <div>
+      <div class="badge-doc">Instrumento Contratual Definitivo</div>
+      <h1 class="title">Contrato de Prestação de Serviços, Cessão e Suporte de Software</h1>
+      <p class="subtitle">Plataforma Siscoop3F / CB Saúde • Cessão Condicionada, Sustentação e Manutenção SLA</p>
+    </div>
+    <div class="header-meta">
+      <div><strong>Comarca:</strong> Rio Branco - AC</div>
+      <div><strong>Data Base:</strong> Novembro de 2026</div>
+      <div><strong>Ativo:</strong> CPC 04 / IAS 38</div>
+    </div>
+  </div>
+
+  <!-- QUALIFICAÇÃO DAS PARTES -->
+  <div class="parties-grid">
+    <div class="party-card">
+      <h4>CONTRATADA (Desenvolvedor Responsável)</h4>
+      <p>
+        <strong>GERSON CORREIA LIMA NETO</strong><br>
+        Engenheiro e Desenvolvedor de Software<br>
+        CPF nº 936.956.832-87<br>
+        Rua Santa Catarina, nº 71, Bairro Xavier Maia<br>
+        Rio Branco - AC, CEP 69903-064
+      </p>
+    </div>
+    <div class="party-card">
+      <h4>CONTRATANTE (Empresa Adquirente)</h4>
+      <p>
+        <strong>REIS E BEZERRA LTDA. (INTEGRESERVICE)</strong><br>
+        CNPJ nº 18.275.369/0001-72<br>
+        Rua Buriti, nº 39, Bairro Adalberto Sena<br>
+        Rio Branco - AC, CEP 69921-166<br>
+        Representada na forma de seus atos constitutivos
+      </p>
+    </div>
+  </div>
+
+  <!-- CLÁUSULAS -->
+  <div class="clause">
+    <div class="clause-title">Cláusula 1ª — Do Objeto do Contrato</div>
+    <p>O presente contrato tem por objeto: <strong>a)</strong> A prestação de serviços de engenharia de software para entrega, homologação e implantação da plataforma <em>Siscoop3F / CB Saúde</em>; <strong>b)</strong> A cessão onerosa dos direitos patrimoniais de propriedade intelectual sobre o código customizado da solução sob condição resolutiva/suspensiva de quitação integral, nos termos da Lei nº 9.609/98 e Lei nº 9.610/98; e <strong>c)</strong> A prestação de serviços técnicos continuados de suporte, sustentação em nuvem e manutenção contínua (SLA).</p>
+  </div>
+
+  <div class="clause">
+    <div class="clause-title">Cláusula 2ª — Escopo dos Módulos e Entregáveis Técnicos</div>
+    <p>A plataforma entregue compreende 4 portais interconectados, cobrindo 35.902 linhas de código core em 358 arquivos e 32 rotinas de testes automatizados:</p>
+    <ul>
+      <li><strong>Portal Master & Multi-Tenant:</strong> Isolamento estrito de bancos de dados por cliente (Stancl Tenancy), gestão de planos e contratos, trilha de auditoria completa de aprovações com comprovante e módulo financeiro com relatórios.</li>
+      <li><strong>Portal do Cooperado/Beneficiário:</strong> Carteirinha digital com QR Code dinâmico anti-fraude, catálogo online de credenciados, agendamento de consultas com checagem automática de elegibilidade e portal Magic Link de dependentes via CPF.</li>
+      <li><strong>Portal da Rede Credenciada:</strong> Painel em abas operacionais (Dashboard, Agenda e Faturas), calendário interativo de consultas com modal universal e validação direta de elegibilidade sem papel.</li>
+      <li><strong>Motor Público de Adesão & LGPD:</strong> Landing page institucional administrável, formulário de adesão com sanitização rigorosa anti-duplicidade, múltiplos gateways de pagamento e criptografia de dados sensíveis (LGPD).</li>
+    </ul>
+  </div>
+
+  <div class="clause">
+    <div class="clause-title">Cláusula 3ª — Condições Financeiras: Desconto e Parcelamento em 12x</div>
+    <div class="finance-summary">
+      <div class="finance-box">
+        <h5>Desenvolvimento Líquido Acordado</h5>
+        <div class="val">R$ 36.000,00</div>
+        <div class="desc">12 parcelas mensais e iguais de R$ 3.000,00 via PIX</div>
+      </div>
+      <div class="finance-box highlight">
+        <h5>Suporte Técnico & Manutenção Mensal</h5>
+        <div class="val">R$ 2.500,00 /mês</div>
+        <div class="desc">SLA prioritário + Correção de bugs + até 25h evolutivas/mês</div>
+      </div>
+    </div>
+    <p><strong>3.1. Memória de Cálculo:</strong> O valor bruto de desenvolvimento é de R$ 44.000,00 (440h @ R$ 100/h), deduzindo-se o aporte prévio inicial de <strong>R$ 4.461,60</strong> (servidores e IA). Sobre o saldo de R$ 39.538,40, a CONTRATADA concedeu desconto comercial de <strong>R$ 3.538,40 (~9%)</strong>, fixando o valor final em <strong>R$ 36.000,00</strong>, quitado em <strong>12 parcelas de R$ 3.000,00</strong>.</p>
+    <p><strong>3.2. Atraso:</strong> Incidência de multa moratória de 2%, juros de 1% ao mês e atualização monetária pelo IPCA pro rata die.</p>
+  </div>
+
+  <div class="clause">
+    <div class="clause-title">Cláusula 4ª — Da Cessão de Direitos Patrimoniais de Propriedade Intelectual</div>
+    <p><strong>4.1. Condição Suspensiva:</strong> Nos termos da Lei nº 9.609/98 e Lei nº 9.610/98, a transferência definitiva dos direitos patrimoniais sobre o código-fonte da plataforma fica expressamente <strong>condicionada à liquidação integral das 12 parcelas</strong>. Durante o período de pagamento, a CONTRATANTE detém licença de uso comercial e sublicenciamento exclusivo para seus clientes e cooperativas.</p>
+    <p><strong>4.2. Consolidação e INPI:</strong> Com a quitação da 12ª parcela, a titularidade se consolida integralmente à CONTRATANTE para registro de marca e software no INPI. Ficam ressalvadas as licenças de bibliotecas open-source públicas (Laravel, Vue, Tailwind).</p>
+    <p><strong>4.3. Direitos Morais:</strong> Ficam resguardados os direitos morais do autor (art. 24, Lei 9.610/98), conferindo à CONTRATADA o direito de citação de autoria técnica e inclusão em portfólio profissional.</p>
+  </div>
+
+  <div class="clause">
+    <div class="clause-title">Cláusula 5ª — Da Sustentação, Suporte Técnico e Manutenção Mensal (SLA)</div>
+    <p><strong>5.1. Mensalidade:</strong> A CONTRATANTE pagará o valor mensal de <strong>R$ 2.500,00</strong>, com vencimento todo dia 10 de cada mês.</p>
+    <p><strong>5.2. Escopo Incluso:</strong> Manutenção corretiva de erros/bugs sem custo adicional; sustentação contínua de containers Docker, backups automáticos e segurança SSL; atendimento de suporte técnico aos gestores; e franquia mensal de <strong>até 25 horas técnicas</strong> para melhorias, novos relatórios e integrações. Horas adicionais previamente autorizadas custarão R$ 90,00/h.</p>
+    <table class="sla-table">
+      <thead>
+        <tr>
+          <th>Classificação do Chamado</th>
+          <th>Definição de Severidade</th>
+          <th>Prazo Máximo de Resposta (SLA)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Crítico (Emergência)</strong></td>
+          <td>Interrupção total do sistema ou indisponibilidade geral da plataforma</td>
+          <td class="font-mono">Até 2 horas (com plantão)</td>
+        </tr>
+        <tr>
+          <td><strong>Grave (Alta Prioridade)</strong></td>
+          <td>Falha em funcionalidade central com impedimento operacional relevante</td>
+          <td class="font-mono">Até 6 horas úteis</td>
+        </tr>
+        <tr>
+          <td><strong>Regular / Evolutivo</strong></td>
+          <td>Dúvidas técnicas, ajustes de layout, relatórios e novas demandas</td>
+          <td class="font-mono">Até 24 horas úteis</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>5.3. Custos de Terceiros:</strong> Custos de servidores em nuvem (Hostinger/AWS), registros de domínio e gateways de pagamento são de responsabilidade direta da CONTRATANTE.</p>
+  </div>
+
+  <div class="clause">
+    <div class="clause-title">Cláusula 6ª — Da Confidencialidade e Conformidade com a LGPD</div>
+    <p>As Partes obrigam-se ao sigilo absoluto de dados estratégicos e técnicos. Nos termos da Lei nº 13.709/2018 (LGPD), a CONTRATANTE atua como <strong>Controladora</strong> e a CONTRATADA como <strong>Operadora Técnica</strong>, tratando dados apenas para a manutenção segura da plataforma com criptografia.</p>
+  </div>
+
+  <div class="clause">
+    <div class="clause-title">Cláusula 7ª — Da Vigência, Reajuste e Rescisão</div>
+    <p>O cronograma de quitação do software tem prazo de 12 meses. O serviço de suporte vigora por 12 meses, renovando-se automaticamente, com reajuste anual pelo IPCA. Após os 12 meses, o suporte poderá ser rescindido mediante aviso prévio de 30 dias sem multa.</p>
+  </div>
+
+  <div class="clause">
+    <div class="clause-title">Cláusula 8ª — Do Foro de Eleição</div>
+    <p>Fica eleito o Foro da Comarca de <strong>Rio Branco, Estado do Acre</strong>, com exclusão de qualquer outro, para dirimir dúvidas deste instrumento.</p>
+  </div>
+
+  <!-- ASSINATURAS -->
+  <div class="signatures">
+    <div class="signature-line">
+      <strong>GERSON CORREIA LIMA NETO</strong>
+      <span>CPF: 936.956.832-87<br>CONTRATADA (Desenvolvedor Responsável)</span>
+    </div>
+    <div class="signature-line">
+      <strong>REIS E BEZERRA LTDA. (INTEGRESERVICE)</strong>
+      <span>CNPJ: 18.275.369/0001-72<br>Representante Legal / CONTRATANTE</span>
+    </div>
+  </div>
+
+  <div class="witnesses">
+    <div class="signature-line" style="border-top: 1px dashed #cbd5e1;">
+      <strong>Testemunha 1</strong>
+      <span>Nome: ________________________________<br>CPF: _________________________________</span>
+    </div>
+    <div class="signature-line" style="border-top: 1px dashed #cbd5e1;">
+      <strong>Testemunha 2</strong>
+      <span>Nome: ________________________________<br>CPF: _________________________________</span>
+    </div>
+  </div>
+
+</body>
+</html>

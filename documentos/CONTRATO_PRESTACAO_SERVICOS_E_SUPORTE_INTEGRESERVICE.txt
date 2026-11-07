@@ -1,0 +1,310 @@
+================================================================================
+INSTRUMENTO PARTICULAR DE PRESTAÇÃO DE SERVIÇOS DE DESENVOLVIMENTO DE SOFTWARE,
+CESSÃO CONDICIONADA DE DIREITOS PATRIMONIAIS DE PROPRIEDADE INTELECTUAL, SUPORTE
+TÉCNICO, SUSTENTAÇÃO E MANUTENÇÃO CONTÍNUA (SLA)
+================================================================================
+
+Pelo presente instrumento particular, de um lado:
+
+CONTRATADA (DESENVOLVEDOR RESPONSÁVEL):
+GERSON CORREIA LIMA NETO, brasileiro, maior, desenvolvedor e engenheiro de software,
+inscrito no Cadastro de Pessoas Físicas (CPF/ME) sob o nº 936.956.832-87, residente
+e domiciliado na Rua Santa Catarina, nº 71, Bairro Xavier Maia, Município de Rio
+Branco, Estado do Acre, CEP 69903-064, doravante denominado simplesmente CONTRATADA;
+
+E, de outro lado:
+
+CONTRATANTE:
+REIS E BEZERRA LTDA., pessoa jurídica de direito privado, inscrita no Cadastro
+Nacional da Pessoa Jurídica (CNPJ/ME) sob o nº 18.275.369/0001-72, com sede na
+Rua Buriti, nº 39, Bairro Adalberto Sena, Município de Rio Branco, Estado do Acre,
+CEP 69921-166, com nome fantasia comercial INTEGRESERVICE, neste ato representada
+na forma de seus atos constitutivos por seu(s) representante(s) legal(is), doravante
+denominada simplesmente CONTRATANTE;
+
+Ambas doravante denominadas conjuntamente "Partes" ou individualmente "Parte".
+
+CONSIDERANDO QUE:
+I. A CONTRATADA detém capacidade técnica e conhecimento especializado em engenharia
+   de software, arquitetura em nuvem e desenvolvimento de soluções tecnológicas;
+II. A CONTRATADA projetou, arquitetou e desenvolveu a plataforma tecnológica sob
+    medida denominada "SISCOOP3F / CB SAÚDE", voltada à gestão de redes credenciadas,
+    agendamento online, validação de elegibilidade e governança de benefícios;
+III. A CONTRATANTE formalizou sua sociedade empresária e deseja adquirir em caráter
+     definitivo a propriedade patrimonial do software, integrando-o ao seu patrimônio
+     como Ativo Intangível (CPC 04 / IAS 38), bem como contratar de forma contínua os
+     serviços de sustentação, manutenção e suporte técnico especializado da CONTRATADA;
+
+TÊM, ENTRE SI, JUSTO E CONTRATADO O QUE SE SEGUE NAS CLÁUSULAS ABAIXO:
+
+--------------------------------------------------------------------------------
+CLÁUSULA PRIMEIRA - DO OBJETO DO CONTRATO
+--------------------------------------------------------------------------------
+1.1. Constitui objeto do presente instrumento:
+     a) A prestação de serviços de engenharia de software especializada para o
+        desenvolvimento, finalização, homologação e implantação da plataforma
+        denominada "SISCOOP3F / CB SAÚDE";
+     b) A cessão onerosa, irrevogável e irretratável dos direitos patrimoniais de
+        propriedade intelectual sobre o código-fonte desenvolvido especificamente
+        para a plataforma, sob a condição suspensiva de liquidação financeira integral,
+        nos termos da Lei Federal nº 9.609/1998 (Lei do Software) e Lei Federal
+        nº 9.610/1998 (Direitos Autorais);
+     c) A prestação contínua de serviços de suporte técnico operacional, manutenção
+        preventiva, corretiva e evolutiva (AMS/SLA) para a garantia de disponibilidade
+        e estabilidade da plataforma em produção.
+
+--------------------------------------------------------------------------------
+CLÁUSULA SEGUNDA - DO ESCOPO DOS MÓDULOS E ENTREGÁVEIS TÉCNICOS
+--------------------------------------------------------------------------------
+2.1. O software entregue e coberto por este contrato compreende 4 (quatro) portais
+integrados, totalizando 11 (onze) módulos funcionais e 35.902 linhas de código core
+registradas em 358 arquivos estruturados e 32 rotinas de testes automatizados:
+
+I. PORTAL MASTER ADMINISTRATIVO & GESTÃO MULTI-TENANT:
+   - Arquitetura multi-empresa com isolamento estrito de banco de dados (Stancl Tenancy);
+   - Gestão de planos, contratos, taxas de adesão flexíveis e faturamento central;
+   - Trilha de auditoria completa de aprovações com registro de operador, data e
+     comprovante anexado;
+   - Módulo financeiro com conciliação, controle de cotas capitais e exportação de
+     relatórios analíticos em PDF e Excel.
+
+II. PORTAL DO COOPERADO / BENEFICIÁRIO (DESKTOP & MOBILE):
+   - Carteirinha virtual interativa com QR Code dinâmico anti-fraude;
+   - Catálogo online de prestadores credenciados com busca por especialidade e local;
+   - Agendamento autônomo de procedimentos e consultas com checagem automática de elegibilidade;
+   - Gestão completa de dependentes com validação matemática algorítmica de CPF;
+   - Portal web autônomo para dependentes via Magic Link com chave de validação de CPF;
+   - Extrato financeiro, reembolsos com upload de comprovantes e histórico clínico.
+
+III. PORTAL DA REDE CREDENCIADA / PRESTADORES DE SERVIÇOS:
+   - Painel operacional em abas (Dashboard, Agendamentos, Solicitações e Faturas);
+   - Calendário interativo de atendimentos com modal universal de ações imediatas;
+   - Listagem paginada de solicitações recebidas em tempo real;
+   - Validação direta da elegibilidade do associado sem necessidade de guias físicas.
+
+IV. MOTOR PÚBLICO DE ADESÃO & CONFORMIDADE LGPD:
+   - Landing page institucional dinâmica configurável pelo painel administrativo;
+   - Formulário público de adesão com sanitização rigorosa de dados e trava anti-duplicidade;
+   - Múltiplos meios de pagamento: PIX Automático/Manual, Boleto e Cartão de Crédito;
+   - Criptografia em repouso de dados sensíveis conforme a Lei Federal nº 13.709/2018 (LGPD).
+
+V. INFRAESTRUTURA DE PRODUÇÃO & HOMOLOGAÇÃO:
+   - Configuração de contêineres Docker, Docker Compose, Nginx com certificado SSL e
+     ambiente homologado em servidor virtual privado (VPS).
+
+--------------------------------------------------------------------------------
+CLÁUSULA TERCEIRA - DO VALOR DO DESENVOLVIMENTO, DESCONTO E PARCELAMENTO (12X)
+--------------------------------------------------------------------------------
+3.1. O valor total bruto avaliado dos serviços de engenharia e desenvolvimento da
+plataforma perfaz o montante de R$ 44.000,00 (quarenta e quatro mil reais),
+correspondente a 440 (quatrocentas e quarenta) horas técnicas especializadas a
+R$ 100,00/hora, devidamente atestadas no Laudo Técnico-Contábil anexo.
+
+3.2. As Partes reconhecem e deduzem expressamente o aporte prévio inicial realizado
+pela CONTRATANTE no valor exato de R$ 4.461,60 (quatro mil, quatrocentos e sessenta e
+um reais e sessenta centavos), destinado ao custeio de servidores, infraestrutura e
+ferramentas de inteligência artificial.
+
+3.3. Da aplicação de Desconto Comercial e Parcelamento:
+     Sobre o saldo remanescente de R$ 39.538,40, a CONTRATADA concede, em caráter
+     excepcional de incentivo à formalização da nova empresa, um desconto comercial
+     de R$ 3.538,40 (três mil, quinhentos e trinta e oito reais e quarenta centavos).
+
+3.4. Desta forma, o VALOR LÍQUIDO FINAL pactuado para a quitação e aquisição do
+desenvolvimento do software é de R$ 36.000,00 (trinta e seis mil reais).
+
+3.5. Condições de Pagamento:
+     O valor líquido de R$ 36.000,00 será pago pela CONTRATANTE em 12 (doze) parcelas
+     mensais, iguais e sucessivas de R$ 3.000,00 (três mil reais) cada, vencendo-se
+     a primeira parcela no dia ___/___/2026 e as demais no mesmo dia dos meses
+     subsequentes.
+
+3.6. Meio de Pagamento:
+     As parcelas serão adimplidas mediante transferência bancária via PIX para a
+     chave informada pela CONTRATADA ou outra modalidade expressamente ajustada.
+
+3.7. Do Atraso no Pagamento:
+     O inadimplemento de qualquer parcela no seu respectivo vencimento sujeitará a
+     CONTRATANTE à multa moratória de 2% (dois por cento) sobre o valor da parcela em
+     atraso, acrescida de juros legais de 1% (um por cento) ao mês e correção monetária
+     pelo índice IPCA/IBGE pro rata die.
+
+--------------------------------------------------------------------------------
+CLÁUSULA QUARTA - DA CESSÃO DE DIREITOS PATRIMONIAIS DE PROPRIEDADE INTELECTUAL
+--------------------------------------------------------------------------------
+4.1. Condição Suspensiva da Cessão:
+     Nos termos do art. 4º da Lei nº 9.609/1998 e do art. 49 e seguintes da Lei
+     nº 9.610/1998, a CONTRATADA cede e transfere à CONTRATANTE os direitos patrimoniais
+     exclusivos sobre o código-fonte desenvolvido sob encomenda, ficando dita cessão
+     CONDICIONADA À LIQUIDAÇÃO INTEGRAL de todas as 12 (doze) parcelas ajustadas na
+     Cláusula Terceira.
+
+4.2. Enquanto perdurar o parcelamento, é outorgada à CONTRATANTE licença irrevogável
+de uso, exploração comercial e sublicenciamento a terceiros (clientes, cooperativas e
+empresas parceiras) em caráter operacional pleno.
+
+4.3. Após a liquidação da 12ª (décima segunda) parcela, a titularidade patrimonial
+do código-fonte se consolidará de pleno direito em nome da CONTRATANTE, que poderá
+livremente registrá-lo perante o Instituto Nacional da Propriedade Industrial (INPI)
+ou qualquer órgão competente.
+
+4.4. Bibliotecas de Terceiros e Open Source:
+     A cessão abrange as linhas de código personalizadas desenvolvidas especificamente
+     para a solução, ressalvadas as bibliotecas públicas de código aberto (open-source)
+     integradas (como Laravel Framework, Vue.js, TailwindCSS, extensões PHP e pacotes
+     Node.js), as quais continuam regidas por suas respectivas licenças universais
+     (MIT, BSD, Apache 2.0).
+
+4.5. Direitos Morais do Autor:
+     Permanecem inalienáveis e irrenunciáveis os direitos morais do autor da obra,
+     conforme disposto no art. 24 da Lei Federal nº 9.610/1998, assegurando à
+     CONTRATADA o direito de ter seu nome mencionado como autor/desenvolvedor em
+     referências técnicas e portfólio profissional.
+
+--------------------------------------------------------------------------------
+CLÁUSULA QUINTA - DA SUSTENTAÇÃO, SUPORTE TÉCNICO E MANUTENÇÃO MENSAL (SLA)
+--------------------------------------------------------------------------------
+5.1. Para assegurar a continuidade, disponibilidade, segurança e evolução constante
+da plataforma comercializada pela CONTRATANTE, a CONTRATADA prestará serviços técnicos
+mensais contínuos de suporte e sustentação.
+
+5.2. Do Valor da Mensalidade de Suporte:
+     Pelos serviços continuados de suporte e manutenção, a CONTRATANTE pagará à
+     CONTRATADA o valor mensal fixo de R$ 2.500,00 (dois mil e quinhentos reais),
+     vencendo-se no dia 10 (dez) de cada mês, iniciando-se a partir de ___/___/2026.
+
+5.3. Escopo Incluso na Mensalidade:
+     a) Manutenção Corretiva Ilimitada: Identificação e correção de quaisquer falhas,
+        erros de sistema (bugs) ou inconsistências de código sem custo adicional;
+     b) Manutenção Preventiva e Infraestrutura: Monitoramento dos contêineres Docker,
+        bancos de dados, certificados de segurança SSL, rotinas de backup e logs;
+     c) Franquia Mensal de Horas Evolutivas: Pacote de até 25 (vinte e cinco) horas
+        técnicas mensais para desenvolvimento de melhorias, novos relatórios, ajustes
+        de fluxos, parametrizações e novas integrações solicitadas pela CONTRATANTE;
+     d) Suporte Técnico Nível 2 e 3: Atendimento direto aos gestores e operadores da
+        CONTRATANTE para dirimir dúvidas técnicas e operacionais da plataforma.
+
+5.4. Do Horário de Atendimento e Prazos de Resposta (SLA - Service Level Agreement):
+     - Horário Padrão de Atendimento: De segunda a sexta-feira, das 08h às 18h
+       (horário local de Rio Branco/AC);
+     - Chamados Críticos (Interrupção total do sistema / indisponibilidade geral):
+       Início do atendimento em até 2 (duas) horas e plantão de emergência;
+     - Chamados Graves (Falha em funcionalidade central com impacto operacional):
+       Início do atendimento em até 6 (seis) horas úteis;
+     - Chamados Regulares / Dúvidas / Evolutivas:
+       Início do atendimento em até 24 (vinte e quatro) horas úteis.
+
+5.5. Horas Excedentes:
+     Caso a CONTRATANTE demande demandas evolutivas ou novos módulos estruturais que
+     ultrapassem a franquia mensal de 25 horas, as horas excedentes serão previamente
+     orçadas e faturadas com tarifa subsidiada de R$ 90,00/hora (noventa reais por hora),
+     com início condicionado à aprovação expressa da CONTRATANTE. As horas da franquia
+     não são cumulativas de um mês para o outro.
+
+5.6. Custos de Terceiros e Infraestrutura:
+     Permanecem sob responsabilidade financeira direta da CONTRATANTE as despesas com
+     serviços terceirizados necessários à operação do sistema, tais como: locação de
+     servidores em nuvem (Hostinger/AWS), registros e renovações de domínio, taxas
+     de gateways de pagamento e provedores de envio transacional de e-mails/SMS.
+
+--------------------------------------------------------------------------------
+CLÁUSULA SEXTA - DA CONFIDENCIALIDADE E CONFORMIDADE COM A LGPD
+--------------------------------------------------------------------------------
+6.1. Ambas as Partes obrigam-se a manter sob rigoroso sigilo todas as informações
+estratégicas, comerciais, financeiras e técnicas relativas à outra Parte e aos
+clientes/usuários finais da plataforma ("Informações Confidenciais").
+
+6.2. Proteção de Dados Pessoais (LGPD):
+     As Partes declaram cumprir integralmente as determinações da Lei Geral de
+     Proteção de Dados Pessoais (Lei nº 13.709/2018).
+     a) A CONTRATANTE atua na qualidade de CONTROLADORA DOS DADOS PESSOAIS de seus
+        cooperados, clientes e parceiros credenciados;
+     b) A CONTRATADA atua na qualidade de OPERADORA TÉCNICA, tratando dados pessoais
+        exclusivamente para a finalidade de manutenção, sustentação e garantia da
+        segurança técnica do sistema, adotando medidas de criptografia e proteção.
+
+--------------------------------------------------------------------------------
+CLÁUSULA SÉTIMA - DA VIGÊNCIA, REAJUSTE E RESCISÃO
+--------------------------------------------------------------------------------
+7.1. O presente contrato entra em vigor na data de sua assinatura.
+
+7.2. O cronograma de quitação do desenvolvimento terá vigência determinada de 12 (doze)
+meses, correspondente às 12 parcelas mensais estipuladas.
+
+7.3. Os serviços continuados de suporte e manutenção (Cláusula Quinta) vigorarão pelo
+prazo inicial de 12 (doze) meses, renovando-se automaticamente por períodos iguais e
+sucessivos, salvo notificação formal em contrário com antecedência mínima de 30 dias.
+
+7.4. Reajuste Anual do Suporte:
+     O valor mensal do suporte técnico (R$ 2.500,00) será reajustado anualmente a cada
+     12 meses pelo índice oficial acumulado do IPCA/IBGE (ou índice oficial substituto).
+
+7.5. Da Rescisão:
+     a) Rescisão Motivada: Qualquer das Partes poderá rescindir este contrato de pleno
+        direito em caso de descumprimento injustificado de obrigações contratuais não
+        sanado no prazo de 15 (quinze) dias após notificação escrita;
+     b) Rescisão do Suporte Mensal: Após os primeiros 12 meses, qualquer das Partes
+        poderá rescindir os serviços de suporte mediante aviso prévio por escrito de
+        30 (trinta) dias, sem incidência de multa rescisória, desde que quitadas as
+        mensalidades vencidas e a vencer no período de aviso.
+
+--------------------------------------------------------------------------------
+CLÁUSULA OITAVA - DAS DISPOSIÇÕES GERAIS E DECLARAÇÃO CONTÁBIL
+--------------------------------------------------------------------------------
+8.1. Autonomia das Partes:
+     O presente contrato não estabelece qualquer vínculo empregatício, societário ou
+     de subordinação jurídica entre os profissionais da CONTRATADA e a CONTRATANTE,
+     sendo regido pelas normas de prestação de serviços civis e comerciais.
+
+8.2. Validade para Efeitos Contábeis e Fiscais:
+     Este contrato, complementado pelo Laudo Técnico-Contábil de Valoração Patrimonial
+     emitido em 05/11/2026, serve como documento hábil e idôneo para que o setor
+     contábil da CONTRATANTE proceda à escrituração do software como Ativo Intangível
+     (CPC 04 / IAS 38) e registro das despesas operacionais correspondentes.
+
+8.3. Tolerância:
+     A eventual tolerância de qualquer das Partes quanto ao descumprimento de prazos
+     ou cláusulas contratuais constituirá mera liberalidade, não implicando novação,
+     perdão de dívida ou renúncia de direitos.
+
+--------------------------------------------------------------------------------
+CLÁUSULA NONA - DO FORO DE ELEIÇÃO
+--------------------------------------------------------------------------------
+9.1. Para dirimir quaisquer litígios, dúvidas ou controvérsias oriundas do presente
+instrumento, as Partes elegem, com expressa renúncia a qualquer outro, por mais
+privilegiado que seja, o Foro da Comarca de Rio Branco, Estado do Acre.
+
+E, por estarem assim justas e contratadas, as Partes assinam o presente instrumento
+em 02 (duas) vias de igual teor e forma, na presença de 02 (duas) testemunhas abaixo
+assinadas, para que produza todos os seus efeitos jurídicos e legais.
+
+
+Rio Branco - AC, _____ de ___________________ de 2026.
+
+
+
+_______________________________________________________
+GERSON CORREIA LIMA NETO
+CPF: 936.956.832-87
+(CONTRATADA - Desenvolvedor Responsável)
+
+
+
+_______________________________________________________
+REIS E BEZERRA LTDA. (INTEGRESERVICE)
+CNPJ: 18.275.369/0001-72
+Representante Legal:
+(CONTRATANTE)
+
+
+
+TESTEMUNHAS:
+
+1. ________________________________________
+   Nome:
+   CPF:
+
+2. ________________________________________
+   Nome:
+   CPF:
+================================================================================
